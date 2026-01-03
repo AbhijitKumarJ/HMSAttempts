@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BMADTest UX Design Directions</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        .clinical-shadow { box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06); }
+        .grid-striped div:nth-child(even) { background-color: #f1f5f9; }
+        .stat-glow-red { border-left: 4px solid #dc2626; background-color: #fef2f2; }
+        .stat-glow-amber { border-left: 4px solid #f59e0b; background-color: #fffbeb; }
+    </style>
+</head>
+<body class="p-8">
+    <header class="mb-12">
+        <h1 class="text-3xl font-bold text-slate-900">BMADTest UX Design Directions</h1>
+        <p class="text-slate-600">Visualizing the "Clinical Cockpit" and "Excel Flexibility" for an Open Source HMS.</p>
+    </header>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+        
+        <!-- Variation 1: High-Density Grid -->
+        <section class="bg-white p-6 rounded-lg clinical-shadow border border-slate-200">
+            <h2 class="text-xl font-semibold mb-4 text-blue-600">1. The High-Density Grid</h2>
+            <p class="text-sm text-slate-500 mb-6">Prioritizes "Excel-like" data visibility. Everything is editable inline.</p>
+            <div class="border border-slate-200 rounded overflow-hidden text-xs">
+                <div class="bg-slate-100 p-2 font-bold grid grid-cols-4 border-b border-slate-200">
+                    <span>Vital</span><span>Value</span><span>Unit</span><span>Status</span>
+                </div>
+                <div class="grid grid-cols-4 p-2 border-b border-slate-100 hover:bg-blue-50 cursor-pointer">
+                    <span>Blood Pressure</span><span class="font-mono text-red-600">160/95</span><span>mmHg</span><span class="text-red-600 font-bold">CRITICAL</span>
+                </div>
+                <div class="grid grid-cols-4 p-2 border-b border-slate-100 hover:bg-blue-50 cursor-pointer">
+                    <span>Heart Rate</span><span class="font-mono">82</span><span>bpm</span><span class="text-emerald-600">Normal</span>
+                </div>
+                <div class="grid grid-cols-4 p-2 bg-slate-50 hover:bg-blue-50 cursor-pointer">
+                    <span>Temperature</span><span class="font-mono">38.2</span><span>°C</span><span class="text-amber-600">Warning</span>
+                </div>
+            </div>
+            <div class="mt-4 p-2 bg-blue-50 text-blue-700 text-[10px] rounded italic">
+                Lesson: Users can fix any value directly in the cell without an "Edit" button.
+            </div>
+        </section>
+
+        <!-- Variation 2: Block-Based Canvas -->
+        <section class="bg-white p-6 rounded-lg clinical-shadow border border-slate-200">
+            <h2 class="text-xl font-semibold mb-4 text-blue-600">2. The Block-Based Canvas</h2>
+            <p class="text-sm text-slate-500 mb-6">Notion-style documentation. Components are "blocks" that can be moved.</p>
+            <div class="space-y-3">
+                <div class="p-3 border border-dashed border-slate-300 rounded text-sm text-slate-400">
+                    + Type '/' for a clinical block (Order, Note, Image)
+                </div>
+                <div class="p-3 bg-slate-50 rounded-md border-l-4 border-blue-600">
+                    <h4 class="font-bold text-xs text-slate-700 mb-1 uppercase">Clinical Note</h4>
+                    <p class="text-sm">Patient presents with persistent cough and fatigue. Suspected viral infection.</p>
+                </div>
+                <div class="p-3 bg-emerald-50 rounded-md border border-emerald-200 flex justify-between items-center">
+                    <span class="text-sm font-medium text-emerald-800">Order: Chest X-Ray</span>
+                    <span class="text-[10px] bg-emerald-200 text-emerald-800 px-2 py-0.5 rounded-full">SENT</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Variation 3: Split-Pane Cockpit -->
+        <section class="bg-white p-6 rounded-lg clinical-shadow border border-slate-200">
+            <h2 class="text-xl font-semibold mb-4 text-blue-600">3. The Split-Pane Cockpit</h2>
+            <p class="text-sm text-slate-500 mb-6">Side-by-side context. Pinned vitals vs Active Timeline.</p>
+            <div class="flex h-48 border border-slate-200 rounded">
+                <div class="w-1/3 border-r border-slate-200 p-2 bg-slate-50">
+                    <div class="text-[10px] font-bold text-slate-400 mb-2 uppercase">Pinned Vitals</div>
+                    <div class="space-y-2">
+                        <div class="text-sm font-mono text-red-600">BP: 160/95</div>
+                        <div class="text-sm font-mono">HR: 82</div>
+                    </div>
+                </div>
+                <div class="w-2/3 p-2 overflow-y-auto">
+                    <div class="text-[10px] font-bold text-slate-400 mb-2 uppercase">Patient Timeline</div>
+                    <div class="relative border-l-2 border-slate-200 ml-2 pl-4 space-y-4">
+                        <div class="text-xs">
+                            <span class="font-bold">14:00</span> - Lab Result: CBC Normal
+                        </div>
+                        <div class="text-xs">
+                            <span class="font-bold">13:45</span> - Triage Complete
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Variation 4: Tabbed Command Center -->
+        <section class="bg-white p-6 rounded-lg clinical-shadow border border-slate-200">
+            <h2 class="text-xl font-semibold mb-4 text-blue-600">4. Tabbed Command Center</h2>
+            <p class="text-sm text-slate-500 mb-6">Multi-patient multitasking. No data loss when switching.</p>
+            <div class="border border-slate-200 rounded overflow-hidden">
+                <div class="flex bg-slate-200 p-1 gap-1">
+                    <div class="bg-white px-3 py-1 rounded-t text-[10px] font-bold border-t-2 border-blue-600">John Chen</div>
+                    <div class="bg-slate-300 px-3 py-1 rounded-t text-[10px] text-slate-600">Sarah Smith</div>
+                    <div class="bg-slate-300 px-3 py-1 rounded-t text-[10px] text-slate-600">+ New</div>
+                </div>
+                <div class="p-4 h-32 bg-white text-sm">
+                    Dashboard content for <span class="font-bold text-blue-600">John Chen</span>...
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <footer class="mt-12 p-6 bg-slate-900 text-white rounded-lg">
+        <h3 class="text-lg font-bold mb-2">Decision Framework</h3>
+        <ul class="text-sm text-slate-300 space-y-1">
+            <li>• Use <strong>1 + 3</strong> for the primary Cockpit Review.</li>
+            <li>• Use <strong>2</strong> for the documentation experience.</li>
+            <li>• Use <strong>4</strong> for handling multiple patients in a busy clinic.</li>
+        </ul>
+    </footer>
+</body>
+</html>
