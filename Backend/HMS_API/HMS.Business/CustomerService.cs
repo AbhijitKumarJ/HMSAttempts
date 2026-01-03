@@ -2,52 +2,52 @@ using Newtonsoft.Json.Linq;
 using HMS.Data;
 using HMS.Entity;
 namespace HMS.Business;
-public interface ICustomerService{
-    // Define methods for customer operations
-    public JObject GetCustomers(int limit);
-    public JObject GetCustomer(int id);
-    public JObject CreateCustomer(CreateCustomerEntity entity);
-    public JObject UpdateCustomer(UpdateCustomerEntity entity);
-    public JObject DeleteCustomer(int id);
+public interface IUserService{
+    // Define methods for user operations
+    public JObject GetUsers(int limit);
+    public JObject GetUser(int id);
+    public JObject CreateUser(CreateUserEntity entity);
+    public JObject UpdateUser(UpdateUserEntity entity);
+    public JObject DeleteUser(int id);
 }
 
-public class CustomerService : ICustomerService
+public class UserService : IUserService
 {
-    private readonly ICustomerRepository _customerRepository;
+    private readonly IUserRepository _userRepository;
 
-    public CustomerService(ICustomerRepository customerRepository)
+    public UserService(IUserRepository userRepository)
     {
-        _customerRepository = customerRepository;
+        _userRepository = userRepository;
     }
 
-    public JObject GetCustomers(int limit)
+    public JObject GetUsers(int limit)
     {
-        // Implementation for retrieving customers
-        return new JObject { ["Message"] = $"Retrieved {limit} customers." };
+        // Implementation for retrieving users
+        return new JObject { ["Message"] = $"Retrieved {limit} users." };
     }
 
-    public JObject GetCustomer(int id)
+    public JObject GetUser(int id)
     {
-        // Implementation for retrieving a single 
-        object obj= _customerRepository.GetCustomerById(id);
-        return new JObject { ["Message"] = $"Retrieved customer with ID {id}.", ["Data"]=JObject.FromObject(obj) };
+        // Implementation for retrieving a single user by ID
+        object obj= _userRepository.GetUserById(id);
+        return new JObject { ["Message"] = $"Retrieved user with ID {id}.", ["Data"]=JObject.FromObject(obj) };
     }
 
-    public JObject CreateCustomer(CreateCustomerEntity entity)
+    public JObject CreateUser(CreateUserEntity entity)
     {
-        // Implementation for creating a customer
-        return new JObject { ["Message"] = $"Created customer: {entity.FirstName} {entity.LastName}." };
+        // Implementation for creating a user
+        return new JObject { ["Message"] = $"Created user: {entity.Username}." };
     }
 
-    public JObject UpdateCustomer(UpdateCustomerEntity entity)
+    public JObject UpdateUser(UpdateUserEntity entity)
     {
-        // Implementation for updating a customer
-        return new JObject { ["Message"] = $"Updated customer with ID {entity.CustomerId}." };
+        // Implementation for updating a user
+        return new JObject { ["Message"] = $"Updated user with ID {entity.UserId}." };
     }
 
-    public JObject DeleteCustomer(int id)
+    public JObject DeleteUser(int id)
     {
-        // Implementation for deleting a customer
-        return new JObject { ["Message"] = $"Deleted customer with ID {id}." };
+        // Implementation for deleting a user
+        return new JObject { ["Message"] = $"Deleted user with ID {id}." };
     }
 }

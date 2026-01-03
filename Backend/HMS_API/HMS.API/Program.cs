@@ -23,14 +23,14 @@ public class Program
         });
 
         // Configure EF Core with Postgres connection string from appsettings.json
-        builder.Services.AddDbContext<HMS.Data.DBModel.DvdRentalContext>(options =>
-            options.UseNpgsql(builder.Configuration.GetConnectionString("DvdRental")));
+        builder.Services.AddDbContext<HMS.Data.DBModel.HMSContext>(options =>
+            options.UseNpgsql(builder.Configuration.GetConnectionString("HMS")));
 
 
         // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
         builder.Services.AddOpenApi();
-        builder.Services.AddScoped<ICustomerService, CustomerService>();
-        builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
+        builder.Services.AddScoped<IUserService, UserService>();
+        builder.Services.AddScoped<IUserRepository, UserRepository>();
 
         var app = builder.Build();
 

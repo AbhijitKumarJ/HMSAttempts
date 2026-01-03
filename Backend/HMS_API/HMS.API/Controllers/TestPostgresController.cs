@@ -11,50 +11,50 @@ namespace HMS.API.Controllers;
 public class TestPostgresController : ControllerBase
 {
     private readonly ILogger<TestPostgresController> _logger;
-    private readonly ICustomerService _customerService;
+    private readonly IUserService _userService;
 
-    public TestPostgresController(ILogger<TestPostgresController> logger, ICustomerService customerService)
+    public TestPostgresController(ILogger<TestPostgresController> logger, IUserService userService)
     {
         _logger = logger;
-        _customerService = customerService;
+        _userService = userService;
     }
 
-    // GET: api/TestPostgres/GetCustomers
-    [HttpGet("GetCustomers")]
-    public async Task<IActionResult> GetCustomers([FromQuery]int limit,CancellationToken cancellationToken)
+    // GET: api/TestPostgres/GetUsers
+    [HttpGet("GetUsers")]
+    public async Task<IActionResult> GetUsers([FromQuery]int limit,CancellationToken cancellationToken)
     {
-        return Ok(new JObject { ["Message"] = $"Retrieved {limit} customers." });
+        return Ok(new JObject { ["Message"] = $"Retrieved {limit} users." });
     }
 
-    // GET: api/TestPostgres/GetCustomer/5
-    [HttpGet("GetCustomer/{id:int}")]
-    public async Task<IActionResult> GetCustomer(int id, CancellationToken cancellationToken)
+    // GET: api/TestPostgres/GetUser/5
+    [HttpGet("GetUser/{id:int}")]
+    public async Task<IActionResult> GetUser(int id, CancellationToken cancellationToken)
     {
-        return Ok(_customerService.GetCustomer(id));
+        return Ok(_userService.GetUser(id));
     }
 
-    // POST: api/TestPostgres/CreateCustomer
-    [HttpPost("CreateCustomer")]
-    public async Task<IActionResult> CreateCustomer([FromBody] CreateCustomerEntity entity, CancellationToken cancellationToken)
+    // POST: api/TestPostgres/CreateUser
+    [HttpPost("CreateUser")]
+    public async Task<IActionResult> CreateUser([FromBody] CreateUserEntity entity, CancellationToken cancellationToken)
     {
         if (entity == null) return BadRequest();
 
         
 
-        return CreatedAtAction(nameof(GetCustomer), new { id = 1 }, entity);
+        return CreatedAtAction(nameof(GetUser), new { id = 1 }, entity);
     }
 
-    // POST: api/TestPostgres/UpdateCustomer/5
-    [HttpPost("UpdateCustomer")]
-    public async Task<IActionResult> UpdateCustomer([FromBody] UpdateCustomerEntity entity, CancellationToken cancellationToken)
+    // POST: api/TestPostgres/UpdateUser/5
+    [HttpPost("UpdateUser")]
+    public async Task<IActionResult> UpdateUser([FromBody] UpdateUserEntity entity, CancellationToken cancellationToken)
     {
-        return Ok(new JObject { ["Message"] = $"Updated customer with ID {entity.CustomerId}." });
+        return Ok(new JObject { ["Message"] = $"Updated user with ID {entity.UserId}." });
     }
 
-    // GET: api/TestPostgres/DeleteCustomer/5
-    [HttpGet("DeleteCustomer/{id:int}")]
-    public async Task<IActionResult> DeleteCustomer(int id, CancellationToken cancellationToken)
+    // GET: api/TestPostgres/DeleteUser/5
+    [HttpGet("DeleteUser/{id:int}")]
+    public async Task<IActionResult> DeleteUser(int id, CancellationToken cancellationToken)
     {
-        return Ok(new JObject { ["Message"] = $"Deleted customer with ID {id}." });
+        return Ok(new JObject { ["Message"] = $"Deleted user with ID {id}." });
     }
 }

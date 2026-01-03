@@ -2,28 +2,28 @@ using HMS.Data.DBModel;
 
 namespace HMS.Data;
 
-public interface ICustomerRepository
+public interface IUserRepository
 {
-    // Define methods for customer data access
-    public object GetCustomerById(int id);
+    // Define methods for user data access
+    public object GetUserById(int id);
 }
 
-public class CustomerRepository : ICustomerRepository
+public class UserRepository : IUserRepository
 {
-    private readonly DvdRentalContext _context;
+    private readonly HMSContext _context;
 
-    public CustomerRepository(DvdRentalContext context)
+    public UserRepository(HMSContext context)
     {
         _context = context;
     }
 
-    public object GetCustomerById(int id)
+    public object GetUserById(int id)
     {
-        System.Console.WriteLine("Fetching customer by ID from database..." + id);
-        var customer = _context.Customers.FirstOrDefault(c => c.CustomerId == id);
-        // Implementation for retrieving a customer by ID from the database
+        System.Console.WriteLine("Fetching user by ID from database..." + id);
+        var user = _context.Users.FirstOrDefault(c => c.UserId == id);
+        // Implementation for retrieving a user by ID from the database
         //return new { CustomerId = id, FirstName = "John", LastName = "Doe" };
 
-        return customer??new object();
+        return user??new object();
     }
 }

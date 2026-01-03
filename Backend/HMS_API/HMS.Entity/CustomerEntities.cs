@@ -1,41 +1,30 @@
 namespace HMS.Entity;
 
-public class CreateCustomerEntity
+public class CreateUserEntity
 {
-    public int StoreId { get; set; }
-    public string FirstName { get; set; }
-    public string LastName { get; set; }
-    public string? Email { get; set; }
-    public int AddressId { get; set; }
-    public bool ActiveBool { get; set; }
-    public int Active { get; set; }
-    public DateTime? CreateDate { get; set; }
-    public DateTime? LastUpdate { get; set; }
+    public string Username { get; set; } = null!;
+    public string PasswordHash { get; set; } = null!;
+    public long? RoleId { get; set; }
+    public DateTime? CreatedAt { get; set; }
+    public DateTime? UpdatedAt { get; set; }    
 }
 
-public class UpdateCustomerEntity
+public class UpdateUserEntity
 {
-    public int CustomerId { get; set; }
-    public int StoreId { get; set; }
-    public string FirstName { get; set; }
-    public string LastName { get; set; }
-    public string? Email { get; set; }
-    public int AddressId { get; set; }
-    public bool ActiveBool { get; set; }
-    public int Active { get; set; }
-    public DateTime? LastUpdate { get; set; }
+    public long UserId { get; set; }
+    public string Username { get; set; } = null!;
+    public string PasswordHash { get; set; } = null!;
+    public long? RoleId { get; set; }
+    public DateTime? CreatedAt { get; set; }
+    public DateTime? UpdatedAt { get; set; }
 }
 
-public class GetCustomerEntity
+public class GetUserEntity
 {
-    public int CustomerId { get; set; }
-    public int StoreId { get; set; }
-    public string FirstName { get; set; }
-    public string LastName { get; set; }
-    public string? Email { get; set; }
-    public int AddressId { get; set; }
-    public bool ActiveBool { get; set; }
-    public int Active { get; set; }
-    public DateTime CreateDate { get; set; }
-    public DateTime LastUpdate { get; set; }
+    public long UserId { get; set; }
+    public string Username { get; set; } = null!;
+    public string PasswordHash { get; set; } = null!;
+    public long? RoleId { get; set; }
+    public DateTime? CreatedAt { get; set; }
+    public DateTime? UpdatedAt { get; set; }
 }
