@@ -1,60 +1,58 @@
-using HMS.Business;
-using HMS.Entity;
+using HMS.Business.Inventory;
+using HMS.Entity.Inventory;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
 
-namespace HMS.API.Controllers;
+namespace HMS.API.Controllers.Inventory;
 
 [ApiController]
 [Route("api/Inventory")]
 public class InventoryController : ControllerBase
 {
     private readonly ILogger<InventoryController> _logger;
-    private readonly IUserService _userService;
+    private readonly IInventoryService _inventoryService;
 
-    public InventoryController(ILogger<InventoryController> logger, IUserService userService)
+    public InventoryController(ILogger<InventoryController> logger, IInventoryService inventoryService)
     {
         _logger = logger;
-        _userService = userService;
+        _inventoryService = inventoryService;
     }
 
-    // GET: api/TestPostgres/GetUsers
+    // GET: api/Inventory/GetUsers
     [HttpGet("GetUsers")]
     public async Task<IActionResult> GetUsers([FromQuery]int limit,CancellationToken cancellationToken)
     {
-        return Ok(new JObject { ["Message"] = $"Retrieved {limit} users." });
+        return Ok(_inventoryService.GetUsers(limit));
     }
 
-    // GET: api/TestPostgres/GetUser/5
+    // GET: api/Inventory/GetUser/5
     [HttpGet("GetUser/{id:int}")]
     public async Task<IActionResult> GetUser(int id, CancellationToken cancellationToken)
     {
-        return Ok(_userService.GetUser(id));
+        return Ok(_inventoryService.GetUser(id));
     }
 
-    // POST: api/TestPostgres/CreateUser
+    // POST: api/Inventory/CreateUser
     [HttpPost("CreateUser")]
     public async Task<IActionResult> CreateUser([FromBody] CreateUserEntity entity, CancellationToken cancellationToken)
     {
         if (entity == null) return BadRequest();
 
-        
-
-        return CreatedAtAction(nameof(GetUser), new { id = 1 }, entity);
+        return Ok(_inventoryService.CreateUser(entity));
     }
 
-    // POST: api/TestPostgres/UpdateUser/5
+    // POST: api/Inventory/UpdateUser
     [HttpPost("UpdateUser")]
     public async Task<IActionResult> UpdateUser([FromBody] UpdateUserEntity entity, CancellationToken cancellationToken)
     {
-        return Ok(new JObject { ["Message"] = $"Updated user with ID {entity.UserId}." });
+        return Ok(_inventoryService.UpdateUser(entity));
     }
 
-    // GET: api/TestPostgres/DeleteUser/5
+    // GET: api/Inventory/DeleteUser/5
     [HttpGet("DeleteUser/{id:int}")]
     public async Task<IActionResult> DeleteUser(int id, CancellationToken cancellationToken)
     {
-        return Ok(new JObject { ["Message"] = $"Deleted user with ID {id}." });
+        return Ok(_inventoryService.DeleteUser(id));
     }
 }

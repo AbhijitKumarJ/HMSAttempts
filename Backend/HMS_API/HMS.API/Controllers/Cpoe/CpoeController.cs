@@ -1,60 +1,58 @@
-using HMS.Business;
-using HMS.Entity;
+using HMS.Business.Cpoe;
+using HMS.Entity.Cpoe;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
 
-namespace HMS.API.Controllers;
+namespace HMS.API.Controllers.Cpoe;
 
 [ApiController]
 [Route("api/Cpoe")]
 public class CpoeController : ControllerBase
 {
     private readonly ILogger<CpoeController> _logger;
-    private readonly IUserService _userService;
+    private readonly ICpoeService _cpoeService;
 
-    public CpoeController(ILogger<CpoeController> logger, IUserService userService)
+    public CpoeController(ILogger<CpoeController> logger, ICpoeService cpoeService)
     {
         _logger = logger;
-        _userService = userService;
+        _cpoeService = cpoeService;
     }
 
-    // GET: api/TestPostgres/GetUsers
+    // GET: api/Cpoe/GetUsers
     [HttpGet("GetUsers")]
     public async Task<IActionResult> GetUsers([FromQuery]int limit,CancellationToken cancellationToken)
     {
-        return Ok(new JObject { ["Message"] = $"Retrieved {limit} users." });
+        return Ok(_cpoeService.GetUsers(limit));
     }
 
-    // GET: api/TestPostgres/GetUser/5
+    // GET: api/Cpoe/GetUser/5
     [HttpGet("GetUser/{id:int}")]
     public async Task<IActionResult> GetUser(int id, CancellationToken cancellationToken)
     {
-        return Ok(_userService.GetUser(id));
+        return Ok(_cpoeService.GetUser(id));
     }
 
-    // POST: api/TestPostgres/CreateUser
+    // POST: api/Cpoe/CreateUser
     [HttpPost("CreateUser")]
     public async Task<IActionResult> CreateUser([FromBody] CreateUserEntity entity, CancellationToken cancellationToken)
     {
         if (entity == null) return BadRequest();
 
-        
-
-        return CreatedAtAction(nameof(GetUser), new { id = 1 }, entity);
+        return Ok(_cpoeService.CreateUser(entity));
     }
 
-    // POST: api/TestPostgres/UpdateUser/5
+    // POST: api/Cpoe/UpdateUser
     [HttpPost("UpdateUser")]
     public async Task<IActionResult> UpdateUser([FromBody] UpdateUserEntity entity, CancellationToken cancellationToken)
     {
-        return Ok(new JObject { ["Message"] = $"Updated user with ID {entity.UserId}." });
+        return Ok(_cpoeService.UpdateUser(entity));
     }
 
-    // GET: api/TestPostgres/DeleteUser/5
+    // GET: api/Cpoe/DeleteUser/5
     [HttpGet("DeleteUser/{id:int}")]
     public async Task<IActionResult> DeleteUser(int id, CancellationToken cancellationToken)
     {
-        return Ok(new JObject { ["Message"] = $"Deleted user with ID {id}." });
+        return Ok(_cpoeService.DeleteUser(id));
     }
 }

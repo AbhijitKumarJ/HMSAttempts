@@ -1,60 +1,58 @@
-using HMS.Business;
-using HMS.Entity;
+using HMS.Business.Billing;
+using HMS.Entity.Billing;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
 
-namespace HMS.API.Controllers;
+namespace HMS.API.Controllers.Billing;
 
 [ApiController]
 [Route("api/Billing")]
 public class BillingController : ControllerBase
 {
     private readonly ILogger<BillingController> _logger;
-    private readonly IUserService _userService;
+    private readonly IBillingService _billingService;
 
-    public BillingController(ILogger<BillingController> logger, IUserService userService)
+    public BillingController(ILogger<BillingController> logger, IBillingService billingService)
     {
         _logger = logger;
-        _userService = userService;
+        _billingService = billingService;
     }
 
-    // GET: api/TestPostgres/GetUsers
+    // GET: api/Billing/GetUsers
     [HttpGet("GetUsers")]
     public async Task<IActionResult> GetUsers([FromQuery]int limit,CancellationToken cancellationToken)
     {
-        return Ok(new JObject { ["Message"] = $"Retrieved {limit} users." });
+        return Ok(_billingService.GetUsers(limit));
     }
 
-    // GET: api/TestPostgres/GetUser/5
+    // GET: api/Billing/GetUser/5
     [HttpGet("GetUser/{id:int}")]
     public async Task<IActionResult> GetUser(int id, CancellationToken cancellationToken)
     {
-        return Ok(_userService.GetUser(id));
+        return Ok(_billingService.GetUser(id));
     }
 
-    // POST: api/TestPostgres/CreateUser
+    // POST: api/Billing/CreateUser
     [HttpPost("CreateUser")]
     public async Task<IActionResult> CreateUser([FromBody] CreateUserEntity entity, CancellationToken cancellationToken)
     {
         if (entity == null) return BadRequest();
 
-        
-
-        return CreatedAtAction(nameof(GetUser), new { id = 1 }, entity);
+        return CreatedAtAction(nameof(GetUser), new { id = 1 }, _billingService.CreateUser(entity));
     }
 
-    // POST: api/TestPostgres/UpdateUser/5
+    // POST: api/Billing/UpdateUser
     [HttpPost("UpdateUser")]
     public async Task<IActionResult> UpdateUser([FromBody] UpdateUserEntity entity, CancellationToken cancellationToken)
     {
-        return Ok(new JObject { ["Message"] = $"Updated user with ID {entity.UserId}." });
+        return Ok(_billingService.UpdateUser(entity));
     }
 
-    // GET: api/TestPostgres/DeleteUser/5
+    // GET: api/Billing/DeleteUser/5
     [HttpGet("DeleteUser/{id:int}")]
     public async Task<IActionResult> DeleteUser(int id, CancellationToken cancellationToken)
     {
-        return Ok(new JObject { ["Message"] = $"Deleted user with ID {id}." });
+        return Ok(_billingService.DeleteUser(id));
     }
 }

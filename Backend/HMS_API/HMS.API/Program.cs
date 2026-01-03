@@ -1,6 +1,20 @@
 using HMS.Entity;
 using HMS.Business;
 using HMS.Data;
+using HMS.Business.Auth;
+using HMS.Business.Billing;
+using HMS.Business.Bus;
+using HMS.Business.Clinical;
+using HMS.Business.Cpoe;
+using HMS.Business.Inventory;
+using HMS.Business.Patient;
+using HMS.Data.Auth;
+using HMS.Data.Billing;
+using HMS.Data.Bus;
+using HMS.Data.Clinical;
+using HMS.Data.Cpoe;
+using HMS.Data.Inventory;
+using HMS.Data.Patient;
 using Newtonsoft.Json;
 using Microsoft.EntityFrameworkCore;
 
@@ -29,8 +43,38 @@ public class Program
 
         // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
         builder.Services.AddOpenApi();
+        
+        // Legacy services (keep for backward compatibility)
         builder.Services.AddScoped<IUserService, UserService>();
         builder.Services.AddScoped<IUserRepository, UserRepository>();
+        
+        // Auth module
+        builder.Services.AddScoped<IAuthService, AuthService>();
+        builder.Services.AddScoped<IAuthRepository, AuthRepository>();
+        
+        // Billing module
+        builder.Services.AddScoped<IBillingService, BillingService>();
+        builder.Services.AddScoped<IBillingRepository, BillingRepository>();
+        
+        // Bus module
+        builder.Services.AddScoped<IBusService, BusService>();
+        builder.Services.AddScoped<IBusRepository, BusRepository>();
+        
+        // Clinical module
+        builder.Services.AddScoped<IClinicalService, ClinicalService>();
+        builder.Services.AddScoped<IClinicalRepository, ClinicalRepository>();
+        
+        // CPOE module
+        builder.Services.AddScoped<ICpoeService, CpoeService>();
+        builder.Services.AddScoped<ICpoeRepository, CpoeRepository>();
+        
+        // Inventory module
+        builder.Services.AddScoped<IInventoryService, InventoryService>();
+        builder.Services.AddScoped<IInventoryRepository, InventoryRepository>();
+        
+        // Patient module
+        builder.Services.AddScoped<IPatientService, PatientService>();
+        builder.Services.AddScoped<IPatientRepository, PatientRepository>();
 
         var app = builder.Build();
 
