@@ -103,7 +103,7 @@ NFR6: Scalability: "Internal-as-External" modularity to support scaling from cli
 ## Epic List
 
 ### Epic 1: Foundations & Secure Access
-Establish the Nx workspace, Standalone IdP, and JWT-based authentication to ensure users can securely log in and admins can manage roles and permissions.
+Establish the angular workspace, HMS.API IdP module, and JWT-based authentication to ensure users can securely log in and admins can manage roles and permissions.
 **FRs covered:** FR4, FR5, FR33
 
 ### Epic 2: Patient Identity & Emergency Registration

@@ -90,7 +90,7 @@ npx @angular/cli@latest new HMS_UI --directory Frontend/HMS_UI --style=scss --ro
     *   **Fit:** Less ideal for a tightly coupled "Internal-as-External" architecture where contract testing is critical.
 
 3.  **T3 Stack / Blitz / Redwood:**
-    *   **Fit:** Rejected. These are React-centric and don't support the specific Angular + Python requirement.
+    *   **Fit:** Rejected. These are React-centric and don't support the specific Angular + C# requirement.
 
 
 **Architectural Decisions Provided by Starter:**
@@ -182,7 +182,7 @@ npx @angular/cli@latest new HMS_UI --directory Frontend/HMS_UI --style=scss --ro
 - **Error:** Standard wrapper: `{ "error": { "code": "STRING_CODE", "message": "Human readable", "details": {} } }`.
 
 **Data Exchange Formats:**
-- **JSON:** `camelCase` for all API payloads (Pydantic alias generator used to map from Python `snake_case`).
+- **JSON:** `camelCase` for all API payloads (alias generator used to map from c# `PascalCase`).
 
 ### Communication Patterns
 
@@ -279,12 +279,15 @@ HMS/
 
 **Feature/Epic Mapping:**
 -   **Identity & Access:** `Backend/HMS_API/HMS.API/Controllers/Auth/` & `Frontend/HMS_UI/src/app/auth/`
--   **Patient Registration:** `Backend/HMS_API/src/Patient/` & `Frontend/HMS_UI/src/app/patient/`
--   **Triage/Assessment:** `Backend/HMS_API/src/Clinical/` & `Frontend/HMS_UI/src/app/clinical/`
--   **Order Entry (CPOE):** `Backend/HMS_API/src/Cpoe/` & `Frontend/HMS_UI/src/app/cockpit/`
--   **Interoperability:** `Backend/HMS_API/src/Bus/` & `Frontend/HMS_UI/src/app/shared/` (FHIR schemas / clients)
--   **Billing/Audit:** `Backend/HMS_API/src/Billing/` & `Frontend/HMS_UI/src/app/billing/`
--   **Inventory:** `Backend/HMS_API/src/Inventory/` & `Frontend/HMS_UI/src/app/inventory/`
+-   **Patient Registration:** `Backend/HMS_API/HMS.API/Controllers/Patient/`, `Backend/HMS_API/HMS.Business/Patient/`, `Backend/HMS_API/HMS.Entity/Patient/`, `Backend/HMS_API/HMS.Data/Patient/` & `Frontend/HMS_UI/src/app/patient/`
+-   **Triage/Assessment:** `Backend/HMS_API/HMS.API/Controllers/Clinical/`, `Backend/HMS_API/HMS.Business/Clinical/`, `Backend/HMS_API/HMS.Entity/Clinical/`, `Backend/HMS_API/HMS.Data/Clinical/` & `Frontend/HMS_UI/src/app/clinical/`
+-   **Order Entry (CPOE):** `Backend/HMS_API/HMS.API/Controllers/Cpoe/`, `Backend/HMS_API/HMS.Business/Cpoe/`, `Backend/HMS_API/HMS.Entity/Cpoe/`, `Backend/HMS_API/HMS.Data/Cpoe/` & `Frontend/HMS_UI/src/app/cockpit/`
+-   **Interoperability:** `Backend/HMS_API/HMS.API/Controllers/Bus/`, `Backend/HMS_API/HMS.Business/Bus/`, `Backend/HMS_API/HMS.Entity/Bus/`, `Backend/HMS_API/HMS.Data/Bus/` & `Frontend/HMS_UI/src/app/shared/` (FHIR schemas / clients)
+-   **Billing/Audit:** `Backend/HMS_API/HMS.API/Controllers/Billing/`, `Backend/HMS_API/HMS.Business/Billing/`, `Backend/HMS_API/HMS.Entity/Billing/`, `Backend/HMS_API/HMS.Data/Billing/` & `Frontend/HMS_UI/src/app/billing/`
+-   **Inventory:** `Backend/HMS_API/HMS.API/Controllers/Inventory/`, `Backend/HMS_API/HMS.Business/Inventory/`, `Backend/HMS_API/HMS.Entity/Inventory/`, `Backend/HMS_API/HMS.Data/Inventory/` & `Frontend/HMS_UI/src/app/inventory/`
+
+**Module Segregation Strategy:**
+Each module is organized vertically across all backend layers (API, Business, Entity, Data) to maintain clear boundaries and enable future independent deployment. This approach preserves module cohesion during initial development while allowing seamless extraction into separate microservices without refactoring.
 
 **Cross-Cutting Concerns:**
 -   **Audit Logging:** `Backend/HMS_API/HMS.API/Middleware/AuditMiddleware.cs` (Middleware)
@@ -316,14 +319,14 @@ HMS/
 
 **Source Organization:**
 -   **Angular:** `feature/` directories containing `feature.component.ts|html|scss`.
--   **FastAPI:** `feature/` directories containing `router.py`, `service.py`, `models.py`.
+-   **ASP.NET Core:** `feature/` directories containing `Controller.cs`, `Service.cs`, `Model.cs`.
 
 **Test Organization:**
 -   **Angular:** `.spec.ts` files co-located with components.
 -   **FastAPI:** `tests/` directory mirroring the `src/` structure.
 
 **Asset Organization:**
--   **Static:** `apps/web-client/src/assets/` for images/icons.
+-   **Static:** `Frontend/HMS_UI/src/assets/` for images/icons.
 
 ### Development Workflow Integration
 

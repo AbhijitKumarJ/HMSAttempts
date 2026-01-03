@@ -28,7 +28,7 @@ HMS is a modern, modular Open Source Hospital Management System (HMS) designed t
 ## Core User Experience
 
 ### Defining Experience
-The heartbeat of BMADTest is the **Clinical Decision Loop**. The system is optimized to make the cycle of "Reviewing Data $\rightarrow$ Documenting Findings $\rightarrow$ Placing Orders" as fluid as possible. Every second saved here translates to better patient care. The design prioritizes data density and speed over white space or simplicity, reflecting the expert nature of its users.
+The heartbeat of HMS is the **Clinical Decision Loop**. The system is optimized to make the cycle of "Reviewing Data $\rightarrow$ Documenting Findings $\rightarrow$ Placing Orders" as fluid as possible. Every second saved here translates to better patient care. The design prioritizes data density and speed over white space or simplicity, reflecting the expert nature of its users.
 
 ### Platform Strategy
 - **Primary Platform**: Desktop/Laptop web browser (Optimized for Google Chrome).
@@ -114,7 +114,7 @@ The heartbeat of BMADTest is the **Clinical Decision Loop**. The system is optim
 ### Implementation Approach
 - Use **Angular Material CDK** (Component Dev Kit) for complex behaviors like overlays and accessibility.
 - Implement **Tailwind CSS** for all structural layouts, spacing, and custom high-density styling.
-- Create a set of **"BMAD Design Tokens"** (colors, spacing, typography) that synchronize across both Material and Tailwind to ensure a unified visual language.
+- Create a set of **"HMS Design Tokens"** (colors, spacing, typography) that synchronize across both Material and Tailwind to ensure a unified visual language.
 
 ### Customization Strategy
 - **Density Overrides**: Systematic reduction of padding/margin in Material components to fit more data into the "Cockpit" view.
@@ -271,7 +271,7 @@ We will leverage **Angular Material** for standard administrative and foundation
 
 ### Custom Components
 
-#### 1. High-Density Data Grid (The "BMAD Grid")
+#### 1. High-Density Data Grid (The "HMS Grid")
 **Purpose**: Fulfills the "Excel Flexibility" requirement for inventory, billing, and vitals.
 **Interaction Behavior**:
 - **Inline Editing**: Double-click or hit `Enter` on a cell to activate an input field.
