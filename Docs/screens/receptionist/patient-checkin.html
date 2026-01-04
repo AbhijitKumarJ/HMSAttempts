@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Check-in - HMS Reception</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        primary: { 600: '#2563EB', 700: '#1D4ED8' },
+                        slate: { 50: '#F8FAFC', 100: '#F1F5F9', 200: '#E2E8F0', 300: '#CBD5E1', 800: '#1E293B', 900: '#0F172A' },
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="bg-slate-50 text-slate-900 font-sans h-screen flex flex-col">
+
+    <!-- Header -->
+    <header
+        class="h-16 bg-white border-b border-slate-200 flex justify-between items-center px-6 lg:px-8 flex-shrink-0">
+        <div class="flex items-center gap-4">
+            <a href="../receptionist-dashboard.html"
+                class="p-2 hover:bg-slate-100 rounded-full text-slate-500 transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+            </a>
+            <h1 class="text-xl font-bold text-slate-800">Process Check-in</h1>
+        </div>
+    </header>
+
+    <!-- Content -->
+    <main class="flex-1 overflow-auto p-6 lg:p-8 max-w-5xl mx-auto w-full">
+
+        <!-- Search Step -->
+        <div class="mb-8">
+            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex gap-4">
+                <div class="flex-1 relative">
+                    <input type="text" value="Doe, John (MRN-2024-001)"
+                        class="w-full pl-10 pr-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary-600 outline-none font-medium">
+                    <svg class="w-5 h-5 text-slate-400 absolute left-3 top-2.5" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </div>
+                <button
+                    class="px-6 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg font-medium transition-colors">Clear</button>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+
+            <!-- Details Verification -->
+            <div class="md:col-span-2 space-y-6">
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                    <h2 class="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
+                        <span
+                            class="w-6 h-6 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-xs">✔</span>
+                        Verify Information
+                    </h2>
+
+                    <div class="grid grid-cols-2 gap-6">
+                        <div class="p-4 bg-slate-50 rounded-lg border border-slate-100">
+                            <h3 class="text-xs font-bold text-slate-500 uppercase mb-2">Patient Demographics</h3>
+                            <p class="font-bold text-slate-900">John Doe (38y)</p>
+                            <p class="text-sm text-slate-600">123 Main St, Springfield</p>
+                            <p class="text-sm text-slate-600">Ph: (555) 123-4567</p>
+                            <div class="mt-3">
+                                <button class="text-xs text-primary-600 font-medium hover:underline">Edit
+                                    Details</button>
+                            </div>
+                        </div>
+                        <div class="p-4 bg-slate-50 rounded-lg border border-slate-100">
+                            <h3 class="text-xs font-bold text-slate-500 uppercase mb-2">Insurance</h3>
+                            <p class="font-bold text-slate-900">Blue Cross Blue Shield</p>
+                            <p class="text-sm text-slate-600">Policy: 994821092</p>
+                            <p class="text-sm text-green-700 font-medium mt-1">Status: Active (Verified Today)</p>
+                            <div class="mt-2">
+                                <button class="text-xs text-primary-600 font-medium hover:underline">Update
+                                    Insurance</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Appointment Info -->
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                    <h2 class="text-lg font-bold text-slate-900 mb-4">Visit Details</h2>
+                    <div class="flex items-center gap-4 p-4 border border-slate-100 rounded-lg bg-blue-50/50">
+                        <div
+                            class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-primary-600">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="font-bold text-slate-900">Checkup - General Practice</div>
+                            <div class="text-sm text-slate-600">with Dr. Sarah Connor • 10:15 AM (Today)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Panel: Payment -->
+            <div class="space-y-6">
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                    <h2 class="text-lg font-bold text-slate-900 mb-4">Co-Pay Collection</h2>
+
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Amount Due</label>
+                        <div class="text-3xl font-bold text-slate-900">$25.00</div>
+                    </div>
+
+                    <div class="space-y-3 mb-6">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="radio" name="payment" class="w-4 h-4 text-primary-600">
+                            <span class="text-sm text-slate-700">Credit Card</span>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="radio" name="payment" class="w-4 h-4 text-primary-600">
+                            <span class="text-sm text-slate-700">Cash</span>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="radio" name="payment" class="w-4 h-4 text-primary-600">
+                            <span class="text-sm text-slate-700">Bill Later</span>
+                        </label>
+                    </div>
+
+                    <button
+                        class="w-full py-2 bg-white border border-slate-200 text-slate-700 rounded-lg font-medium hover:bg-slate-50 mb-4">Process
+                        Payment</button>
+
+                    <hr class="border-slate-100 mb-4">
+
+                    <button
+                        class="w-full py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-bold shadow-lg shadow-green-500/20 transition-all">
+                        Check In Patient
+                    </button>
+                    <p class="text-xs text-center text-slate-400 mt-2">Updates status in Triage Queue</p>
+
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+</body>
+
+</html>

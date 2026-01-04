@@ -1,0 +1,95 @@
+generated: "2026-01-04"
+project: HMS
+project_key: HMS
+tracking_system: file-system
+
+# STATUS DEFINITIONS:
+# ==================
+# Epic Status:
+#   - backlog: Epic not yet started
+#   - in-progress: Epic actively being worked on (or has created stories)
+#   - done: All stories in epic completed
+#
+# Story Status:
+#   - backlog: Story only exists in epic file
+#   - ready-for-dev: Story file created in stories folder
+#   - in-progress: Developer actively working on implementation
+#   - review: Ready for code review
+#   - done: Story completed
+
+development_status:
+  # Epic 1: Foundations & Secure Access
+  epic-1: in-progress
+  1-1-project-initialization-solution-setup: ready-for-dev
+  1-2-shared-message-bus-infrastructure: ready-for-dev
+  1-3-standalone-identity-provider-idp-module: ready-for-dev
+  1-4-frontend-authentication-role-interceptors: ready-for-dev
+  epic-1-retrospective: optional
+
+  # Epic 2: Patient Identity & Emergency Registration
+  epic-2: in-progress
+  2-1-patient-module-database-schema: ready-for-dev
+  2-2-emergency-registration-api-logic: ready-for-dev
+  2-3-patient-registration-frontend: ready-for-dev
+  2-4-full-registration-demographics: ready-for-dev
+  epic-2-retrospective: optional
+
+  # Epic 3: Clinical Triage & Dynamic Assessment
+  epic-3: in-progress
+  3-1-clinical-module-dynamic-form-schema: ready-for-dev
+  3-2-dynamic-form-builder-api: ready-for-dev
+  3-3-triage-workflow-vitals-capture: ready-for-dev
+  3-4-vital-signs-alerting-logic: ready-for-dev
+  epic-3-retrospective: optional
+
+  # Epic 4: Clinical Consultation & The "Cockpit"
+  epic-4: in-progress
+  4-1-clinical-cockpit-shell-role-switcher: ready-for-dev
+  4-2-patient-dashboard-timeline: ready-for-dev
+  4-3-clinical-notes-editor: ready-for-dev
+  4-4-order-entry-cpoe-interface: ready-for-dev
+  epic-4-retrospective: optional
+
+  # Epic 5: Reliable Asynchronous Interoperability
+  epic-5: in-progress
+  5-1-message-bus-publisher-consumer-logic: ready-for-dev
+  5-2-order-processing-worker: ready-for-dev
+  5-3-result-processing-worker: ready-for-dev
+  epic-5-retrospective: optional
+
+  # Epic 6: Pharmacy Fulfillment & Stock Management
+  epic-6: in-progress
+  6-1-inventory-module-stock-schema: ready-for-dev
+  6-2-pharmacy-dispensing-workflow: ready-for-dev
+  6-3-stock-management-interface: ready-for-dev
+  epic-6-retrospective: optional
+
+  # Epic 7: Clinical Invoicing & Financial Audit
+  epic-7: in-progress
+  7-1-billing-module-invoice-schema: ready-for-dev
+  7-2-automated-invoice-generation: ready-for-dev
+  7-3-invoice-adjustment-audit-log: ready-for-dev
+  epic-7-retrospective: optional
+
+  # Epic 8: System Configuration & Administration
+  epic-8: in-progress
+  8-1-system-configuration-interface: ready-for-dev
+  epic-8-retrospective: optional
+
+  # Epic 9: Usability & Enhancements
+  epic-9: in-progress
+  9-1-clinical-macros-dot-phrases: ready-for-dev
+  9-2-patient-search-command-palette: ready-for-dev
+  9-3-audit-log-viewer: ready-for-dev
+  9-4-inventory-low-stock-alerts: ready-for-dev
+  9-5-system-health-diagnostics: ready-for-dev
+  9-6-database-seeder: ready-for-dev
+  9-7-patient-visit-summary-pdf: ready-for-dev
+  epic-9-retrospective: optional
+
+  # Epic 10: Scheduling & Care Coordination
+  epic-10: in-progress
+  10-1-appointment-scheduling: ready-for-dev
+  10-2-episode-of-care-management: ready-for-dev
+  10-3-consultation-lifecycle: ready-for-dev
+  epic-10-retrospective: optional

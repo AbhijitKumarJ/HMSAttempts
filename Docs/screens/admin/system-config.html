@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Configuration - HMS Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        primary: { 600: '#2563EB', 700: '#1D4ED8' },
+                        slate: { 50: '#F8FAFC', 100: '#F1F5F9', 200: '#E2E8F0', 300: '#CBD5E1', 800: '#1E293B', 900: '#0F172A' },
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="bg-slate-50 text-slate-900 font-sans h-screen flex flex-col">
+
+    <!-- Header -->
+    <header
+        class="h-16 bg-white border-b border-slate-200 flex justify-between items-center px-6 lg:px-8 flex-shrink-0">
+        <div class="flex items-center gap-4">
+            <a href="../admin-dashboard.html"
+                class="p-2 hover:bg-slate-100 rounded-full text-slate-500 transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+            </a>
+            <h1 class="text-xl font-bold text-slate-800">System Configuration</h1>
+        </div>
+    </header>
+
+    <!-- Content -->
+    <main class="flex-1 overflow-auto p-6 lg:p-8 max-w-4xl mx-auto w-full">
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- Sidebar Nav (Settings) -->
+            <div class="space-y-1">
+                <button
+                    class="w-full text-left px-4 py-2 rounded-lg bg-primary-50 text-primary-700 font-medium border border-primary-100">General
+                    Settings</button>
+                <button
+                    class="w-full text-left px-4 py-2 rounded-lg hover:bg-white text-slate-600 font-medium border border-transparent hover:border-slate-200 transition-colors">Feature
+                    Flags</button>
+                <button
+                    class="w-full text-left px-4 py-2 rounded-lg hover:bg-white text-slate-600 font-medium border border-transparent hover:border-slate-200 transition-colors">Integrations</button>
+                <button
+                    class="w-full text-left px-4 py-2 rounded-lg hover:bg-white text-slate-600 font-medium border border-transparent hover:border-slate-200 transition-colors">Backup
+                    & Restore</button>
+            </div>
+
+            <!-- Form Area -->
+            <div class="md:col-span-2 space-y-6">
+
+                <!-- Facility Info -->
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                    <h2 class="text-lg font-bold text-slate-900 mb-4 border-b border-slate-100 pb-2">Facility
+                        Information</h2>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-2">Clinic / Hospital Name</label>
+                            <input type="text" value="Grand Valley General Hospital"
+                                class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary-600 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-2">Timezone</label>
+                            <select
+                                class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary-600 outline-none bg-white">
+                                <option>UTC-05:00 (Eastern Time)</option>
+                                <option>UTC-08:00 (Pacific Time)</option>
+                                <option selected>UTC+00:00 (GMT)</option>
+                                <option>UTC+05:30 (IST)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Toggles -->
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                    <h2 class="text-lg font-bold text-slate-900 mb-4 border-b border-slate-100 pb-2">Modules & Features
+                    </h2>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <div class="font-medium text-slate-900">Emergency Registration Mode</div>
+                                <div class="text-xs text-slate-500">Allow minimal data capture for critical patients.
+                                </div>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" value="" class="sr-only peer" checked>
+                                <div
+                                    class="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600">
+                                </div>
+                            </label>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <div class="font-medium text-slate-900">External Lab Integration</div>
+                                <div class="text-xs text-slate-500">Auto-send HL7 messages to configured lab partners.
+                                </div>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" value="" class="sr-only peer">
+                                <div
+                                    class="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600">
+                                </div>
+                            </label>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <div class="font-medium text-slate-900">Maintenance Mode</div>
+                                <div class="text-xs text-slate-500 text-red-500">Blocks all non-admin logins.</div>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" value="" class="sr-only peer">
+                                <div
+                                    class="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-red-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-red-600">
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-end pt-4">
+                    <button type="button"
+                        class="px-8 py-3 bg-slate-900 text-white rounded-lg font-medium hover:bg-slate-800 shadow-sm transition-colors">Save
+                        Configuration</button>
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+</body>
+
+</html>

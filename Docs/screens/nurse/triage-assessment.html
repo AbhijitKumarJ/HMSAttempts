@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Triage Assessment - HMS Nurse</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        primary: { 600: '#2563EB', 700: '#1D4ED8' },
+                        slate: { 50: '#F8FAFC', 100: '#F1F5F9', 200: '#E2E8F0', 300: '#CBD5E1', 800: '#1E293B', 900: '#0F172A' },
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="bg-slate-50 text-slate-900 font-sans h-screen flex flex-col">
+
+    <!-- Header -->
+    <header
+        class="h-16 bg-white border-b border-slate-200 flex justify-between items-center px-6 lg:px-8 flex-shrink-0">
+        <div class="flex items-center gap-4">
+            <a href="../nurse-dashboard.html"
+                class="p-2 hover:bg-slate-100 rounded-full text-slate-500 transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+            </a>
+            <h1 class="text-xl font-bold text-slate-800">Triage Assessment</h1>
+        </div>
+        <div class="text-sm font-medium text-slate-600">
+            Patient: <span class="font-bold text-slate-900">Jane Smith (MRN-2024-042)</span>
+        </div>
+    </header>
+
+    <!-- Content -->
+    <main class="flex-1 overflow-auto p-6 lg:p-8 max-w-4xl mx-auto w-full">
+
+        <form class="space-y-6">
+
+            <!-- Chief Complaint -->
+            <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                <label class="block text-lg font-bold text-slate-900 mb-4">Chief Complaint</label>
+                <textarea
+                    class="w-full h-24 px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary-600 outline-none resize-none text-lg"
+                    placeholder="Why is the patient here today?"></textarea>
+                <div class="flex gap-2 mt-3">
+                    <button type="button"
+                        class="px-3 py-1 bg-slate-100 hover:bg-slate-200 rounded-full text-sm text-slate-700 transition-colors">Chest
+                        Pain</button>
+                    <button type="button"
+                        class="px-3 py-1 bg-slate-100 hover:bg-slate-200 rounded-full text-sm text-slate-700 transition-colors">Shortness
+                        of Breath</button>
+                    <button type="button"
+                        class="px-3 py-1 bg-slate-100 hover:bg-slate-200 rounded-full text-sm text-slate-700 transition-colors">Fever</button>
+                </div>
+            </div>
+
+            <!-- ESI Level -->
+            <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                <h2 class="text-lg font-bold text-slate-900 mb-6">Acuity Level (ESI)</h2>
+                <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+                    <label class="cursor-pointer">
+                        <input type="radio" name="esi" class="peer sr-only">
+                        <div
+                            class="p-4 rounded-xl border-2 border-slate-200 peer-checked:border-red-600 peer-checked:bg-red-50 hover:bg-slate-50 transition-all text-center h-full flex flex-col justify-center">
+                            <div class="font-bold text-lg text-slate-900 peer-checked:text-red-700">Level 1</div>
+                            <div class="text-xs text-slate-500 peer-checked:text-red-600">Resuscitation</div>
+                        </div>
+                    </label>
+                    <label class="cursor-pointer">
+                        <input type="radio" name="esi" class="peer sr-only">
+                        <div
+                            class="p-4 rounded-xl border-2 border-slate-200 peer-checked:border-orange-500 peer-checked:bg-orange-50 hover:bg-slate-50 transition-all text-center h-full flex flex-col justify-center">
+                            <div class="font-bold text-lg text-slate-900 peer-checked:text-orange-700">Level 2</div>
+                            <div class="text-xs text-slate-500 peer-checked:text-orange-600">Emergent</div>
+                        </div>
+                    </label>
+                    <label class="cursor-pointer">
+                        <input type="radio" name="esi" class="peer sr-only" checked>
+                        <div
+                            class="p-4 rounded-xl border-2 border-slate-200 peer-checked:border-yellow-500 peer-checked:bg-yellow-50 hover:bg-slate-50 transition-all text-center h-full flex flex-col justify-center">
+                            <div class="font-bold text-lg text-slate-900 peer-checked:text-yellow-700">Level 3</div>
+                            <div class="text-xs text-slate-500 peer-checked:text-yellow-600">Urgent</div>
+                        </div>
+                    </label>
+                    <label class="cursor-pointer">
+                        <input type="radio" name="esi" class="peer sr-only">
+                        <div
+                            class="p-4 rounded-xl border-2 border-slate-200 peer-checked:border-green-500 peer-checked:bg-green-50 hover:bg-slate-50 transition-all text-center h-full flex flex-col justify-center">
+                            <div class="font-bold text-lg text-slate-900 peer-checked:text-green-700">Level 4</div>
+                            <div class="text-xs text-slate-500 peer-checked:text-green-600">Less Urgent</div>
+                        </div>
+                    </label>
+                    <label class="cursor-pointer">
+                        <input type="radio" name="esi" class="peer sr-only">
+                        <div
+                            class="p-4 rounded-xl border-2 border-slate-200 peer-checked:border-blue-500 peer-checked:bg-blue-50 hover:bg-slate-50 transition-all text-center h-full flex flex-col justify-center">
+                            <div class="font-bold text-lg text-slate-900 peer-checked:text-blue-700">Level 5</div>
+                            <div class="text-xs text-slate-500 peer-checked:text-blue-600">Non-Urgent</div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Pain Score -->
+            <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                <h2 class="text-lg font-bold text-slate-900 mb-6">Pain Score (0-10)</h2>
+                <div class="flex items-center gap-4">
+                    <input type="range" min="0" max="10" value="3"
+                        class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-primary-600">
+                    <span class="text-2xl font-bold text-primary-600 w-12 text-center">3</span>
+                </div>
+                <div class="flex justify-between text-xs text-slate-500 mt-2 px-1">
+                    <span>No Pain</span>
+                    <span>Moderate</span>
+                    <span>Worst Possible</span>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-end gap-3 pt-4">
+                <a href="../nurse-dashboard.html"
+                    class="px-6 py-3 border border-slate-300 bg-white text-slate-700 rounded-lg font-medium hover:bg-slate-50 transition-colors">Discard</a>
+                <button type="button"
+                    class="px-8 py-3 bg-primary-600 text-white rounded-lg font-medium hover:bg-primary-700 shadow-lg shadow-blue-500/30 transition-all hover:-translate-y-0.5">Complete
+                    Triage</button>
+            </div>
+
+        </form>
+
+    </main>
+</body>
+
+</html>

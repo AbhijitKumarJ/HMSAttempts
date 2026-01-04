@@ -1,154 +1,235 @@
-# Database Design for HMS
+# HMS Database Design
 
-## Tables
+**Conventions:**
+*   **Case:** `snake_case` for Tables and Columns (Postgres standard).
+*   **Primary Keys:** `id` (Identity/Serial or UUID).
+*   **Foreign Keys:** `[entity]_id`.
+*   **JSON:** used for flexible configurations and schema definitions (`jsonb`).
+*   **Audit:** Most mutable tables have `created_at`, `updated_at`, and `created_by`.
 
-### Users
-- **UserID** (Primary Key, INT, Auto Increment)
-- **Username** (VARCHAR, Unique)
-- **PasswordHash** (VARCHAR)
-- **Role** (ENUM: 'Doctor', 'Nurse', 'Staff', 'Admin', 'Billing Clerk')
-- **CreatedAt** (DATETIME)
-- **UpdatedAt** (DATETIME)
+---
 
-### Patients
-- **PatientID** (Primary Key, INT, Auto Increment)
-- **MRN** (VARCHAR, Unique)
-- **FirstName** (VARCHAR)
-- **LastName** (VARCHAR)
-- **DateOfBirth** (DATE)
-- **Gender** (ENUM: 'Male', 'Female', 'Other')
-- **ContactInfo** (JSONB)
+## 1. Core Infrastructure & Config
 
-### Roles
-- **RoleID** (Primary Key, INT, Auto Increment)
-- **RoleName** (VARCHAR, Unique)
+### `app_events` (Message Bus)
+Used for the "Internal-as-External" async communication pattern.
+*   `id` (UUID, PK)
+*   `event_type` (VARCHAR(150), Indexed)
+*   `payload` (JSONB)
+*   `status` (VARCHAR(50)) -- 'Pending', 'Processing', 'Completed', 'Failed'
+*   `created_at` (TIMESTAMP DEFAULT NOW())
+*   `processed_at` (TIMESTAMP NULL)
+*   `failure_count` (INT DEFAULT 0)
 
-### Appointments
-- **AppointmentID** (Primary Key, INT, Auto Increment)
-- **PatientID** (Foreign Key)
-- **DoctorID** (Foreign Key)
-- **AppointmentDate** (DATETIME)
-- **Status** (ENUM: 'Scheduled', 'Completed', 'Cancelled')
+### `sys_config` (System Configuration)
+Global key-value settings.
+*   `key` (VARCHAR(100), PK)
+*   `value` (TEXT)
+*   `description` (TEXT)
+*   `updated_at` (TIMESTAMP)
 
-### Assessments
-- **AssessmentID** (Primary Key, INT, Auto Increment)
-- **ConsultationID** (Foreign Key, INT)
-- **DynamicFormID** (Foreign Key, INT)
-- **AssessmentDate** (DATETIME)
-- **Summary** (TEXT)
+### `audit_logs` (Compliance)
+Immutable history of critical actions.
+*   `id` (BIGSERIAL, PK)
+*   `entity_type` (VARCHAR(100)) -- e.g., 'Invoice', 'Patient'
+*   `entity_id` (VARCHAR(100))
+*   `action` (VARCHAR(50)) -- 'Update', 'Delete', 'Dispense'
+*   `old_value` (JSONB NULL)
+*   `new_value` (JSONB NULL)
+*   `reason` (TEXT NULL)
+*   `user_id` (INT)
+*   `created_at` (TIMESTAMP DEFAULT NOW())
 
-### FieldDefinitions
-- **FieldID** (Primary Key, INT, Auto Increment)
-- **FieldCode** (VARCHAR, Unique) -- stable programmatic identifier (e.g. 'systolic_bp')
-- **FieldName** (VARCHAR) -- human-friendly default label
-- **DataType** (ENUM: 'Integer', 'Decimal', 'String', 'Date', 'Boolean') -- semantic type
-- **Unit** (VARCHAR, Nullable)
-- **AllowedValues** (JSONB, Nullable) -- enumerations or option list when applicable
-- **ValidationRules** (JSONB, Nullable) -- min/max/regex/etc.
-- **IsRepeatable** (BOOLEAN) -- whether multiple values may be captured per assessment
-- **CreatedAt** (DATETIME)
-- **UpdatedAt** (DATETIME)
+---
 
-### FormFields (mapping)
-- **FormFieldID** (Primary Key, INT, Auto Increment)
-- **DynamicFormID** (Foreign Key, INT)
-- **FieldID** (Foreign Key, INT) -- references `FieldDefinitions`
-- **LabelOverride** (VARCHAR, Nullable) -- form-specific label
-- **DisplayOrder** (INT)
-- **IsRequiredOverride** (BOOLEAN, Nullable)
-- **VisibilityCondition** (JSONB, Nullable) -- conditional display rules
-- **UIControlType** (ENUM: 'Textbox', 'Textarea', 'Dropdown', 'Radio', 'Checkbox', 'DatePicker', 'NumberSpinner') -- how the field is rendered
-- **UIOptions** (JSONB, Nullable) -- UI-specific options (e.g. dropdown option labels/values)
+## 2. Identity & Access
 
-### AssessmentFieldValues
-- **AssessmentFieldValueID** (Primary Key, INT, Auto Increment)
-- **AssessmentID** (Foreign Key, INT)
-- **FieldID** (Foreign Key, INT)
-- **FormFieldID** (Foreign Key, INT, Nullable)
-- **RawValue** (TEXT) -- raw input as captured from the UI
-- **TypedValue** (JSONB, Nullable) -- canonical typed representation (e.g. { "number": 120 } )
-- **Unit** (VARCHAR, Nullable)
-- **RecordedByUserID** (Foreign Key, INT, Nullable)
-- **RecordedAt** (DATETIME)
+### `users`
+*   `id` (SERIAL, PK)
+*   `username` (VARCHAR(100), Unique)
+*   `password_hash` (VARCHAR(255))
+*   `is_active` (BOOLEAN DEFAULT TRUE)
+*   `created_at` (TIMESTAMP)
 
-### Notes on DataType vs UIControlType
-- Keep semantic type (`DataType`) in `FieldDefinitions` separate from `UIControlType` in `FormFields`.
-- Example: a field with `DataType = Integer` may be rendered with `UIControlType = Dropdown` or `Textbox`. The UI may send `RawValue = "120"` but `TypedValue` should store the numeric representation (e.g. `{ "number": 120 }`).
-- Store enumerations/options in `AllowedValues` (semantic values) and `UIOptions` (presentation labels/ordering) so the same field can be reused across forms with different UI choices.
-- Use `AssessmentFieldValues` to persist captured values in a way that preserves original input and provides a canonical typed form for queries and reporting.
+### `roles`
+*   `id` (SERIAL, PK)
+*   `name` (VARCHAR(50)) -- 'Doctor', 'Nurse', 'Admin', 'Receptionist'
 
-### Vitals
-- **VitalID** (Primary Key, INT, Auto Increment)
-- **PatientID** (Foreign Key)
-- **BloodPressure** (VARCHAR)
-- **HeartRate** (INT)
-- **Temperature** (FLOAT)
-- **RecordedAt** (DATETIME)
+### `user_roles`
+*   `user_id` (INT, FK -> users.id)
+*   `role_id` (INT, FK -> roles.id)
+*   (PK: user_id, role_id)
 
-### Medications
-- **MedicationID** (Primary Key, INT, Auto Increment)
-- **PatientID** (Foreign Key)
-- **MedicationName** (VARCHAR)
-- **Dosage** (VARCHAR)
-- **StartDate** (DATETIME)
-- **EndDate** (DATETIME)
+---
 
-### Billing
-- **BillingID** (Primary Key, INT, Auto Increment)
-- **PatientID** (Foreign Key)
-- **Amount** (DECIMAL)
-- **Status** (ENUM: 'Paid', 'Pending', 'Cancelled')
-- **CreatedAt** (DATETIME)
+## 3. Scheduling & Patient Management
 
-## Notes
+### `pat_patients`
+*   `id` (SERIAL, PK)
+*   `mrn` (VARCHAR(20), Unique Index)
+*   `first_name` (VARCHAR(100))
+*   `last_name` (VARCHAR(100))
+*   `gender` (VARCHAR(20))
+*   `dob` (DATE)
+*   `contact_info` (JSONB)
+*   `is_emergency_reg` (BOOLEAN)
+*   `created_at` (TIMESTAMP)
 
-### Labs
-- **LabID** (Primary Key, INT, Auto Increment)
-- **LabName** (VARCHAR)
-- **Description** (TEXT)
-- **CreatedAt** (DATETIME)
-- **UpdatedAt** (DATETIME)
+### `sch_appointments`
+*   `id` (BIGSERIAL, PK)
+*   `patient_id` (INT, FK -> pat_patients.id)
+*   `doctor_id` (INT, FK -> users.id)
+*   `appointment_date` (TIMESTAMP)
+*   `status` (VARCHAR(50)) -- 'Scheduled', 'CheckedIn', 'Completed', 'Cancelled', 'NoShow'
+*   `reason_for_visit` (TEXT)
+*   `created_at` (TIMESTAMP)
 
-### Orders
-- **OrderID** (Primary Key, INT, Auto Increment)
-- **PatientID** (Foreign Key, INT)
-- **LabID** (Foreign Key, INT)
-- **OrderDate** (DATETIME)
-- **Status** (ENUM: 'Pending', 'Completed', 'Cancelled')
+### `sch_episodes`
+Groups related encounters (e.g., "Pregnancy 2024", "Broken Leg").
+*   `id` (BIGSERIAL, PK)
+*   `patient_id` (INT, FK -> pat_patients.id)
+*   `title` (VARCHAR(200))
+*   `start_date` (TIMESTAMP)
+*   `end_date` (TIMESTAMP NULL)
+*   `status` (VARCHAR(50)) -- 'Active', 'Resolved'
 
-### Consultations
-- **ConsultationID** (Primary Key, INT, Auto Increment)
-- **PatientID** (Foreign Key, INT)
-- **DoctorID** (Foreign Key, INT)
-- **EpisodeID** (Foreign Key, INT)
-- **EncounterDate** (DATETIME)
-- **Notes** (TEXT)
+---
 
-### Episodes
-- **EpisodeID** (Primary Key, INT, Auto Increment)
-- **PatientID** (Foreign Key, INT)
-- **StartDate** (DATETIME)
-- **EndDate** (DATETIME)
-- **Diagnosis** (VARCHAR)
+## 4. Clinical Core & Dynamic Forms
 
-### Assessments
-- **AssessmentID** (Primary Key, INT, Auto Increment)
-- **ConsultationID** (Foreign Key, INT)
-- **DynamicFormID** (Foreign Key, INT)
-- **AssessmentDate** (DATETIME)
-- **Results** (JSONB)
+### `clin_consultations`
+The central event of a clinical interaction.
+*   `id` (BIGSERIAL, PK)
+*   `appointment_id` (BIGINT, FK -> sch_appointments.id, Nullable)
+*   `episode_id` (BIGINT, FK -> sch_episodes.id, Nullable)
+*   `patient_id` (INT, FK -> pat_patients.id)
+*   `doctor_id` (INT, FK -> users.id)
+*   `started_at` (TIMESTAMP)
+*   `ended_at` (TIMESTAMP NULL)
+*   `clinical_summary` (TEXT)
 
-### DynamicForms
-- **DynamicFormID** (Primary Key, INT, Auto Increment)
-- **FormName** (VARCHAR)
-- **Fields** (JSONB)
+### `clin_vitals`
+Standardized high-frequency data.
+*   `id` (BIGSERIAL, PK)
+*   `patient_id` (INT, FK -> pat_patients.id)
+*   `consultation_id` (BIGINT, FK -> clin_consultations.id, Nullable)
+*   `bp_systolic` (INT)
+*   `bp_diastolic` (INT)
+*   `heart_rate` (INT)
+*   `temperature` (DECIMAL(4,1))
+*   `spo2` (INT)
+*   `recorded_at` (TIMESTAMP)
+*   `recorded_by` (INT, FK -> users.id)
 
-### Fields
-- **FieldID** (Primary Key, INT, Auto Increment)
-- **DynamicFormID** (Foreign Key, INT)
-- **FieldName** (VARCHAR)
-- **FieldType** (ENUM: 'Text', 'Number', 'Date', 'Boolean')
-- **IsRequired** (BOOLEAN)
-- The design supports multi-role functionality and dynamic role switching as per the requirements.
-- Patient records are uniquely identified by MRN, ensuring no duplicates.
-- Vitals and medications are linked to patients for comprehensive tracking.
+### `clin_field_definitions`
+Library of reusable clinical data points (e.g., "Smoking Status", "Pain Score").
+*   `id` (SERIAL, PK)
+*   `field_code` (VARCHAR(50), Unique) -- e.g., 'pain_score'
+*   `name` (VARCHAR(100))
+*   `data_type` (VARCHAR(20)) -- 'Integer', 'String', 'Boolean', 'Date', 'Option'
+*   `unit` (VARCHAR(20)) -- e.g., 'kg', 'cm'
+*   `validation_rules` (JSONB) -- Min/Max, Regex
+*   `options` (JSONB) -- For 'Option' types (e.g., ["Smoker", "Non-Smoker"])
+
+### `clin_form_templates`
+Definitions of forms (e.g., "Triage Form v1").
+*   `id` (SERIAL, PK)
+*   `title` (VARCHAR(200))
+*   `is_active` (BOOLEAN)
+*   `version` (INT)
+
+### `clin_form_fields`
+Many-to-Many mapping specific fields to templates with overrides.
+*   `id` (SERIAL, PK)
+*   `template_id` (INT, FK -> clin_form_templates.id)
+*   `field_id` (INT, FK -> clin_field_definitions.id)
+*   `label_override` (VARCHAR(100))
+*   `display_order` (INT)
+*   `is_required` (BOOLEAN)
+*   `ui_control` (VARCHAR(50)) -- 'Textbox', 'Dropdown', 'Radio'
+
+### `clin_assessments`
+An instance of a filled-out form.
+*   `id` (BIGSERIAL, PK)
+*   `patient_id` (INT, FK -> pat_patients.id)
+*   `consultation_id` (BIGINT, FK -> clin_consultations.id)
+*   `template_id` (INT, FK -> clin_form_templates.id)
+*   `performed_at` (TIMESTAMP)
+*   `performed_by` (INT, FK -> users.id)
+
+### `clin_assessment_values`
+The actual data captured.
+*   `id` (BIGSERIAL, PK)
+*   `assessment_id` (BIGINT, FK -> clin_assessments.id)
+*   `field_id` (INT, FK -> clin_field_definitions.id)
+*   `value_raw` (TEXT)
+*   `value_typed` (JSONB) -- Canonical storage
+*   `created_at` (TIMESTAMP)
+
+### `clin_macros`
+*   `id` (SERIAL, PK)
+*   `trigger_key` (VARCHAR(50))
+*   `expansion` (TEXT)
+*   `user_id` (INT NULL)
+
+---
+
+## 5. Orders & Labs
+
+### `ord_orders`
+*   `id` (BIGSERIAL, PK)
+*   `patient_id` (INT, FK -> pat_patients.id)
+*   `consultation_id` (BIGINT, FK -> clin_consultations.id, Nullable)
+*   `type` (VARCHAR(50)) -- 'Lab', 'Medication'
+*   `description` (TEXT)
+*   `priority` (VARCHAR(20)) -- 'Routine', 'Stat'
+*   `status` (VARCHAR(50))
+*   `ordered_by` (INT, FK -> users.id)
+*   `created_at` (TIMESTAMP)
+
+### `lab_results`
+*   `id` (BIGSERIAL, PK)
+*   `order_id` (BIGINT, FK -> ord_orders.id)
+*   `result_summary` (TEXT)
+*   `result_data` (JSONB) -- Detailed findings
+*   `released_at` (TIMESTAMP)
+
+---
+
+## 6. Inventory & Pharmacy
+
+### `inv_items`
+*   `sku` (VARCHAR(50), PK)
+*   `name` (VARCHAR(200))
+*   `quantity` (INT)
+*   `min_reorder_level` (INT)
+*   `unit_price` (DECIMAL(10,2))
+*   `updated_at` (TIMESTAMP)
+
+### `inv_transactions`
+*   `id` (BIGSERIAL, PK)
+*   `sku` (VARCHAR(50), FK -> inv_items.sku)
+*   `change_amount` (INT)
+*   `reason` (VARCHAR(200))
+*   `user_id` (INT)
+*   `created_at` (TIMESTAMP)
+
+---
+
+## 7. Billing
+
+### `bil_invoices`
+*   `id` (BIGSERIAL, PK)
+*   `patient_id` (INT, FK -> pat_patients.id)
+*   `total_amount` (DECIMAL(12,2))
+*   `status` (VARCHAR(50)) -- 'Open', 'Paid', 'Void'
+*   `created_at` (TIMESTAMP)
+
+### `bil_invoice_items`
+*   `id` (BIGSERIAL, PK)
+*   `invoice_id` (BIGINT, FK -> bil_invoices.id)
+*   `description` (VARCHAR(200))
+*   `quantity` (INT)
+*   `unit_price` (DECIMAL(10,2))
+*   `total_price` (DECIMAL(10,2))
+*   `source_event_id` (UUID NULL)

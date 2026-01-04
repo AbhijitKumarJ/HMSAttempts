@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clinical Documentation - HMS Doctor</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        primary: { 600: '#2563EB', 700: '#1D4ED8' },
+                        slate: { 50: '#F8FAFC', 100: '#F1F5F9', 200: '#E2E8F0', 300: '#CBD5E1', 800: '#1E293B', 900: '#0F172A' },
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="bg-slate-50 text-slate-900 font-sans h-screen flex flex-col">
+
+    <!-- Header -->
+    <header
+        class="h-16 bg-white border-b border-slate-200 flex justify-between items-center px-6 lg:px-8 flex-shrink-0">
+        <div class="flex items-center gap-4">
+            <a href="../doctor-dashboard.html"
+                class="p-2 hover:bg-slate-100 rounded-full text-slate-500 transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+            </a>
+            <h1 class="text-xl font-bold text-slate-800">New Clinical Note</h1>
+        </div>
+        <div class="flex items-center gap-4">
+            <div class="text-sm text-slate-500">Auto-saved 2 mins ago</div>
+            <button
+                class="px-4 py-2 border border-slate-300 bg-white text-slate-700 rounded-lg text-sm font-medium hover:bg-slate-50">Save
+                Draft</button>
+            <button
+                class="px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700 shadow-sm">Sign
+                & Finalize</button>
+        </div>
+    </header>
+
+    <!-- Content -->
+    <main class="flex-1 overflow-auto p-6 lg:p-8 max-w-5xl mx-auto w-full">
+
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 min-h-[600px] flex flex-col">
+
+            <!-- Toolbar -->
+            <div class="p-3 border-b border-slate-200 bg-slate-50 flex flex-wrap gap-2 items-center">
+                <select
+                    class="px-3 py-1.5 rounded-lg border border-slate-300 text-sm bg-white focus:ring-1 focus:ring-primary-600 outline-none">
+                    <option>Progress Note</option>
+                    <option>H&P</option>
+                    <option>Discharge Summary</option>
+                    <option>Consult Note</option>
+                </select>
+                <div class="w-px h-6 bg-slate-300 mx-2"></div>
+                <button class="p-1.5 hover:bg-white rounded text-slate-600"><svg class="w-4 h-4" fill="none"
+                        stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 6h16M4 12h16M4 18h16" />
+                    </svg></button>
+                <button class="p-1.5 hover:bg-white rounded text-slate-600 font-bold">B</button>
+                <button class="p-1.5 hover:bg-white rounded text-slate-600 italic">I</button>
+                <div class="w-px h-6 bg-slate-300 mx-2"></div>
+                <button
+                    class="flex items-center gap-1.5 px-3 py-1.5 hover:bg-white border border-transparent hover:border-slate-200 rounded text-sm text-slate-700">
+                    <svg class="w-4 h-4 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                    </svg>
+                    Dictate
+                </button>
+                <button
+                    class="flex items-center gap-1.5 px-3 py-1.5 hover:bg-white border border-transparent hover:border-slate-200 rounded text-sm text-slate-700">
+                    <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                    Smart Phrases
+                </button>
+            </div>
+
+            <!-- Editor (Mock) -->
+            <div class="flex-1 p-8 space-y-6">
+
+                <!-- Subjective -->
+                <div>
+                    <h3 class="text-sm font-bold text-slate-400 uppercase mb-2">Subjective</h3>
+                    <textarea
+                        class="w-full h-32 p-3 text-slate-900 border border-slate-100 focus:border-primary-100 rounded-lg outline-none resize-none leading-relaxed transition-colors"
+                        placeholder="Patient describes..."></textarea>
+                </div>
+
+                <!-- Objective -->
+                <div>
+                    <h3 class="text-sm font-bold text-slate-400 uppercase mb-2">Objective</h3>
+                    <textarea
+                        class="w-full h-32 p-3 text-slate-900 border border-slate-100 focus:border-primary-100 rounded-lg outline-none resize-none leading-relaxed transition-colors"
+                        placeholder="Physical exam findings..."></textarea>
+                    <div class="mt-2 p-3 bg-blue-50 border border-blue-100 rounded-lg text-sm text-blue-800">
+                        <span class="font-bold">Imported Vitals (Today):</span> BP 145/95 | HR 98 | Temp 38.5°C
+                    </div>
+                </div>
+
+                <!-- Assessment -->
+                <div>
+                    <h3 class="text-sm font-bold text-slate-400 uppercase mb-2">Assessment</h3>
+                    <textarea
+                        class="w-full h-24 p-3 text-slate-900 border border-slate-100 focus:border-primary-100 rounded-lg outline-none resize-none leading-relaxed transition-colors"
+                        placeholder="Diagnoses and impressions..."></textarea>
+                </div>
+
+                <!-- Plan -->
+                <div>
+                    <h3 class="text-sm font-bold text-slate-400 uppercase mb-2">Plan</h3>
+                    <textarea
+                        class="w-full h-32 p-3 text-slate-900 border border-slate-100 focus:border-primary-100 rounded-lg outline-none resize-none leading-relaxed transition-colors"
+                        placeholder="Treatment plan, follow up..."></textarea>
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+</body>
+
+</html>

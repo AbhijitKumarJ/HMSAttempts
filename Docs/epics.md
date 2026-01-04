@@ -266,16 +266,20 @@ Implement the Triage module with vital signs capture and dynamic form engine so 
 ### Story 3.1: Clinical Module & Dynamic Form Schema
 
 As a Backend Developer,
-I want to create the Clinical module with JSONB support,
-So that we can store flexible assessment data.
+I want to create the relational schema for dynamic forms,
+So that we can build forms from reusable field definitions.
 
 **Acceptance Criteria:**
 
 **Given** The PostgreSQL database
 **When** The Clinical module initializes
-**Then** A `clin_assessments` table is created with a `data` column of type `JSONB`
-**And** A `clin_form_templates` table is created to store form definitions
-**And** An index is created on `clin_assessments.patient_mrn`
+**Then** Tables are created for:
+*   `clin_field_definitions` (Reusable library)
+*   `clin_form_templates` (Form headers)
+*   `clin_form_fields` (Mapping fields to templates)
+*   `clin_assessments` (Instance of a filled form)
+*   `clin_assessment_values` (Actual data)
+**And** FK constraints ensure data integrity
 
 ### Story 3.2: Dynamic Form Builder API
 
@@ -535,3 +539,140 @@ So that I can configure the clinic's name and defaults.
 **When** I navigate to System Settings
 **Then** I can update the Clinic Name, Default Currency, and Timezone
 **And** These settings are cached and applied globally
+
+## Epic 9: Usability & Enhancements
+
+Implement high-value, low-complexity improvements to enhance clinician efficiency, operational observability, and developer experience.
+
+### Story 9.1: Clinical Macros (Dot Phrases)
+
+As a Doctor,
+I want to use short commands (dot phrases) to insert common blocks of text,
+So that I can document clinical notes faster and more consistently.
+
+**Acceptance Criteria:**
+
+**Given** I am typing in the Clinical Note Editor
+**When** I type `.` followed by a keyword (e.g., `.lungClear`)
+**Then** The keyword is instantly replaced with a preset text block
+**And** An autocomplete menu helps me find available macros
+
+### Story 9.2: Patient Search & Command Palette
+
+As a Power User,
+I want a global search bar accessible by keyboard shortcut (`Ctrl+K`),
+So that I can find a patient or navigate to a module without using the mouse.
+
+**Acceptance Criteria:**
+
+**Given** I am anywhere in the application
+**When** I press `Ctrl+K`
+**Then** A modal search bar appears
+**When** I search for a patient name or menu item
+**Then** I can navigate directly to the result
+
+### Story 9.3: Audit Log Viewer
+
+As an Compliance Officer,
+I want to view a history of critical system actions,
+So that I can investigate unauthorized changes or errors.
+
+**Acceptance Criteria:**
+
+**Given** I am an Administrator
+**When** I view the Audit Logs page
+**Then** I can filter logs by User, Date, or Entity Type
+**And** I see a paginated list of all recorded changes
+
+### Story 9.4: Inventory Low Stock Alerts
+
+As an Inventory Manager,
+I want to be notified when items run low,
+So that I can reorder before we run out.
+
+**Acceptance Criteria:**
+
+**Given** An inventory item with a `min_reorder_level`
+**When** Dispensing reduces the stock below this level
+**Then** A system alert is triggered for the Inventory Manager
+
+### Story 9.5: System Health & Diagnostics
+
+As a DevOps Engineer,
+I want an automated health check endpoint,
+So that I know if the database or queue infrastructure is down.
+
+**Acceptance Criteria:**
+
+**Given** The application is running
+**When** I call `/health`
+**Then** I receive a 200 OK status with DB and Queue connectivity metrics
+
+### Story 9.6: Database Seeder
+
+As a Developer,
+I want a script to populate the database with realistic test data,
+So that I can demo the application without manual data entry.
+
+**Acceptance Criteria:**
+
+**Given** A fresh database
+**When** I run the seeder command
+**Then** The database is populated with dummy patients, providers, and inventory items
+
+### Story 9.7: Patient Visit Summary PDF
+
+As a Patient,
+I want a PDF summary of my visit,
+So that I have a record of my vitals and prescriptions.
+
+**Acceptance Criteria:**
+
+**Given** A completed patient visit
+**When** I click "Print Summary"
+**Then** A PDF is generated containing Vitals, Notes, and Orders
+
+## Epic 10: Scheduling & Care Coordination
+
+Manage the patient journey through Appointments, Episodes of Care, and Consultation tracking.
+
+### Story 10.1: Appointment Scheduling
+
+As a Receptionist,
+I want to schedule an appointment for a patient,
+So that they can see a doctor at a specific time.
+
+**Acceptance Criteria:**
+
+**Given** I select a Doctor and Date
+**When** I book a slot
+**Then** The system prevents double-booking
+**And** A record is saved to `sch_appointments`
+
+### Story 10.2: Episode of Care Management
+
+As a Doctor,
+I want to group related visits into an "Episode of Care" (e.g., "Pregnancy 2024"),
+So that I can track a condition over time.
+
+**Acceptance Criteria:**
+
+**Given** A patient with a long-term condition
+**When** I create an Episode
+**Then** I can link multiple Consultations to it
+
+### Story 10.3: Consultation Lifecycle
+
+As a Doctor,
+I want to explicitly "Start" and "End" a consultation,
+So that we track the actual encounter duration.
+
+**Acceptance Criteria:**
+
+**Given** A scheduled appointment
+**When** I click "Start Visit"
+**Then** A `clin_consultations` record is created
+**When** I click "Finish"
+**Then** The consultation is marked as closed
+
+

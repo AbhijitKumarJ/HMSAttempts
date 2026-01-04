@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HMS - Open Source Hospital Management System</title>
+
+    <!-- Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: {
+                            600: '#2563EB', // Blue-600
+                            700: '#1D4ED8',
+                        },
+                        slate: {
+                            50: '#F8FAFC',
+                            200: '#E2E8F0',
+                            900: '#0F172A', // Slate-900
+                        },
+                        semantic: {
+                            alert: '#DC2626', // Red-600
+                            warning: '#F59E0B', // Amber-500
+                            success: '#059669', // Emerald-600
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+    </style>
+</head>
+
+<body class="font-sans text-slate-900 bg-slate-50 antialiased selection:bg-primary-600 selection:text-white">
+
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 bg-white/90 backdrop-blur-md border-b border-slate-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
+                <div class="flex-shrink-0 flex items-center gap-2">
+                    <div class="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                        </svg>
+                    </div>
+                    <span class="font-bold text-xl tracking-tight text-slate-900">HMS Core</span>
+                </div>
+
+                <!-- Links (Desktop) -->
+                <div class="hidden md:flex space-x-8">
+                    <a href="#features"
+                        class="text-slate-600 hover:text-primary-600 transition-colors text-sm font-medium">Features</a>
+                    <a href="#tech-stack"
+                        class="text-slate-600 hover:text-primary-600 transition-colors text-sm font-medium">Technology</a>
+                    <a href="#community"
+                        class="text-slate-600 hover:text-primary-600 transition-colors text-sm font-medium">Ecosystem</a>
+                </div>
+
+                <!-- CTA -->
+                <div class="hidden md:flex items-center gap-4">
+                    <a href="https://github.com/AbhijitKumarJ/HMSAttempts"
+                        class="text-slate-600 hover:text-slate-900 transition-colors">
+                        <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path fill-rule="evenodd"
+                                d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"
+                                clip-rule="evenodd" />
+                        </svg>
+                    </a>
+                    <a href="#"
+                        class="inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-600 transition-all">
+                        Get Started
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="relative pt-32 pb-20 sm:pt-40 sm:pb-24 overflow-hidden">
+        <!-- Background Decor -->
+        <div class="absolute inset-0 -z-10">
+            <div
+                class="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-blue-100 rounded-full blur-3xl opacity-30 mix-blend-multiply">
+            </div>
+            <div
+                class="absolute top-20 right-0 w-[500px] h-[500px] bg-indigo-50 rounded-full blur-3xl opacity-50 mix-blend-multiply">
+            </div>
+        </div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+            <div
+                class="inline-flex items-center px-3 py-1 rounded-full border border-blue-200 bg-blue-50 text-blue-700 text-xs font-semibold uppercase tracking-wide mb-8">
+                <span class="w-2 h-2 bg-blue-600 rounded-full mr-2 animate-pulse"></span>
+                v0.1.0 MVP In Development
+            </div>
+
+            <h1 class="text-4xl sm:text-6xl font-extrabold text-slate-900 tracking-tight leading-tight mb-6">
+                Democratizing Enterprise-Grade<br />
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary-600 to-indigo-600">Healthcare
+                    Technology</span>
+            </h1>
+
+            <p class="mt-4 max-w-2xl mx-auto text-xl text-slate-600 leading-relaxed">
+                A modern, modular, open-source Hospital Management System built for the "Clinical Reality" of
+                small-to-medium healthcare providers.
+            </p>
+
+            <div class="mt-10 flex justify-center gap-4">
+                <a href="#"
+                    class="px-8 py-3.5 rounded-lg bg-primary-600 text-white font-semibold shadow-lg shadow-blue-500/30 hover:bg-primary-700 hover:-translate-y-0.5 transition-all duration-200">
+                    Explore Documentation
+                </a>
+                <a href="https://github.com/AbhijitKumarJ/HMSAttempts"
+                    class="px-8 py-3.5 rounded-lg bg-white border border-slate-200 text-slate-700 font-semibold hover:bg-slate-50 hover:border-slate-300 transition-all duration-200">
+                    Star on GitHub
+                </a>
+            </div>
+
+            <!-- Dashboard Preview Placeholder -->
+            <div
+                class="mt-16 mx-auto w-full max-w-5xl rounded-xl bg-slate-900/5 p-2 shadow-2xl lg:rounded-2xl backdrop-blur-sm">
+                <div
+                    class="rounded-lg bg-slate-900 shadow-inner overflow-hidden relative aspect-[16/9] border border-slate-800">
+                    <!-- Mock UI Header -->
+                    <div class="bg-white border-b border-slate-200 h-12 flex items-center px-4 justify-between">
+                        <div class="flex items-center gap-4">
+                            <div class="h-3 w-3 rounded-full bg-red-400"></div>
+                            <div class="h-3 w-3 rounded-full bg-amber-400"></div>
+                            <div class="h-3 w-3 rounded-full bg-green-400"></div>
+                        </div>
+                        <div class="text-xs font-mono text-slate-400">HMS Clinical Cockpit v1.0</div>
+                    </div>
+                    <!-- Mock UI Body -->
+                    <div class="grid grid-cols-12 h-full bg-slate-50">
+                        <!-- Sidebar -->
+                        <div class="col-span-1 border-r border-slate-200 bg-white h-full hidden md:block"></div>
+                        <!-- Main Content -->
+                        <div class="col-span-11 p-6">
+                            <div class="grid grid-cols-3 gap-6">
+                                <!-- Patient Card -->
+                                <div class="bg-white p-4 rounded-lg shadow-sm border-l-4 border-semantic-alert">
+                                    <div class="flex justify-between items-start mb-2">
+                                        <h3 class="font-bold text-slate-900">Doe, John (MRN-2441)</h3>
+                                        <span class="bg-red-50 text-red-700 px-2 py-0.5 rounded text-xs font-bold">High
+                                            Risk</span>
+                                    </div>
+                                    <div class="text-sm text-slate-500">BP: 160/100</div>
+                                </div>
+                                <div class="bg-white p-4 rounded-lg shadow-sm border-l-4 border-blue-500">
+                                    <div class="flex justify-between items-start mb-2">
+                                        <h3 class="font-bold text-slate-900">Smith, Jane (MRN-1922)</h3>
+                                    </div>
+                                    <div class="text-sm text-slate-500">Routine Checkup</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Overlay Text -->
+                    <div class="absolute inset-0 flex items-center justify-center bg-black/10">
+                        <span class="bg-black/70 text-white px-4 py-2 rounded-md font-mono text-sm backdrop-blur-md">
+                            Interactive Demo Coming Soon
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Core Pillars / Value Props -->
+    <div id="features" class="py-24 bg-white relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <h2 class="text-base font-semibold text-primary-600 tracking-wide uppercase">Core Philosophy</h2>
+                <p class="mt-2 text-3xl font-extrabold text-slate-900 sm:text-4xl">Built for Clinical Velocity</p>
+                <p class="mt-4 text-lg text-slate-500">Designed to reduce cognitive load and click-fatigue for
+                    healthcare professionals.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+                <!-- Feature 1 -->
+                <div class="relative group">
+                    <div
+                        class="absolute -inset-1 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg blur opacity-10 group-hover:opacity-20 transition duration-200">
+                    </div>
+                    <div class="relative bg-white p-8 rounded-lg border border-slate-100 shadow-sm h-full">
+                        <div class="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center mb-6">
+                            <svg class="w-6 h-6 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M13 10V3L4 14h7v7l9-11h-7z" />
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-slate-900 mb-3">Modular Architecture</h3>
+                        <p class="text-slate-600 leading-relaxed">
+                            "Internal-as-External" design ensures modules like Lab, Pharmacy, and Billing can be swapped
+                            or extended without breaking the core.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Feature 2 -->
+                <div class="relative group">
+                    <div
+                        class="absolute -inset-1 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg blur opacity-10 group-hover:opacity-20 transition duration-200">
+                    </div>
+                    <div class="relative bg-white p-8 rounded-lg border border-slate-100 shadow-sm h-full">
+                        <div class="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center mb-6">
+                            <svg class="w-6 h-6 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-slate-900 mb-3">No Dead Ends</h3>
+                        <p class="text-slate-600 leading-relaxed">
+                            Robust "Gap Handling" allows for manual overrides and document uploads when automated
+                            workflows are unavailable, ensuring care never stops.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Feature 3 -->
+                <div class="relative group">
+                    <div
+                        class="absolute -inset-1 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg blur opacity-10 group-hover:opacity-20 transition duration-200">
+                    </div>
+                    <div class="relative bg-white p-8 rounded-lg border border-slate-100 shadow-sm h-full">
+                        <div class="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center mb-6">
+                            <svg class="w-6 h-6 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-slate-900 mb-3">Ecosystem Enablement</h3>
+                        <p class="text-slate-600 leading-relaxed">
+                            Designed for local tech firms to provide support and customization, creating a sustainable
+                            economy around open-source healthcare.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tech Stack -->
+    <div id="tech-stack" class="py-24 bg-slate-50 border-t border-slate-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl font-extrabold text-slate-900">Modern Technology Stack</h2>
+                <p class="mt-4 text-slate-500">Built on industry standards for performance and maintainability.</p>
+            </div>
+
+            <div
+                class="flex flex-wrap justify-center items-center gap-12 md:gap-20 opacity-80 grayscale hover:grayscale-0 transition-all duration-500">
+                <!-- Tech Logos (Text representation for portability) -->
+                <div class="flex flex-col items-center gap-2 group">
+                    <div class="text-4xl font-bold text-slate-700 group-hover:text-purple-600 transition-colors">.NET 9
+                    </div>
+                    <span class="text-sm font-medium text-slate-400">Backend Core</span>
+                </div>
+
+                <div class="flex flex-col items-center gap-2 group">
+                    <div class="text-4xl font-bold text-slate-700 group-hover:text-red-600 transition-colors">Angular 21
+                    </div>
+                    <span class="text-sm font-medium text-slate-400">Frontend Framework</span>
+                </div>
+
+                <div class="flex flex-col items-center gap-2 group">
+                    <div class="text-4xl font-bold text-slate-700 group-hover:text-blue-500 transition-colors">
+                        PostgreSQL</div>
+                    <span class="text-sm font-medium text-slate-400">Relational DB</span>
+                </div>
+
+                <div class="flex flex-col items-center gap-2 group">
+                    <div class="text-4xl font-bold text-slate-700 group-hover:text-sky-500 transition-colors">Tailwind
+                    </div>
+                    <span class="text-sm font-medium text-slate-400">Utility CSS</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-slate-300 py-12 border-t border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                <div class="col-span-1 md:col-span-2">
+                    <span class="font-bold text-2xl text-white tracking-tight">HMS Core</span>
+                    <p class="mt-4 text-slate-400 max-w-sm">
+                        Open source Hospital Management System. MIT Licensed. Built with care for the global healthcare
+                        community.
+                    </p>
+                </div>
+                <div>
+                    <h4 class="text-white font-semibold uppercase tracking-wider text-sm mb-4">Project</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="hover:text-white transition-colors">Documentation</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Roadmap</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Issue Tracker</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-white font-semibold uppercase tracking-wider text-sm mb-4">Community</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="hover:text-white transition-colors">Contributing</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Code of Conduct</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Discussions</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div
+                class="border-t border-slate-800 pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-slate-500">
+                <p>&copy; 2026 HMS Core Project. All rights reserved.</p>
+                <div class="flex gap-4 mt-4 md:mt-0">
+                    <a href="#" class="hover:text-white">Privacy Policy</a>
+                    <a href="#" class="hover:text-white">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+
+</html>
