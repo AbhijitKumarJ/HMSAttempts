@@ -20,7 +20,7 @@ public class UserRepository : IUserRepository
     public object GetUserById(int id)
     {
         System.Console.WriteLine("Fetching user by ID from database..." + id);
-        var user = _context.Users.FirstOrDefault(c => c.UserId == id);
+        var user = _context.Users.FirstOrDefault(c => c.Id == id);
         // Implementation for retrieving a user by ID from the database
         //return new { CustomerId = id, FirstName = "John", LastName = "Doe" };
 

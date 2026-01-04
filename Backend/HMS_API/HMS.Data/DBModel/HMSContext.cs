@@ -15,39 +15,49 @@ public partial class HMSContext : DbContext
     {
     }
 
-    public virtual DbSet<Appointment> Appointments { get; set; }
+    public virtual DbSet<AppEvent> AppEvents { get; set; }
 
-    public virtual DbSet<Assessment> Assessments { get; set; }
+    public virtual DbSet<AuditLog> AuditLogs { get; set; }
 
-    public virtual DbSet<AssessmentFieldValue> AssessmentFieldValues { get; set; }
+    public virtual DbSet<BilInvoice> BilInvoices { get; set; }
 
-    public virtual DbSet<Billing> Billings { get; set; }
+    public virtual DbSet<BilInvoiceItem> BilInvoiceItems { get; set; }
 
-    public virtual DbSet<Consultation> Consultations { get; set; }
+    public virtual DbSet<ClinAssessment> ClinAssessments { get; set; }
 
-    public virtual DbSet<DynamicForm> DynamicForms { get; set; }
+    public virtual DbSet<ClinAssessmentValue> ClinAssessmentValues { get; set; }
 
-    public virtual DbSet<Episode> Episodes { get; set; }
+    public virtual DbSet<ClinConsultation> ClinConsultations { get; set; }
 
-    public virtual DbSet<Field> Fields { get; set; }
+    public virtual DbSet<ClinFieldDefinition> ClinFieldDefinitions { get; set; }
 
-    public virtual DbSet<FieldDefinition> FieldDefinitions { get; set; }
+    public virtual DbSet<ClinFormField> ClinFormFields { get; set; }
 
-    public virtual DbSet<FormField> FormFields { get; set; }
+    public virtual DbSet<ClinFormTemplate> ClinFormTemplates { get; set; }
 
-    public virtual DbSet<Lab> Labs { get; set; }
+    public virtual DbSet<ClinMacro> ClinMacros { get; set; }
 
-    public virtual DbSet<Medication> Medications { get; set; }
+    public virtual DbSet<ClinVital> ClinVitals { get; set; }
 
-    public virtual DbSet<Order> Orders { get; set; }
+    public virtual DbSet<InvItem> InvItems { get; set; }
 
-    public virtual DbSet<Patient> Patients { get; set; }
+    public virtual DbSet<InvTransaction> InvTransactions { get; set; }
+
+    public virtual DbSet<LabResult> LabResults { get; set; }
+
+    public virtual DbSet<OrdOrder> OrdOrders { get; set; }
+
+    public virtual DbSet<PatPatient> PatPatients { get; set; }
 
     public virtual DbSet<Role> Roles { get; set; }
 
-    public virtual DbSet<User> Users { get; set; }
+    public virtual DbSet<SchAppointment> SchAppointments { get; set; }
 
-    public virtual DbSet<Vital> Vitals { get; set; }
+    public virtual DbSet<SchEpisode> SchEpisodes { get; set; }
+
+    public virtual DbSet<SysConfig> SysConfigs { get; set; }
+
+    public virtual DbSet<User> Users { get; set; }
 
 //     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 // #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
@@ -55,512 +65,680 @@ public partial class HMSContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder
-            .HasPostgresEnum("appointment_status_enum", new[] { "Scheduled", "Completed", "Cancelled" })
-            .HasPostgresEnum("billing_status_enum", new[] { "Paid", "Pending", "Cancelled" })
-            .HasPostgresEnum("field_data_type_enum", new[] { "Integer", "Decimal", "String", "Date", "Boolean" })
-            .HasPostgresEnum("gender_enum", new[] { "Male", "Female", "Other" })
-            .HasPostgresEnum("order_status_enum", new[] { "Pending", "Completed", "Cancelled" })
-            .HasPostgresEnum("ui_control_type_enum", new[] { "Textbox", "Textarea", "Dropdown", "Radio", "Checkbox", "DatePicker", "NumberSpinner" });
-
-        modelBuilder.Entity<Appointment>(entity =>
+        modelBuilder.Entity<AppEvent>(entity =>
         {
-            entity.HasKey(e => e.AppointmentId).HasName("appointments_pkey");
+            entity.HasKey(e => e.Id).HasName("app_events_pkey");
 
-            entity.ToTable("appointments");
+            entity.ToTable("app_events");
 
-            entity.HasIndex(e => e.PatientId, "appointments_patient_idx");
+            entity.HasIndex(e => e.EventType, "idx_app_events_event_type");
 
-            entity.Property(e => e.AppointmentId)
-                .UseIdentityAlwaysColumn()
-                .HasColumnName("appointment_id");
-            entity.Property(e => e.AppointmentDate).HasColumnName("appointment_date");
+            entity.Property(e => e.Id)
+                .HasDefaultValueSql("gen_random_uuid()")
+                .HasColumnName("id");
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("now()")
+                .HasColumnType("timestamp without time zone")
                 .HasColumnName("created_at");
-            entity.Property(e => e.DoctorId).HasColumnName("doctor_id");
-            entity.Property(e => e.PatientId).HasColumnName("patient_id");
-            entity.Property(e => e.UpdatedAt)
-                .HasDefaultValueSql("now()")
-                .HasColumnName("updated_at");
-
-            entity.HasOne(d => d.Doctor).WithMany(p => p.Appointments)
-                .HasForeignKey(d => d.DoctorId)
-                .OnDelete(DeleteBehavior.SetNull)
-                .HasConstraintName("appointments_doctor_id_fkey");
-
-            entity.HasOne(d => d.Patient).WithMany(p => p.Appointments)
-                .HasForeignKey(d => d.PatientId)
-                .HasConstraintName("appointments_patient_id_fkey");
-        });
-
-        modelBuilder.Entity<Assessment>(entity =>
-        {
-            entity.HasKey(e => e.AssessmentId).HasName("assessments_pkey");
-
-            entity.ToTable("assessments");
-
-            entity.Property(e => e.AssessmentId)
-                .UseIdentityAlwaysColumn()
-                .HasColumnName("assessment_id");
-            entity.Property(e => e.AssessmentDate)
-                .HasDefaultValueSql("now()")
-                .HasColumnName("assessment_date");
-            entity.Property(e => e.ConsultationId).HasColumnName("consultation_id");
-            entity.Property(e => e.CreatedAt)
-                .HasDefaultValueSql("now()")
-                .HasColumnName("created_at");
-            entity.Property(e => e.DynamicFormId).HasColumnName("dynamic_form_id");
-            entity.Property(e => e.Results)
+            entity.Property(e => e.EventType)
+                .HasMaxLength(150)
+                .HasColumnName("event_type");
+            entity.Property(e => e.FailureCount)
+                .HasDefaultValue(0)
+                .HasColumnName("failure_count");
+            entity.Property(e => e.Payload)
                 .HasColumnType("jsonb")
-                .HasColumnName("results");
-            entity.Property(e => e.Summary).HasColumnName("summary");
-            entity.Property(e => e.UpdatedAt)
-                .HasDefaultValueSql("now()")
-                .HasColumnName("updated_at");
-
-            entity.HasOne(d => d.Consultation).WithMany(p => p.Assessments)
-                .HasForeignKey(d => d.ConsultationId)
-                .OnDelete(DeleteBehavior.SetNull)
-                .HasConstraintName("assessments_consultation_id_fkey");
-
-            entity.HasOne(d => d.DynamicForm).WithMany(p => p.Assessments)
-                .HasForeignKey(d => d.DynamicFormId)
-                .OnDelete(DeleteBehavior.SetNull)
-                .HasConstraintName("assessments_dynamic_form_id_fkey");
+                .HasColumnName("payload");
+            entity.Property(e => e.ProcessedAt)
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("processed_at");
+            entity.Property(e => e.Status)
+                .HasMaxLength(50)
+                .HasDefaultValueSql("'Pending'::character varying")
+                .HasColumnName("status");
         });
 
-        modelBuilder.Entity<AssessmentFieldValue>(entity =>
+        modelBuilder.Entity<AuditLog>(entity =>
         {
-            entity.HasKey(e => e.AssessmentFieldValueId).HasName("assessment_field_values_pkey");
+            entity.HasKey(e => e.Id).HasName("audit_logs_pkey");
 
-            entity.ToTable("assessment_field_values");
+            entity.ToTable("audit_logs");
 
-            entity.HasIndex(e => e.AssessmentId, "afv_assessment_idx");
-
-            entity.Property(e => e.AssessmentFieldValueId)
+            entity.Property(e => e.Id)
                 .UseIdentityAlwaysColumn()
-                .HasColumnName("assessment_field_value_id");
-            entity.Property(e => e.AssessmentId).HasColumnName("assessment_id");
+                .HasColumnName("id");
+            entity.Property(e => e.Action)
+                .HasMaxLength(50)
+                .HasColumnName("action");
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("now()")
+                .HasColumnType("timestamp without time zone")
                 .HasColumnName("created_at");
-            entity.Property(e => e.FieldId).HasColumnName("field_id");
-            entity.Property(e => e.FormFieldId).HasColumnName("form_field_id");
-            entity.Property(e => e.RawValue).HasColumnName("raw_value");
-            entity.Property(e => e.RecordedAt)
-                .HasDefaultValueSql("now()")
-                .HasColumnName("recorded_at");
-            entity.Property(e => e.RecordedByUserId).HasColumnName("recorded_by_user_id");
-            entity.Property(e => e.TypedValue)
+            entity.Property(e => e.EntityId)
+                .HasMaxLength(100)
+                .HasColumnName("entity_id");
+            entity.Property(e => e.EntityType)
+                .HasMaxLength(100)
+                .HasColumnName("entity_type");
+            entity.Property(e => e.NewValue)
                 .HasColumnType("jsonb")
-                .HasColumnName("typed_value");
-            entity.Property(e => e.Unit).HasColumnName("unit");
-
-            entity.HasOne(d => d.Assessment).WithMany(p => p.AssessmentFieldValues)
-                .HasForeignKey(d => d.AssessmentId)
-                .HasConstraintName("assessment_field_values_assessment_id_fkey");
-
-            entity.HasOne(d => d.Field).WithMany(p => p.AssessmentFieldValues)
-                .HasForeignKey(d => d.FieldId)
-                .OnDelete(DeleteBehavior.SetNull)
-                .HasConstraintName("assessment_field_values_field_id_fkey");
-
-            entity.HasOne(d => d.FormField).WithMany(p => p.AssessmentFieldValues)
-                .HasForeignKey(d => d.FormFieldId)
-                .OnDelete(DeleteBehavior.SetNull)
-                .HasConstraintName("assessment_field_values_form_field_id_fkey");
-
-            entity.HasOne(d => d.RecordedByUser).WithMany(p => p.AssessmentFieldValues)
-                .HasForeignKey(d => d.RecordedByUserId)
-                .OnDelete(DeleteBehavior.SetNull)
-                .HasConstraintName("assessment_field_values_recorded_by_user_id_fkey");
-        });
-
-        modelBuilder.Entity<Billing>(entity =>
-        {
-            entity.HasKey(e => e.BillingId).HasName("billing_pkey");
-
-            entity.ToTable("billing");
-
-            entity.Property(e => e.BillingId)
-                .UseIdentityAlwaysColumn()
-                .HasColumnName("billing_id");
-            entity.Property(e => e.Amount)
-                .HasPrecision(12, 2)
-                .HasDefaultValueSql("0.00")
-                .HasColumnName("amount");
-            entity.Property(e => e.CreatedAt)
-                .HasDefaultValueSql("now()")
-                .HasColumnName("created_at");
-            entity.Property(e => e.PatientId).HasColumnName("patient_id");
-            entity.Property(e => e.UpdatedAt)
-                .HasDefaultValueSql("now()")
-                .HasColumnName("updated_at");
-
-            entity.HasOne(d => d.Patient).WithMany(p => p.Billings)
-                .HasForeignKey(d => d.PatientId)
-                .HasConstraintName("billing_patient_id_fkey");
-        });
-
-        modelBuilder.Entity<Consultation>(entity =>
-        {
-            entity.HasKey(e => e.ConsultationId).HasName("consultations_pkey");
-
-            entity.ToTable("consultations");
-
-            entity.Property(e => e.ConsultationId)
-                .UseIdentityAlwaysColumn()
-                .HasColumnName("consultation_id");
-            entity.Property(e => e.CreatedAt)
-                .HasDefaultValueSql("now()")
-                .HasColumnName("created_at");
-            entity.Property(e => e.DoctorId).HasColumnName("doctor_id");
-            entity.Property(e => e.EncounterDate).HasColumnName("encounter_date");
-            entity.Property(e => e.EpisodeId).HasColumnName("episode_id");
-            entity.Property(e => e.Notes).HasColumnName("notes");
-            entity.Property(e => e.PatientId).HasColumnName("patient_id");
-            entity.Property(e => e.UpdatedAt)
-                .HasDefaultValueSql("now()")
-                .HasColumnName("updated_at");
-
-            entity.HasOne(d => d.Doctor).WithMany(p => p.Consultations)
-                .HasForeignKey(d => d.DoctorId)
-                .OnDelete(DeleteBehavior.SetNull)
-                .HasConstraintName("consultations_doctor_id_fkey");
-
-            entity.HasOne(d => d.Episode).WithMany(p => p.Consultations)
-                .HasForeignKey(d => d.EpisodeId)
-                .OnDelete(DeleteBehavior.SetNull)
-                .HasConstraintName("consultations_episode_id_fkey");
-
-            entity.HasOne(d => d.Patient).WithMany(p => p.Consultations)
-                .HasForeignKey(d => d.PatientId)
-                .HasConstraintName("consultations_patient_id_fkey");
-        });
-
-        modelBuilder.Entity<DynamicForm>(entity =>
-        {
-            entity.HasKey(e => e.DynamicFormId).HasName("dynamic_forms_pkey");
-
-            entity.ToTable("dynamic_forms");
-
-            entity.Property(e => e.DynamicFormId)
-                .UseIdentityAlwaysColumn()
-                .HasColumnName("dynamic_form_id");
-            entity.Property(e => e.CreatedAt)
-                .HasDefaultValueSql("now()")
-                .HasColumnName("created_at");
-            entity.Property(e => e.Fields)
+                .HasColumnName("new_value");
+            entity.Property(e => e.OldValue)
                 .HasColumnType("jsonb")
-                .HasColumnName("fields");
-            entity.Property(e => e.FormName).HasColumnName("form_name");
-            entity.Property(e => e.UpdatedAt)
-                .HasDefaultValueSql("now()")
-                .HasColumnName("updated_at");
+                .HasColumnName("old_value");
+            entity.Property(e => e.Reason).HasColumnName("reason");
+            entity.Property(e => e.UserId).HasColumnName("user_id");
         });
 
-        modelBuilder.Entity<Episode>(entity =>
+        modelBuilder.Entity<BilInvoice>(entity =>
         {
-            entity.HasKey(e => e.EpisodeId).HasName("episodes_pkey");
+            entity.HasKey(e => e.Id).HasName("bil_invoices_pkey");
 
-            entity.ToTable("episodes");
-
-            entity.Property(e => e.EpisodeId)
-                .UseIdentityAlwaysColumn()
-                .HasColumnName("episode_id");
-            entity.Property(e => e.CreatedAt)
-                .HasDefaultValueSql("now()")
-                .HasColumnName("created_at");
-            entity.Property(e => e.Diagnosis).HasColumnName("diagnosis");
-            entity.Property(e => e.EndDate).HasColumnName("end_date");
-            entity.Property(e => e.PatientId).HasColumnName("patient_id");
-            entity.Property(e => e.StartDate).HasColumnName("start_date");
-            entity.Property(e => e.UpdatedAt)
-                .HasDefaultValueSql("now()")
-                .HasColumnName("updated_at");
-
-            entity.HasOne(d => d.Patient).WithMany(p => p.Episodes)
-                .HasForeignKey(d => d.PatientId)
-                .HasConstraintName("episodes_patient_id_fkey");
-        });
-
-        modelBuilder.Entity<Field>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("fields_pkey");
-
-            entity.ToTable("fields");
+            entity.ToTable("bil_invoices");
 
             entity.Property(e => e.Id)
                 .UseIdentityAlwaysColumn()
                 .HasColumnName("id");
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("now()")
+                .HasColumnType("timestamp without time zone")
                 .HasColumnName("created_at");
-            entity.Property(e => e.DynamicFormId).HasColumnName("dynamic_form_id");
-            entity.Property(e => e.FieldName).HasColumnName("field_name");
-            entity.Property(e => e.FieldType).HasColumnName("field_type");
-            entity.Property(e => e.IsRequired)
-                .HasDefaultValue(false)
-                .HasColumnName("is_required");
+            entity.Property(e => e.PatientId).HasColumnName("patient_id");
+            entity.Property(e => e.Status)
+                .HasMaxLength(50)
+                .HasColumnName("status");
+            entity.Property(e => e.TotalAmount)
+                .HasPrecision(12, 2)
+                .HasColumnName("total_amount");
 
-            entity.HasOne(d => d.DynamicForm).WithMany(p => p.FieldsNavigation)
-                .HasForeignKey(d => d.DynamicFormId)
+            entity.HasOne(d => d.Patient).WithMany(p => p.BilInvoices)
+                .HasForeignKey(d => d.PatientId)
                 .OnDelete(DeleteBehavior.Cascade)
-                .HasConstraintName("fields_dynamic_form_id_fkey");
+                .HasConstraintName("bil_invoices_patient_id_fkey");
         });
 
-        modelBuilder.Entity<FieldDefinition>(entity =>
+        modelBuilder.Entity<BilInvoiceItem>(entity =>
         {
-            entity.HasKey(e => e.FieldId).HasName("field_definitions_pkey");
+            entity.HasKey(e => e.Id).HasName("bil_invoice_items_pkey");
 
-            entity.ToTable("field_definitions");
+            entity.ToTable("bil_invoice_items");
 
-            entity.HasIndex(e => e.FieldCode, "field_definitions_field_code_key").IsUnique();
-
-            entity.Property(e => e.FieldId)
+            entity.Property(e => e.Id)
                 .UseIdentityAlwaysColumn()
-                .HasColumnName("field_id");
-            entity.Property(e => e.AllowedValues)
-                .HasColumnType("jsonb")
-                .HasColumnName("allowed_values");
+                .HasColumnName("id");
+            entity.Property(e => e.Description)
+                .HasMaxLength(200)
+                .HasColumnName("description");
+            entity.Property(e => e.InvoiceId).HasColumnName("invoice_id");
+            entity.Property(e => e.Quantity).HasColumnName("quantity");
+            entity.Property(e => e.SourceEventId).HasColumnName("source_event_id");
+            entity.Property(e => e.TotalPrice)
+                .HasPrecision(10, 2)
+                .HasColumnName("total_price");
+            entity.Property(e => e.UnitPrice)
+                .HasPrecision(10, 2)
+                .HasColumnName("unit_price");
+
+            entity.HasOne(d => d.Invoice).WithMany(p => p.BilInvoiceItems)
+                .HasForeignKey(d => d.InvoiceId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("bil_invoice_items_invoice_id_fkey");
+        });
+
+        modelBuilder.Entity<ClinAssessment>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("clin_assessments_pkey");
+
+            entity.ToTable("clin_assessments");
+
+            entity.Property(e => e.Id)
+                .UseIdentityAlwaysColumn()
+                .HasColumnName("id");
+            entity.Property(e => e.ConsultationId).HasColumnName("consultation_id");
+            entity.Property(e => e.PatientId).HasColumnName("patient_id");
+            entity.Property(e => e.PerformedAt)
+                .HasDefaultValueSql("now()")
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("performed_at");
+            entity.Property(e => e.PerformedBy).HasColumnName("performed_by");
+            entity.Property(e => e.TemplateId).HasColumnName("template_id");
+
+            entity.HasOne(d => d.Consultation).WithMany(p => p.ClinAssessments)
+                .HasForeignKey(d => d.ConsultationId)
+                .OnDelete(DeleteBehavior.SetNull)
+                .HasConstraintName("clin_assessments_consultation_id_fkey");
+
+            entity.HasOne(d => d.Patient).WithMany(p => p.ClinAssessments)
+                .HasForeignKey(d => d.PatientId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("clin_assessments_patient_id_fkey");
+
+            entity.HasOne(d => d.PerformedByNavigation).WithMany(p => p.ClinAssessments)
+                .HasForeignKey(d => d.PerformedBy)
+                .OnDelete(DeleteBehavior.SetNull)
+                .HasConstraintName("clin_assessments_performed_by_fkey");
+
+            entity.HasOne(d => d.Template).WithMany(p => p.ClinAssessments)
+                .HasForeignKey(d => d.TemplateId)
+                .OnDelete(DeleteBehavior.SetNull)
+                .HasConstraintName("clin_assessments_template_id_fkey");
+        });
+
+        modelBuilder.Entity<ClinAssessmentValue>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("clin_assessment_values_pkey");
+
+            entity.ToTable("clin_assessment_values");
+
+            entity.Property(e => e.Id)
+                .UseIdentityAlwaysColumn()
+                .HasColumnName("id");
+            entity.Property(e => e.AssessmentId).HasColumnName("assessment_id");
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("now()")
+                .HasColumnType("timestamp without time zone")
                 .HasColumnName("created_at");
-            entity.Property(e => e.FieldCode).HasColumnName("field_code");
-            entity.Property(e => e.FieldName).HasColumnName("field_name");
-            entity.Property(e => e.IsRepeatable)
-                .HasDefaultValue(false)
-                .HasColumnName("is_repeatable");
-            entity.Property(e => e.Unit).HasColumnName("unit");
-            entity.Property(e => e.UpdatedAt)
-                .HasDefaultValueSql("now()")
-                .HasColumnName("updated_at");
+            entity.Property(e => e.FieldId).HasColumnName("field_id");
+            entity.Property(e => e.ValueRaw).HasColumnName("value_raw");
+            entity.Property(e => e.ValueTyped)
+                .HasColumnType("jsonb")
+                .HasColumnName("value_typed");
+
+            entity.HasOne(d => d.Assessment).WithMany(p => p.ClinAssessmentValues)
+                .HasForeignKey(d => d.AssessmentId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("clin_assessment_values_assessment_id_fkey");
+
+            entity.HasOne(d => d.Field).WithMany(p => p.ClinAssessmentValues)
+                .HasForeignKey(d => d.FieldId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("clin_assessment_values_field_id_fkey");
+        });
+
+        modelBuilder.Entity<ClinConsultation>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("clin_consultations_pkey");
+
+            entity.ToTable("clin_consultations");
+
+            entity.Property(e => e.Id)
+                .UseIdentityAlwaysColumn()
+                .HasColumnName("id");
+            entity.Property(e => e.AppointmentId).HasColumnName("appointment_id");
+            entity.Property(e => e.ClinicalSummary).HasColumnName("clinical_summary");
+            entity.Property(e => e.DoctorId).HasColumnName("doctor_id");
+            entity.Property(e => e.EndedAt)
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("ended_at");
+            entity.Property(e => e.EpisodeId).HasColumnName("episode_id");
+            entity.Property(e => e.PatientId).HasColumnName("patient_id");
+            entity.Property(e => e.StartedAt)
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("started_at");
+
+            entity.HasOne(d => d.Appointment).WithMany(p => p.ClinConsultations)
+                .HasForeignKey(d => d.AppointmentId)
+                .OnDelete(DeleteBehavior.SetNull)
+                .HasConstraintName("clin_consultations_appointment_id_fkey");
+
+            entity.HasOne(d => d.Doctor).WithMany(p => p.ClinConsultations)
+                .HasForeignKey(d => d.DoctorId)
+                .OnDelete(DeleteBehavior.SetNull)
+                .HasConstraintName("clin_consultations_doctor_id_fkey");
+
+            entity.HasOne(d => d.Episode).WithMany(p => p.ClinConsultations)
+                .HasForeignKey(d => d.EpisodeId)
+                .OnDelete(DeleteBehavior.SetNull)
+                .HasConstraintName("clin_consultations_episode_id_fkey");
+
+            entity.HasOne(d => d.Patient).WithMany(p => p.ClinConsultations)
+                .HasForeignKey(d => d.PatientId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("clin_consultations_patient_id_fkey");
+        });
+
+        modelBuilder.Entity<ClinFieldDefinition>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("clin_field_definitions_pkey");
+
+            entity.ToTable("clin_field_definitions");
+
+            entity.HasIndex(e => e.FieldCode, "clin_field_definitions_field_code_key").IsUnique();
+
+            entity.Property(e => e.Id)
+                .UseIdentityAlwaysColumn()
+                .HasColumnName("id");
+            entity.Property(e => e.DataType)
+                .HasMaxLength(20)
+                .HasColumnName("data_type");
+            entity.Property(e => e.FieldCode)
+                .HasMaxLength(50)
+                .HasColumnName("field_code");
+            entity.Property(e => e.Name)
+                .HasMaxLength(100)
+                .HasColumnName("name");
+            entity.Property(e => e.Options)
+                .HasColumnType("jsonb")
+                .HasColumnName("options");
+            entity.Property(e => e.Unit)
+                .HasMaxLength(20)
+                .HasColumnName("unit");
             entity.Property(e => e.ValidationRules)
                 .HasColumnType("jsonb")
                 .HasColumnName("validation_rules");
         });
 
-        modelBuilder.Entity<FormField>(entity =>
+        modelBuilder.Entity<ClinFormField>(entity =>
         {
-            entity.HasKey(e => e.FormFieldId).HasName("form_fields_pkey");
+            entity.HasKey(e => e.Id).HasName("clin_form_fields_pkey");
 
-            entity.ToTable("form_fields");
+            entity.ToTable("clin_form_fields");
 
-            entity.HasIndex(e => new { e.DynamicFormId, e.FieldId }, "form_fields_dynamic_form_id_field_id_key").IsUnique();
-
-            entity.Property(e => e.FormFieldId)
+            entity.Property(e => e.Id)
                 .UseIdentityAlwaysColumn()
-                .HasColumnName("form_field_id");
-            entity.Property(e => e.CreatedAt)
-                .HasDefaultValueSql("now()")
-                .HasColumnName("created_at");
-            entity.Property(e => e.DisplayOrder)
-                .HasDefaultValue(0)
-                .HasColumnName("display_order");
-            entity.Property(e => e.DynamicFormId).HasColumnName("dynamic_form_id");
+                .HasColumnName("id");
+            entity.Property(e => e.DisplayOrder).HasColumnName("display_order");
             entity.Property(e => e.FieldId).HasColumnName("field_id");
-            entity.Property(e => e.IsRequiredOverride).HasColumnName("is_required_override");
-            entity.Property(e => e.LabelOverride).HasColumnName("label_override");
-            entity.Property(e => e.UiOptions)
-                .HasColumnType("jsonb")
-                .HasColumnName("ui_options");
-            entity.Property(e => e.UpdatedAt)
-                .HasDefaultValueSql("now()")
-                .HasColumnName("updated_at");
-            entity.Property(e => e.VisibilityCondition)
-                .HasColumnType("jsonb")
-                .HasColumnName("visibility_condition");
+            entity.Property(e => e.IsRequired)
+                .HasDefaultValue(false)
+                .HasColumnName("is_required");
+            entity.Property(e => e.LabelOverride)
+                .HasMaxLength(100)
+                .HasColumnName("label_override");
+            entity.Property(e => e.TemplateId).HasColumnName("template_id");
+            entity.Property(e => e.UiControl)
+                .HasMaxLength(50)
+                .HasColumnName("ui_control");
 
-            entity.HasOne(d => d.DynamicForm).WithMany(p => p.FormFields)
-                .HasForeignKey(d => d.DynamicFormId)
-                .OnDelete(DeleteBehavior.Cascade)
-                .HasConstraintName("form_fields_dynamic_form_id_fkey");
-
-            entity.HasOne(d => d.Field).WithMany(p => p.FormFields)
+            entity.HasOne(d => d.Field).WithMany(p => p.ClinFormFields)
                 .HasForeignKey(d => d.FieldId)
                 .OnDelete(DeleteBehavior.Cascade)
-                .HasConstraintName("form_fields_field_id_fkey");
+                .HasConstraintName("clin_form_fields_field_id_fkey");
+
+            entity.HasOne(d => d.Template).WithMany(p => p.ClinFormFields)
+                .HasForeignKey(d => d.TemplateId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("clin_form_fields_template_id_fkey");
         });
 
-        modelBuilder.Entity<Lab>(entity =>
+        modelBuilder.Entity<ClinFormTemplate>(entity =>
         {
-            entity.HasKey(e => e.LabId).HasName("labs_pkey");
+            entity.HasKey(e => e.Id).HasName("clin_form_templates_pkey");
 
-            entity.ToTable("labs");
+            entity.ToTable("clin_form_templates");
 
-            entity.Property(e => e.LabId)
+            entity.Property(e => e.Id)
                 .UseIdentityAlwaysColumn()
-                .HasColumnName("lab_id");
+                .HasColumnName("id");
+            entity.Property(e => e.IsActive)
+                .HasDefaultValue(true)
+                .HasColumnName("is_active");
+            entity.Property(e => e.Title)
+                .HasMaxLength(200)
+                .HasColumnName("title");
+            entity.Property(e => e.Version)
+                .HasDefaultValue(1)
+                .HasColumnName("version");
+        });
+
+        modelBuilder.Entity<ClinMacro>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("clin_macros_pkey");
+
+            entity.ToTable("clin_macros");
+
+            entity.Property(e => e.Id)
+                .UseIdentityAlwaysColumn()
+                .HasColumnName("id");
+            entity.Property(e => e.Expansion).HasColumnName("expansion");
+            entity.Property(e => e.TriggerKey)
+                .HasMaxLength(50)
+                .HasColumnName("trigger_key");
+            entity.Property(e => e.UserId).HasColumnName("user_id");
+
+            entity.HasOne(d => d.User).WithMany(p => p.ClinMacros)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("clin_macros_user_id_fkey");
+        });
+
+        modelBuilder.Entity<ClinVital>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("clin_vitals_pkey");
+
+            entity.ToTable("clin_vitals");
+
+            entity.Property(e => e.Id)
+                .UseIdentityAlwaysColumn()
+                .HasColumnName("id");
+            entity.Property(e => e.BpDiastolic).HasColumnName("bp_diastolic");
+            entity.Property(e => e.BpSystolic).HasColumnName("bp_systolic");
+            entity.Property(e => e.ConsultationId).HasColumnName("consultation_id");
+            entity.Property(e => e.HeartRate).HasColumnName("heart_rate");
+            entity.Property(e => e.PatientId).HasColumnName("patient_id");
+            entity.Property(e => e.RecordedAt)
+                .HasDefaultValueSql("now()")
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("recorded_at");
+            entity.Property(e => e.RecordedBy).HasColumnName("recorded_by");
+            entity.Property(e => e.Spo2).HasColumnName("spo2");
+            entity.Property(e => e.Temperature)
+                .HasPrecision(4, 1)
+                .HasColumnName("temperature");
+
+            entity.HasOne(d => d.Consultation).WithMany(p => p.ClinVitals)
+                .HasForeignKey(d => d.ConsultationId)
+                .OnDelete(DeleteBehavior.SetNull)
+                .HasConstraintName("clin_vitals_consultation_id_fkey");
+
+            entity.HasOne(d => d.Patient).WithMany(p => p.ClinVitals)
+                .HasForeignKey(d => d.PatientId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("clin_vitals_patient_id_fkey");
+
+            entity.HasOne(d => d.RecordedByNavigation).WithMany(p => p.ClinVitals)
+                .HasForeignKey(d => d.RecordedBy)
+                .OnDelete(DeleteBehavior.SetNull)
+                .HasConstraintName("clin_vitals_recorded_by_fkey");
+        });
+
+        modelBuilder.Entity<InvItem>(entity =>
+        {
+            entity.HasKey(e => e.Sku).HasName("inv_items_pkey");
+
+            entity.ToTable("inv_items");
+
+            entity.Property(e => e.Sku)
+                .HasMaxLength(50)
+                .HasColumnName("sku");
+            entity.Property(e => e.MinReorderLevel)
+                .HasDefaultValue(0)
+                .HasColumnName("min_reorder_level");
+            entity.Property(e => e.Name)
+                .HasMaxLength(200)
+                .HasColumnName("name");
+            entity.Property(e => e.Quantity)
+                .HasDefaultValue(0)
+                .HasColumnName("quantity");
+            entity.Property(e => e.UnitPrice)
+                .HasPrecision(10, 2)
+                .HasColumnName("unit_price");
+            entity.Property(e => e.UpdatedAt)
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("updated_at");
+        });
+
+        modelBuilder.Entity<InvTransaction>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("inv_transactions_pkey");
+
+            entity.ToTable("inv_transactions");
+
+            entity.Property(e => e.Id)
+                .UseIdentityAlwaysColumn()
+                .HasColumnName("id");
+            entity.Property(e => e.ChangeAmount).HasColumnName("change_amount");
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("now()")
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("created_at");
+            entity.Property(e => e.Reason)
+                .HasMaxLength(200)
+                .HasColumnName("reason");
+            entity.Property(e => e.Sku)
+                .HasMaxLength(50)
+                .HasColumnName("sku");
+            entity.Property(e => e.UserId).HasColumnName("user_id");
+
+            entity.HasOne(d => d.SkuNavigation).WithMany(p => p.InvTransactions)
+                .HasForeignKey(d => d.Sku)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("inv_transactions_sku_fkey");
+
+            entity.HasOne(d => d.User).WithMany(p => p.InvTransactions)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.SetNull)
+                .HasConstraintName("inv_transactions_user_id_fkey");
+        });
+
+        modelBuilder.Entity<LabResult>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("lab_results_pkey");
+
+            entity.ToTable("lab_results");
+
+            entity.Property(e => e.Id)
+                .UseIdentityAlwaysColumn()
+                .HasColumnName("id");
+            entity.Property(e => e.OrderId).HasColumnName("order_id");
+            entity.Property(e => e.ReleasedAt)
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("released_at");
+            entity.Property(e => e.ResultData)
+                .HasColumnType("jsonb")
+                .HasColumnName("result_data");
+            entity.Property(e => e.ResultSummary).HasColumnName("result_summary");
+
+            entity.HasOne(d => d.Order).WithMany(p => p.LabResults)
+                .HasForeignKey(d => d.OrderId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("lab_results_order_id_fkey");
+        });
+
+        modelBuilder.Entity<OrdOrder>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("ord_orders_pkey");
+
+            entity.ToTable("ord_orders");
+
+            entity.Property(e => e.Id)
+                .UseIdentityAlwaysColumn()
+                .HasColumnName("id");
+            entity.Property(e => e.ConsultationId).HasColumnName("consultation_id");
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("now()")
+                .HasColumnType("timestamp without time zone")
                 .HasColumnName("created_at");
             entity.Property(e => e.Description).HasColumnName("description");
-            entity.Property(e => e.LabName).HasColumnName("lab_name");
-            entity.Property(e => e.UpdatedAt)
-                .HasDefaultValueSql("now()")
-                .HasColumnName("updated_at");
-        });
-
-        modelBuilder.Entity<Medication>(entity =>
-        {
-            entity.HasKey(e => e.MedicationId).HasName("medications_pkey");
-
-            entity.ToTable("medications");
-
-            entity.Property(e => e.MedicationId)
-                .UseIdentityAlwaysColumn()
-                .HasColumnName("medication_id");
-            entity.Property(e => e.CreatedAt)
-                .HasDefaultValueSql("now()")
-                .HasColumnName("created_at");
-            entity.Property(e => e.Dosage).HasColumnName("dosage");
-            entity.Property(e => e.EndDate).HasColumnName("end_date");
-            entity.Property(e => e.MedicationName).HasColumnName("medication_name");
+            entity.Property(e => e.OrderedBy).HasColumnName("ordered_by");
             entity.Property(e => e.PatientId).HasColumnName("patient_id");
-            entity.Property(e => e.StartDate).HasColumnName("start_date");
-            entity.Property(e => e.UpdatedAt)
-                .HasDefaultValueSql("now()")
-                .HasColumnName("updated_at");
+            entity.Property(e => e.Priority)
+                .HasMaxLength(20)
+                .HasColumnName("priority");
+            entity.Property(e => e.Status)
+                .HasMaxLength(50)
+                .HasColumnName("status");
+            entity.Property(e => e.Type)
+                .HasMaxLength(50)
+                .HasColumnName("type");
 
-            entity.HasOne(d => d.Patient).WithMany(p => p.Medications)
-                .HasForeignKey(d => d.PatientId)
-                .HasConstraintName("medications_patient_id_fkey");
-        });
-
-        modelBuilder.Entity<Order>(entity =>
-        {
-            entity.HasKey(e => e.OrderId).HasName("orders_pkey");
-
-            entity.ToTable("orders");
-
-            entity.Property(e => e.OrderId)
-                .UseIdentityAlwaysColumn()
-                .HasColumnName("order_id");
-            entity.Property(e => e.CreatedAt)
-                .HasDefaultValueSql("now()")
-                .HasColumnName("created_at");
-            entity.Property(e => e.LabId).HasColumnName("lab_id");
-            entity.Property(e => e.OrderDate)
-                .HasDefaultValueSql("now()")
-                .HasColumnName("order_date");
-            entity.Property(e => e.PatientId).HasColumnName("patient_id");
-            entity.Property(e => e.UpdatedAt)
-                .HasDefaultValueSql("now()")
-                .HasColumnName("updated_at");
-
-            entity.HasOne(d => d.Lab).WithMany(p => p.Orders)
-                .HasForeignKey(d => d.LabId)
+            entity.HasOne(d => d.Consultation).WithMany(p => p.OrdOrders)
+                .HasForeignKey(d => d.ConsultationId)
                 .OnDelete(DeleteBehavior.SetNull)
-                .HasConstraintName("orders_lab_id_fkey");
+                .HasConstraintName("ord_orders_consultation_id_fkey");
 
-            entity.HasOne(d => d.Patient).WithMany(p => p.Orders)
+            entity.HasOne(d => d.OrderedByNavigation).WithMany(p => p.OrdOrders)
+                .HasForeignKey(d => d.OrderedBy)
+                .OnDelete(DeleteBehavior.SetNull)
+                .HasConstraintName("ord_orders_ordered_by_fkey");
+
+            entity.HasOne(d => d.Patient).WithMany(p => p.OrdOrders)
                 .HasForeignKey(d => d.PatientId)
-                .HasConstraintName("orders_patient_id_fkey");
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("ord_orders_patient_id_fkey");
         });
 
-        modelBuilder.Entity<Patient>(entity =>
+        modelBuilder.Entity<PatPatient>(entity =>
         {
-            entity.HasKey(e => e.PatientId).HasName("patients_pkey");
+            entity.HasKey(e => e.Id).HasName("pat_patients_pkey");
 
-            entity.ToTable("patients");
+            entity.ToTable("pat_patients");
 
-            entity.HasIndex(e => e.Mrn, "patients_mrn_idx");
+            entity.HasIndex(e => e.Mrn, "idx_pat_patients_mrn");
 
-            entity.HasIndex(e => e.Mrn, "patients_mrn_key").IsUnique();
+            entity.HasIndex(e => e.Mrn, "pat_patients_mrn_key").IsUnique();
 
-            entity.Property(e => e.PatientId)
+            entity.Property(e => e.Id)
                 .UseIdentityAlwaysColumn()
-                .HasColumnName("patient_id");
+                .HasColumnName("id");
             entity.Property(e => e.ContactInfo)
                 .HasColumnType("jsonb")
                 .HasColumnName("contact_info");
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("now()")
+                .HasColumnType("timestamp without time zone")
                 .HasColumnName("created_at");
-            entity.Property(e => e.DateOfBirth).HasColumnName("date_of_birth");
-            entity.Property(e => e.FirstName).HasColumnName("first_name");
-            entity.Property(e => e.LastName).HasColumnName("last_name");
-            entity.Property(e => e.Mrn).HasColumnName("mrn");
-            entity.Property(e => e.UpdatedAt)
-                .HasDefaultValueSql("now()")
-                .HasColumnName("updated_at");
+            entity.Property(e => e.Dob).HasColumnName("dob");
+            entity.Property(e => e.FirstName)
+                .HasMaxLength(100)
+                .HasColumnName("first_name");
+            entity.Property(e => e.Gender)
+                .HasMaxLength(20)
+                .HasColumnName("gender");
+            entity.Property(e => e.IsEmergencyReg).HasColumnName("is_emergency_reg");
+            entity.Property(e => e.LastName)
+                .HasMaxLength(100)
+                .HasColumnName("last_name");
+            entity.Property(e => e.Mrn)
+                .HasMaxLength(20)
+                .HasColumnName("mrn");
         });
 
         modelBuilder.Entity<Role>(entity =>
         {
-            entity.HasKey(e => e.RoleId).HasName("roles_pkey");
+            entity.HasKey(e => e.Id).HasName("roles_pkey");
 
             entity.ToTable("roles");
 
-            entity.HasIndex(e => e.RoleName, "roles_role_name_key").IsUnique();
-
-            entity.Property(e => e.RoleId)
+            entity.Property(e => e.Id)
                 .UseIdentityAlwaysColumn()
-                .HasColumnName("role_id");
+                .HasColumnName("id");
+            entity.Property(e => e.Name)
+                .HasMaxLength(50)
+                .HasColumnName("name");
+        });
+
+        modelBuilder.Entity<SchAppointment>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("sch_appointments_pkey");
+
+            entity.ToTable("sch_appointments");
+
+            entity.Property(e => e.Id)
+                .UseIdentityAlwaysColumn()
+                .HasColumnName("id");
+            entity.Property(e => e.AppointmentDate)
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("appointment_date");
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("now()")
+                .HasColumnType("timestamp without time zone")
                 .HasColumnName("created_at");
-            entity.Property(e => e.RoleName).HasColumnName("role_name");
+            entity.Property(e => e.DoctorId).HasColumnName("doctor_id");
+            entity.Property(e => e.PatientId).HasColumnName("patient_id");
+            entity.Property(e => e.ReasonForVisit).HasColumnName("reason_for_visit");
+            entity.Property(e => e.Status)
+                .HasMaxLength(50)
+                .HasDefaultValueSql("'Scheduled'::character varying")
+                .HasColumnName("status");
+
+            entity.HasOne(d => d.Doctor).WithMany(p => p.SchAppointments)
+                .HasForeignKey(d => d.DoctorId)
+                .OnDelete(DeleteBehavior.SetNull)
+                .HasConstraintName("sch_appointments_doctor_id_fkey");
+
+            entity.HasOne(d => d.Patient).WithMany(p => p.SchAppointments)
+                .HasForeignKey(d => d.PatientId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("sch_appointments_patient_id_fkey");
+        });
+
+        modelBuilder.Entity<SchEpisode>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("sch_episodes_pkey");
+
+            entity.ToTable("sch_episodes");
+
+            entity.Property(e => e.Id)
+                .UseIdentityAlwaysColumn()
+                .HasColumnName("id");
+            entity.Property(e => e.EndDate)
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("end_date");
+            entity.Property(e => e.PatientId).HasColumnName("patient_id");
+            entity.Property(e => e.StartDate)
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("start_date");
+            entity.Property(e => e.Status)
+                .HasMaxLength(50)
+                .HasColumnName("status");
+            entity.Property(e => e.Title)
+                .HasMaxLength(200)
+                .HasColumnName("title");
+
+            entity.HasOne(d => d.Patient).WithMany(p => p.SchEpisodes)
+                .HasForeignKey(d => d.PatientId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("sch_episodes_patient_id_fkey");
+        });
+
+        modelBuilder.Entity<SysConfig>(entity =>
+        {
+            entity.HasKey(e => e.Key).HasName("sys_config_pkey");
+
+            entity.ToTable("sys_config");
+
+            entity.Property(e => e.Key)
+                .HasMaxLength(100)
+                .HasColumnName("key");
+            entity.Property(e => e.Description).HasColumnName("description");
             entity.Property(e => e.UpdatedAt)
-                .HasDefaultValueSql("now()")
+                .HasColumnType("timestamp without time zone")
                 .HasColumnName("updated_at");
+            entity.Property(e => e.Value).HasColumnName("value");
         });
 
         modelBuilder.Entity<User>(entity =>
         {
-            entity.HasKey(e => e.UserId).HasName("users_pkey");
+            entity.HasKey(e => e.Id).HasName("users_pkey");
 
             entity.ToTable("users");
 
-            entity.HasIndex(e => e.RoleId, "users_role_id_idx");
-
             entity.HasIndex(e => e.Username, "users_username_key").IsUnique();
 
-            entity.Property(e => e.UserId)
+            entity.Property(e => e.Id)
                 .UseIdentityAlwaysColumn()
-                .HasColumnName("user_id");
+                .HasColumnName("id");
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("now()")
+                .HasColumnType("timestamp without time zone")
                 .HasColumnName("created_at");
-            entity.Property(e => e.PasswordHash).HasColumnName("password_hash");
-            entity.Property(e => e.RoleId).HasColumnName("role_id");
-            entity.Property(e => e.UpdatedAt)
-                .HasDefaultValueSql("now()")
-                .HasColumnName("updated_at");
-            entity.Property(e => e.Username).HasColumnName("username");
+            entity.Property(e => e.IsActive)
+                .HasDefaultValue(true)
+                .HasColumnName("is_active");
+            entity.Property(e => e.PasswordHash)
+                .HasMaxLength(255)
+                .HasColumnName("password_hash");
+            entity.Property(e => e.Username)
+                .HasMaxLength(100)
+                .HasColumnName("username");
 
-            entity.HasOne(d => d.Role).WithMany(p => p.Users)
-                .HasForeignKey(d => d.RoleId)
-                .OnDelete(DeleteBehavior.SetNull)
-                .HasConstraintName("users_role_id_fkey");
-        });
-
-        modelBuilder.Entity<Vital>(entity =>
-        {
-            entity.HasKey(e => e.VitalId).HasName("vitals_pkey");
-
-            entity.ToTable("vitals");
-
-            entity.HasIndex(e => e.PatientId, "vitals_patient_idx");
-
-            entity.Property(e => e.VitalId)
-                .UseIdentityAlwaysColumn()
-                .HasColumnName("vital_id");
-            entity.Property(e => e.BloodPressure).HasColumnName("blood_pressure");
-            entity.Property(e => e.CreatedAt)
-                .HasDefaultValueSql("now()")
-                .HasColumnName("created_at");
-            entity.Property(e => e.HeartRate).HasColumnName("heart_rate");
-            entity.Property(e => e.PatientId).HasColumnName("patient_id");
-            entity.Property(e => e.RecordedAt)
-                .HasDefaultValueSql("now()")
-                .HasColumnName("recorded_at");
-            entity.Property(e => e.Temperature).HasColumnName("temperature");
-
-            entity.HasOne(d => d.Patient).WithMany(p => p.Vitals)
-                .HasForeignKey(d => d.PatientId)
-                .HasConstraintName("vitals_patient_id_fkey");
+            entity.HasMany(d => d.Roles).WithMany(p => p.Users)
+                .UsingEntity<Dictionary<string, object>>(
+                    "UserRole",
+                    r => r.HasOne<Role>().WithMany()
+                        .HasForeignKey("RoleId")
+                        .HasConstraintName("user_roles_role_id_fkey"),
+                    l => l.HasOne<User>().WithMany()
+                        .HasForeignKey("UserId")
+                        .HasConstraintName("user_roles_user_id_fkey"),
+                    j =>
+                    {
+                        j.HasKey("UserId", "RoleId").HasName("user_roles_pkey");
+                        j.ToTable("user_roles");
+                        j.IndexerProperty<int>("UserId").HasColumnName("user_id");
+                        j.IndexerProperty<int>("RoleId").HasColumnName("role_id");
+                    });
         });
 
         OnModelCreatingPartial(modelBuilder);

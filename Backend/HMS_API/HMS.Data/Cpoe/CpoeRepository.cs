@@ -18,7 +18,7 @@ public class CpoeRepository : ICpoeRepository
 
     public object GetUserById(int id)
     {
-        var user = _context.Users.FirstOrDefault(u => u.UserId == id);
+        var user = _context.Users.FirstOrDefault(u => u.Id == id);
         return user ?? new object();
     }
 }

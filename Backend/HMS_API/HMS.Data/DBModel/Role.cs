@@ -5,13 +5,9 @@ namespace HMS.Data.DBModel;
 
 public partial class Role
 {
-    public long RoleId { get; set; }
+    public int Id { get; set; }
 
-    public string RoleName { get; set; } = null!;
-
-    public DateTime CreatedAt { get; set; }
-
-    public DateTime UpdatedAt { get; set; }
+    public string Name { get; set; } = null!;
 
     public virtual ICollection<User> Users { get; set; } = new List<User>();
 }
