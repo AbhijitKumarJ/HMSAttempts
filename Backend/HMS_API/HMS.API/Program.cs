@@ -16,8 +16,11 @@ using HMS.Data.Cpoe;
 using HMS.Data.Inventory;
 using HMS.Data.Patient;
 using HMS.Bus;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using Microsoft.EntityFrameworkCore;
+using System.Text;
 
 namespace HMS.API;
 
@@ -44,6 +47,23 @@ public class Program
 
         // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
         builder.Services.AddOpenApi();
+
+        // Configure JWT Authentication
+        builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = builder.Configuration["Jwt:Issuer"],
+                    ValidAudience = builder.Configuration["Jwt:Audience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(
+                        Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Secret"] ?? "DefaultSecretKeyChangeThisInProduction"))
+                };
+            });
         
         // Legacy services (keep for backward compatibility)
         builder.Services.AddScoped<IUserService, UserService>();
@@ -91,6 +111,8 @@ public class Program
         app.UseRouting();
 
         //app.UseHttpsRedirection();
+
+        app.UseAuthentication();
 
         app.UseAuthorization();
 

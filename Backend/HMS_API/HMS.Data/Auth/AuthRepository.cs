@@ -1,10 +1,18 @@
 using HMS.Data.DBModel;
-
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
 namespace HMS.Data.Auth;
 
 public interface IAuthRepository
 {
     object GetUserById(int id);
+    User? GetUserByUsername(string username);
+    User? GetUserWithRoles(string username);
+    RefreshToken? CreateRefreshToken(RefreshToken token);
+    RefreshToken? GetRefreshTokenByHash(string tokenHash);
+    bool RevokeRefreshToken(Guid tokenId);
+    bool RevokeAllUserRefreshTokens(int userId);
+    void CleanupExpiredRefreshTokens();
 }
 
 public class AuthRepository : IAuthRepository
@@ -20,5 +28,69 @@ public class AuthRepository : IAuthRepository
     {
         var user = _context.Users.FirstOrDefault(u => u.Id == id);
         return user ?? new object();
+    }
+
+    public User? GetUserByUsername(string username)
+    {
+        return _context.Users.FirstOrDefault(u => u.Username == username);
+    }
+
+    public User? GetUserWithRoles(string username)
+    {
+        return _context.Users
+            .Include(u => u.Roles)
+            .FirstOrDefault(u => u.Username == username);
+    }
+
+    public RefreshToken? CreateRefreshToken(RefreshToken token)
+    {
+        _context.RefreshTokens.Add(token);
+        _context.SaveChanges();
+        return token;
+    }
+
+    public RefreshToken? GetRefreshTokenByHash(string tokenHash)
+    {
+        return _context.RefreshTokens
+            .Include(rt => rt.User)
+            .ThenInclude(u => u.Roles)
+            .FirstOrDefault(rt => rt.TokenHash == tokenHash);
+    }
+
+    public bool RevokeRefreshToken(Guid tokenId)
+    {
+        var token = _context.RefreshTokens.Find(tokenId);
+        if (token == null) return false;
+
+        token.IsRevoked = true;
+        token.RevokedAt = DateTime.UtcNow;
+        _context.SaveChanges();
+        return true;
+    }
+
+    public bool RevokeAllUserRefreshTokens(int userId)
+    {
+        var tokens = _context.RefreshTokens
+            .Where(rt => rt.UserId == userId && !(rt.IsRevoked==true))
+            .ToList();
+
+        foreach (var token in tokens)
+        {
+            token.IsRevoked = true;
+            token.RevokedAt = DateTime.UtcNow;
+        }
+
+        _context.SaveChanges();
+        return true;
+    }
+
+    public void CleanupExpiredRefreshTokens()
+    {
+        var expiredTokens = _context.RefreshTokens
+            .Where(rt => rt.ExpiresAt < DateTime.UtcNow)
+            .ToList();
+
+        _context.RefreshTokens.RemoveRange(expiredTokens);
+        _context.SaveChanges();
     }
 }

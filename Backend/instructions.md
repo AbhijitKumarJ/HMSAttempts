@@ -37,6 +37,7 @@
 
     API layer:
     dotnet add package Microsoft.AspNetCore.Mvc.NewtonsoftJson --version 9.0.11
+    dotnet add package Microsoft.AspNetCore.Authentication.JwtBearer --version 9.0.11
 
 
     Business Layer:

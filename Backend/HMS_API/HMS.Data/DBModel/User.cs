@@ -30,4 +30,6 @@ public partial class User
     public virtual ICollection<SchAppointment> SchAppointments { get; set; } = new List<SchAppointment>();
 
     public virtual ICollection<Role> Roles { get; set; } = new List<Role>();
+     
+    public virtual ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
 }
