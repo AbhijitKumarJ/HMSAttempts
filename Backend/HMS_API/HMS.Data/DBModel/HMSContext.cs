@@ -49,6 +49,8 @@ public partial class HMSContext : DbContext
 
     public virtual DbSet<PatPatient> PatPatients { get; set; }
 
+    public virtual DbSet<RefreshToken> RefreshTokens { get; set; }
+
     public virtual DbSet<Role> Roles { get; set; }
 
     public virtual DbSet<SchAppointment> SchAppointments { get; set; }
@@ -59,43 +61,10 @@ public partial class HMSContext : DbContext
 
     public virtual DbSet<User> Users { get; set; }
 
-    public virtual DbSet<RefreshToken> RefreshTokens { get; set; }
-
-//     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-// #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-//         => optionsBuilder.UseNpgsql("");
-
+   
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        //Add OnModelCreating configuration for RefreshToken entity.
-        modelBuilder.Entity<RefreshToken>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("refresh_tokens_pkey");
-
-            entity.ToTable("refresh_tokens");
-
-            entity.Property(e => e.Id)
-                .HasDefaultValueSql("gen_random_uuid()")
-                .HasColumnName("id");
-            entity.Property(e => e.CreatedAt)
-                .HasDefaultValueSql("now()")
-                .HasColumnType("timestamp without time zone")
-                .HasColumnName("created_at");
-            entity.Property(e => e.ExpiresAt)
-                .HasColumnType("timestamp without time zone")
-                .HasColumnName("expires_at");
-            entity.Property(e => e.IsRevoked).HasColumnName("is_revoked");
-            entity.Property(e => e.TokenHash)
-                .HasMaxLength(255)
-                .HasColumnName("token_hash");
-            entity.Property(e => e.UserId).HasColumnName("user_id");
-
-            entity.HasOne(d => d.User).WithMany(p => p.RefreshTokens)
-                .HasForeignKey(d => d.UserId)
-                .OnDelete(DeleteBehavior.Cascade)
-                .HasConstraintName("refresh_tokens_user_id_fkey");
-        });
-        
+        modelBuilder.HasPostgresExtension("pgcrypto");
 
         modelBuilder.Entity<AppEvent>(entity =>
         {
@@ -634,6 +603,45 @@ public partial class HMSContext : DbContext
             entity.Property(e => e.Mrn)
                 .HasMaxLength(20)
                 .HasColumnName("mrn");
+        });
+
+        modelBuilder.Entity<RefreshToken>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("refresh_tokens_pkey");
+
+            entity.ToTable("refresh_tokens");
+
+            entity.HasIndex(e => e.TokenHash, "idx_refresh_tokens_token_hash");
+
+            entity.HasIndex(e => e.UserId, "idx_refresh_tokens_user_id");
+
+            entity.HasIndex(e => e.TokenHash, "refresh_tokens_token_hash_key").IsUnique();
+
+            entity.Property(e => e.Id)
+                .HasDefaultValueSql("gen_random_uuid()")
+                .HasColumnName("id");
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("now()")
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("created_at");
+            entity.Property(e => e.ExpiresAt)
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("expires_at");
+            entity.Property(e => e.IsRevoked)
+                .HasDefaultValue(false)
+                .HasColumnName("is_revoked");
+            entity.Property(e => e.RevokedAt)
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("revoked_at");
+            entity.Property(e => e.TokenHash)
+                .HasMaxLength(255)
+                .HasColumnName("token_hash");
+            entity.Property(e => e.UserId).HasColumnName("user_id");
+
+            entity.HasOne(d => d.User).WithMany(p => p.RefreshTokens)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("refresh_tokens_user_id_fkey");
         });
 
         modelBuilder.Entity<Role>(entity =>

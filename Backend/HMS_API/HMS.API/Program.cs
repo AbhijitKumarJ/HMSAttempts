@@ -30,6 +30,10 @@ public class Program
     {
         Console.WriteLine(new HMS.Business.Class1().GetSampleProperty());
 
+        // Configure Npgsql to allow UTC DateTime with timestamp without time zone columns
+        AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
+
         var builder = WebApplication.CreateBuilder(args);
 
         // Add services to the container.

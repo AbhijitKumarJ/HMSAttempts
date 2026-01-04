@@ -53,7 +53,7 @@
     dotnet tool install dotnet-ef --version 8.0.11 --create-manifest-if-needed
  
     For scaffolding: Ask user to use this command by changing username and password
-    dotnet tool run dotnet-ef dbcontext scaffold "Host=localhost;Port=5432;Database=hms;Username=username;Password=password" Npgsql.EntityFrameworkCore.PostgreSQL -o DBModel -c DvdRentalContext -f --schema public
+    dotnet tool run dotnet-ef dbcontext scaffold "Host=localhost;Port=5432;Database=hms;Username=postgres;Password=pwd" Npgsql.EntityFrameworkCore.PostgreSQL -o DBModel -c HMSContext -f --schema public
 
 
 ---

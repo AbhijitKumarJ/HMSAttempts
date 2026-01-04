@@ -3,9 +3,109 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>HMS API Test Clients</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        p {
+            color: #666;
+            margin-bottom: 30px;
+        }
+        .test-links {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        .test-link {
+            display: block;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            text-decoration: none;
+            color: #007bff;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        .test-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+            border-color: #007bff;
+        }
+        .test-link-title {
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+        .test-link-desc {
+            font-size: 12px;
+            color: #666;
+        }
+        .coming-soon {
+            color: #999;
+            text-decoration: none;
+            cursor: not-allowed;
+        }
+        .coming-soon:hover {
+            transform: none;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-color: transparent;
+        }
+    </style>
 </head>
 <body>
-    Welcome to HMS API
+    <h1>HMS API Test Clients</h1>
+    <p>Select a controller test client from the list below</p>
+    
+    <div class="test-links">
+        <a href="auth-test.html" class="test-link">
+            <div class="test-link-title">Auth Controller</div>
+            <div class="test-link-desc">Login, Refresh Token, Logout</div>
+        </a>
+        
+        <div class="test-link coming-soon">
+            <div class="test-link-title">Patient Controller</div>
+            <div class="test-link-desc">Coming Soon</div>
+        </div>
+        
+        <div class="test-link coming-soon">
+            <div class="test-link-title">Billing Controller</div>
+            <div class="test-link-desc">Coming Soon</div>
+        </div>
+        
+        <div class="test-link coming-soon">
+            <div class="test-link-title">Clinical Controller</div>
+            <div class="test-link-desc">Coming Soon</div>
+        </div>
+        
+        <div class="test-link coming-soon">
+            <div class="test-link-title">Inventory Controller</div>
+            <div class="test-link-desc">Coming Soon</div>
+        </div>
+        
+        <div class="test-link coming-soon">
+            <div class="test-link-title">CPOE Controller</div>
+            <div class="test-link-desc">Coming Soon</div>
+        </div>
+        
+        <div class="test-link coming-soon">
+            <div class="test-link-title">Bus Controller</div>
+            <div class="test-link-desc">Coming Soon</div>
+        </div>
+    </div>
 </body>
 </html>
