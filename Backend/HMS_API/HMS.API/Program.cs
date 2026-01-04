@@ -15,6 +15,7 @@ using HMS.Data.Clinical;
 using HMS.Data.Cpoe;
 using HMS.Data.Inventory;
 using HMS.Data.Patient;
+using HMS.Bus;
 using Newtonsoft.Json;
 using Microsoft.EntityFrameworkCore;
 
@@ -59,6 +60,7 @@ public class Program
         // Bus module
         builder.Services.AddScoped<IBusService, BusService>();
         builder.Services.AddScoped<IBusRepository, BusRepository>();
+        builder.Services.AddScoped<IEventBus, EventBus>();
         
         // Clinical module
         builder.Services.AddScoped<IClinicalService, ClinicalService>();
