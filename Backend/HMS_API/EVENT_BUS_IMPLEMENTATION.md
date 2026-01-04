@@ -71,7 +71,7 @@ The table schema matches Story 1.2 requirements exactly:
 - `failure_count` (INT, Default: 0)
 
 ### 5. Comprehensive Test Suite ✅
-**File:** `Backend/HMS_API/HMS.API/Tests/Bus/EventBusTests.cs`
+**File:** `Backend/HMS_API/HMS.Tests/Tests/Bus/EventBusTests.cs`
 
 Created 11 comprehensive tests covering:
 
@@ -118,8 +118,8 @@ RETURNING id, payload;
 **Impact:** All bus-related functionality in one place
 
 ### 4. Test Location
-**Decision:** Tests in HMS.API/Tests/Bus/ (matching controller structure)
-**Reason:** User requirement for "tests in same project but separate folders similar to controllers folder structure"
+**Decision:** Tests in HMS.Tests/Tests/Bus/ (separate test project)
+**Reason:** Clean separation of production and test code, avoids compilation conflicts
 
 ## Running the Tests
 
@@ -141,13 +141,13 @@ Host=localhost;Port=5432;Database=hms_test;Username=postgres;Password=postgres
 cd Backend/HMS_API
 
 # Run all tests
-dotnet test HMS.API/HMS.API.csproj --no-build
+dotnet test HMS.Tests/HMS.Tests.csproj --no-build
 
 # Run specific test class
-dotnet test --filter "FullyQualifiedName~EventBusTests" --no-build
+dotnet test HMS.Tests/HMS.Tests.csproj --filter "FullyQualifiedName~EventBusTests" --no-build
 
 # Run specific test
-dotnet test --filter "FullyQualifiedName~ConcurrencyFetch_ShouldNotReturnSameEventToMultipleWorkers" --no-build
+dotnet test HMS.Tests/HMS.Tests.csproj --filter "FullyQualifiedName~ConcurrencyFetch_ShouldNotReturnSameEventToMultipleWorkers" --no-build
 
 # Verbose output
 dotnet test --logger "console;verbosity=detailed" --no-build

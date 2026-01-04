@@ -52,7 +52,7 @@ curl -X POST http://localhost:5000/api/Bus/events/fail \
 
 ```bash
 cd Backend/HMS_API
-dotnet test HMS.API/HMS.API.csproj --filter "FullyQualifiedName~EventBusTests" --no-build
+dotnet test HMS.Tests/HMS.Tests.csproj --filter "FullyQualifiedName~EventBusTests" --no-build
 ```
 
 ## Step 5: Create a Background Worker
@@ -196,8 +196,8 @@ sudo systemctl status postgresql
 ### Tests Not Running
 If you get compilation errors about multiple entry points, try:
 ```bash
-dotnet build HMS.API/HMS.API.csproj -p:GenerateProgramFile=false
-dotnet test HMS.API/HMS.API.csproj --no-build
+dotnet build HMS.API/HMS.API.csproj
+dotnet test HMS.Tests/HMS.Tests.csproj --no-build
 ```
 
 ### Events Not Being Processed

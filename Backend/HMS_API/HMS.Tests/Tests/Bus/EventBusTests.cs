@@ -1,10 +1,11 @@
 using HMS.Bus;
 using HMS.Data.DBModel;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace HMS.API.Tests.Bus;
+namespace HMS.Tests.Bus;
 
 public class EventBusTests : IAsyncLifetime
 {

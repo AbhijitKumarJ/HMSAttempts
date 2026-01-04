@@ -1,7 +1,7 @@
 using HMS.Data.DBModel;
 using Microsoft.EntityFrameworkCore;
 
-namespace HMS.API.Tests;
+namespace HMS.Tests;
 
 public static class TestDatabaseHelper
 {
