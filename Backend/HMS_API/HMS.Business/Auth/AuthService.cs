@@ -18,7 +18,8 @@ public interface IAuthService
     // JObject CreateUser(CreateUserEntity entity);
     // JObject UpdateUser(UpdateUserEntity entity);
     // JObject DeleteUser(int id);
-
+    
+    Task<List<DoctorDto>> GetDoctorsAsync(string? query);
     Task<TokenResponse?> LoginAsync(LoginRequest request, CancellationToken cancellationToken);
     Task<TokenResponse?> RefreshTokenAsync(string refreshToken, CancellationToken cancellationToken);
     Task LogoutAsync(string refreshToken, CancellationToken cancellationToken);
@@ -64,6 +65,17 @@ public class AuthService : IAuthService
     // {
     //     return new JObject { ["Message"] = $"Deleted user with ID {id} from Auth service." };
     // }
+
+    public async Task<List<DoctorDto>> GetDoctorsAsync(string? query)
+    {
+        var doctors = await _authRepository.GetDoctorsAsync(query);
+        return doctors.Select(d => new DoctorDto
+        {
+            Id = d.Id,
+            Username = d.Username,
+            Roles = d.Roles?.Select(r => r.Name).ToList() ?? new List<string>()
+        }).ToList();
+    }
 
     public async Task<TokenResponse?> LoginAsync(LoginRequest request, CancellationToken cancellationToken)
     {

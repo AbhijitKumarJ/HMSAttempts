@@ -280,6 +280,60 @@
 
                 <div class="form-group">
                     <label for="reason-for-visit">Reason for Visit</label>
+                    <textarea id="reason-for-visit" rows="3" placeholder="Describe the reason for appointment..."></textarea>
+                </div>
+
+                <button onclick="bookAppointment()" class="success">📝 Book Appointment</button>
+            </div>
+
+            <div class="card">
+                <h2>🔍 Search Appointments</h2>
+                <p style="margin-bottom: 15px; color: #666;">Filter appointments by date range and doctor</p>
+                <div class="form-group">
+                    <label for="search-start-date">Start Date</label>
+                    <input type="date" id="search-start-date" required>
+                </div>
+                <div class="form-group">
+                    <label for="search-end-date">End Date (Optional)</label>
+                    <input type="date" id="search-end-date">
+                </div>
+                <div class="form-group">
+                    <label for="search-doctor-id">Doctor ID (Optional)</label>
+                    <input type="number" id="search-doctor-id" placeholder="Leave empty for all doctors">
+                </div>
+                <button onclick="searchAppointments()" class="secondary">🔎 Search Appointments</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🔍 Get Appointment by ID</h2>
+            <p style="margin-bottom: 15px; color: #666;">Retrieve appointment details</p>
+            <div class="form-group">
+                <label for="appointment-id">Appointment ID</label>
+                <input type="number" id="appointment-id" placeholder="1">
+            </div>
+            <button onclick="getAppointment()" class="secondary">📋 Get Appointment</button>
+        </div>
+
+                <div class="form-group">
+                    <label for="selected-patient-id">Selected Patient ID</label>
+                    <input type="number" id="selected-patient-id" placeholder="Patient ID will appear here" readonly>
+                </div>
+
+                <div class="form-group">
+                    <label for="doctor-id">Doctor ID *</label>
+                    <input type="number" id="doctor-id" placeholder="1" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="appointment-date">Appointment Date *</label>
+                        <input type="datetime-local" id="appointment-date" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="reason-for-visit">Reason for Visit</label>
                     <textarea id="reason-for-visit" rows="3" placeholder="Describe the reason for the appointment..."></textarea>
                 </div>
 
@@ -425,7 +479,7 @@
 
             const apiUrl = document.getElementById('api-url').value;
             const patientId = document.getElementById('selected-patient-id').value;
-            const doctorId = document.getElementById('doctor-id').value;
+            const doctorId = document.getElementById('selected-doctor-id').value;
             const appointmentDate = document.getElementById('appointment-date').value;
             const reasonForVisit = document.getElementById('reason-for-visit').value;
 
@@ -469,6 +523,120 @@
             }
         }
 
+        function searchDoctorsDebounced() {
+            clearTimeout(searchTimeout);
+            const query = document.getElementById('doctor-search').value;
+            
+            if (query.length < 1) {
+                document.getElementById('doctor-list').style.display = 'none';
+                return;
+            }
+
+            searchTimeout = setTimeout(() => searchDoctors(query), 300);
+        }
+
+        async function searchDoctors(query) {
+            if (!accessToken) {
+                showNotification('❌ Please login first!', 'error');
+                return;
+            }
+
+            const apiUrl = document.getElementById('api-url').value;
+            let url = `${apiUrl}/api/auth/doctors`;
+            
+            if (query) {
+                url += `?q=${encodeURIComponent(query)}`;
+            }
+
+            try {
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`,
+                    },
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    const doctorListDiv = document.getElementById('doctor-list');
+                    doctorListDiv.innerHTML = '';
+                    
+                    if (data.data && data.data.length > 0) {
+                        data.data.forEach(doctor => {
+                            const div = document.createElement('div');
+                            div.className = 'patient-item';
+                            div.innerHTML = `<strong>ID: ${doctor.id}</strong> - ${doctor.username} (${doctor.roles.join(', ')})`;
+                            div.onclick = () => selectDoctor(doctor);
+                            doctorListDiv.appendChild(div);
+                        });
+                        doctorListDiv.style.display = 'block';
+                    } else {
+                        doctorListDiv.innerHTML = '<div class="patient-item">No doctors found</div>';
+                        doctorListDiv.style.display = 'block';
+                    }
+                } else {
+                    showNotification(`❌ Search failed: ${data.error?.message || 'Unknown error'}`, 'error');
+                }
+            } catch (error) {
+                showNotification(`❌ Network error: ${error.message}`, 'error');
+            }
+        }
+
+        function selectDoctor(doctor) {
+            document.getElementById('selected-doctor-id').value = doctor.id;
+            document.getElementById('doctor-search').value = `${doctor.id} - ${doctor.username} (${doctor.roles.join(', ')})`;
+            document.getElementById('doctor-list').style.display = 'none';
+        }
+
+        async function searchAppointments() {
+            if (!accessToken) {
+                showNotification('❌ Please login first!', 'error');
+                return;
+            }
+
+            const apiUrl = document.getElementById('api-url').value;
+            const startDate = document.getElementById('search-start-date').value;
+            const endDate = document.getElementById('search-end-date').value;
+            const doctorId = document.getElementById('search-doctor-id').value;
+
+            if (!startDate) {
+                showNotification('❌ Start date is required!', 'error');
+                return;
+            }
+
+            let url = `${apiUrl}/api/appointments?startDate=${encodeURIComponent(startDate)}`;
+            
+            if (endDate) {
+                url += `&endDate=${encodeURIComponent(endDate)}`;
+            }
+            
+            if (doctorId) {
+                url += `&doctorId=${encodeURIComponent(doctorId)}`;
+            }
+
+            try {
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`,
+                    },
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showNotification(`✅ Found ${data.data?.length || 0} appointment(s)!`, 'success');
+                    displayResponse(data);
+                } else {
+                    showNotification(`❌ Search failed: ${data.error?.message || 'Unknown error'}`, 'error');
+                    displayResponse(data);
+                }
+            } catch (error) {
+                showNotification(`❌ Network error: ${error.message}`, 'error');
+            }
+        }
+
         async function getAppointment() {
             if (!accessToken) {
                 showNotification('❌ Please login first!', 'error');
@@ -502,6 +670,30 @@
                 }
             } catch (error) {
                 showNotification(`❌ Network error: ${error.message}`, 'error');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('search-start-date').value = today;
+            loadDoctors();
+        });
+
+        async function loadDoctors() {
+            const apiUrl = document.getElementById('api-url').value;
+            try {
+                const response = await fetch(`${apiUrl}/api/auth/doctors`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`,
+                    },
+                });
+                const data = await response.json();
+                if (response.ok && data.data && data.data.length > 0) {
+                    selectDoctor(data.data[0]);
+                }
+            } catch (error) {
+                console.log('Failed to load doctors:', error);
             }
         }
     </script>

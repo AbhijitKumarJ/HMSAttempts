@@ -136,4 +136,21 @@ public class AuthController : ControllerBase
     // {
     //     return Ok(_authService.DeleteUser(id));
     // }
+
+    // GET: api/auth/doctors
+    [HttpGet("doctors")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetDoctors([FromQuery] string? q, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var result = await _authService.GetDoctorsAsync(q);
+            return Ok(new { message = "Doctors retrieved.", data = result });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving doctors");
+            return StatusCode(500, new { error = new { code = "INTERNAL_ERROR", message = "An error occurred while retrieving doctors" } });
+        }
+    }
 }

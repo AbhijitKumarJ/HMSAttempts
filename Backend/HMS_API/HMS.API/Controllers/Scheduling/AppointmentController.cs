@@ -17,6 +17,30 @@ public class AppointmentController : ControllerBase
         _schedulingService = schedulingService;
     }
 
+    // GET: api/appointments
+    [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> SearchAppointments(
+        [FromQuery] DateTime? startDate,
+        [FromQuery] DateTime? endDate,
+        [FromQuery] int? doctorId,
+        CancellationToken cancellationToken)
+    {
+        var searchStartDate = startDate ?? DateTime.Today;
+
+        try
+        {
+            var result = await _schedulingService.SearchAppointmentsAsync(searchStartDate, endDate, doctorId);
+            return Ok(new { message = "Appointments retrieved.", data = result });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error searching appointments");
+            return StatusCode(500, new { error = new { code = "INTERNAL_ERROR", message = "An error occurred while searching appointments" } });
+        }
+    }
+
     // POST: api/appointments
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]

@@ -7,6 +7,7 @@ public interface ISchedulingRepository
 {
     Task<SchAppointment?> GetByIdAsync(long id);
     Task<List<SchAppointment>> GetByDoctorIdAsync(int doctorId);
+    Task<List<SchAppointment>> SearchAppointmentsAsync(DateTime startDate, DateTime? endDate, int? doctorId);
     Task<bool> IsDoctorAvailableAsync(int doctorId, DateTime appointmentDate);
     Task<SchAppointment> CreateAsync(SchAppointment appointment);
     Task<SchAppointment> UpdateAsync(SchAppointment appointment);
@@ -35,6 +36,28 @@ public class SchedulingRepository : ISchedulingRepository
             .Include(a => a.Patient)
             .Include(a => a.Doctor)
             .Where(a => a.DoctorId == doctorId)
+            .OrderBy(a => a.AppointmentDate)
+            .ToListAsync();
+    }
+
+    public async Task<List<SchAppointment>> SearchAppointmentsAsync(DateTime startDate, DateTime? endDate, int? doctorId)
+    {
+        var query = _context.SchAppointments
+            .Include(a => a.Patient)
+            .Include(a => a.Doctor)
+            .AsQueryable();
+
+        var startOfDay = startDate.Date;
+        var endOfDay = endDate.HasValue ? endDate.Value.Date.AddDays(1).AddTicks(-1) : startOfDay.AddDays(1).AddTicks(-1);
+
+        query = query.Where(a => a.AppointmentDate >= startOfDay && a.AppointmentDate <= endOfDay);
+
+        if (doctorId.HasValue)
+        {
+            query = query.Where(a => a.DoctorId == doctorId);
+        }
+
+        return await query
             .OrderBy(a => a.AppointmentDate)
             .ToListAsync();
     }

@@ -9,6 +9,7 @@ public interface ISchedulingService
 {
     Task<AppointmentResponseDto> BookAppointmentAsync(BookAppointmentDto dto);
     Task<AppointmentResponseDto?> GetAppointmentByIdAsync(long id);
+    Task<List<AppointmentResponseDto>> SearchAppointmentsAsync(DateTime startDate, DateTime? endDate, int? doctorId);
 }
 
 public class SchedulingService : ISchedulingService
@@ -96,5 +97,23 @@ public class SchedulingService : ISchedulingService
             PatientName = $"{appointment.Patient?.FirstName} {appointment.Patient?.LastName}",
             DoctorName = appointment.Doctor?.Username ?? "Unknown"
         };
+    }
+
+    public async Task<List<AppointmentResponseDto>> SearchAppointmentsAsync(DateTime startDate, DateTime? endDate, int? doctorId)
+    {
+        var appointments = await _schedulingRepository.SearchAppointmentsAsync(startDate, endDate, doctorId);
+
+        return appointments.Select(a => new AppointmentResponseDto
+        {
+            Id = a.Id,
+            PatientId = a.PatientId!.Value,
+            DoctorId = a.DoctorId!.Value,
+            AppointmentDate = a.AppointmentDate!.Value,
+            Status = a.Status!,
+            ReasonForVisit = a.ReasonForVisit,
+            CreatedAt = a.CreatedAt!.Value,
+            PatientName = $"{a.Patient?.FirstName} {a.Patient?.LastName}",
+            DoctorName = a.Doctor?.Username ?? "Unknown"
+        }).ToList();
     }
 }

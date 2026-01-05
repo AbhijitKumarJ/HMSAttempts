@@ -8,6 +8,7 @@ public interface IAuthRepository
     object GetUserById(int id);
     User? GetUserByUsername(string username);
     User? GetUserWithRoles(string username);
+    Task<List<User>> GetDoctorsAsync(string? query);
     RefreshToken? CreateRefreshToken(RefreshToken token);
     RefreshToken? GetRefreshTokenByHash(string tokenHash);
     bool RevokeRefreshToken(Guid tokenId);
@@ -40,6 +41,23 @@ public class AuthRepository : IAuthRepository
         return _context.Users
             .Include(u => u.Roles)
             .FirstOrDefault(u => u.Username == username);
+    }
+
+    public async Task<List<User>> GetDoctorsAsync(string? query)
+    {
+        var doctorsQuery = _context.Users
+            .Include(u => u.Roles)
+            .Where(u => u.Roles.Any(r => r.Name == "Doctor"));
+
+        if (!string.IsNullOrWhiteSpace(query))
+        {
+            var searchTerm = $"%{query}%";
+            doctorsQuery = doctorsQuery.Where(u => EF.Functions.ILike(u.Username, searchTerm));
+        }
+
+        return await doctorsQuery
+            .OrderBy(u => u.Username)
+            .ToListAsync();
     }
 
     public RefreshToken? CreateRefreshToken(RefreshToken token)
