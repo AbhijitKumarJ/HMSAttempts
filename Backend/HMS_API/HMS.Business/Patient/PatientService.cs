@@ -9,6 +9,8 @@ namespace HMS.Business.Patient;
 public interface IPatientService
 {
     Task<PatientResponseDto> GetPatientByMrn(string mrn);
+    Task<List<PatientSearchResultDto>> SearchPatientsAsync(string query);
+    Task<List<PatientSearchResultDto>> GetAllPatientsAsync();
     Task<PatientResponseDto> RegisterEmergencyAsync(EmergencyRegistrationDto dto, int userId);
     Task<PatientResponseDto?> UpdatePatientAsync(string mrn, UpdatePatientDto dto, int userId);
 }
@@ -175,5 +177,35 @@ public class PatientService : IPatientService
             IsEmergencyReg = patient.IsEmergencyReg ?? false,
             CreatedAt = patient.CreatedAt ?? DateTime.UtcNow
         };
+    }
+
+    public async Task<List<PatientSearchResultDto>> SearchPatientsAsync(string query)
+    {
+        var patients = await _patientRepository.SearchPatientsAsync(query);
+        
+        return patients.Select(p => new PatientSearchResultDto
+        {
+            Id = p.Id,
+            Mrn = p.Mrn!,
+            FirstName = p.FirstName,
+            LastName = p.LastName,
+            Gender = p.Gender,
+            Dob = p.Dob
+        }).ToList();
+    }
+
+    public async Task<List<PatientSearchResultDto>> GetAllPatientsAsync()
+    {
+        var patients = await _patientRepository.GetAllPatientsAsync();
+        
+        return patients.Select(p => new PatientSearchResultDto
+        {
+            Id = p.Id,
+            Mrn = p.Mrn!,
+            FirstName = p.FirstName,
+            LastName = p.LastName,
+            Gender = p.Gender,
+            Dob = p.Dob
+        }).ToList();
     }
 }

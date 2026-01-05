@@ -8,6 +8,7 @@ using HMS.Business.Clinical;
 using HMS.Business.Cpoe;
 using HMS.Business.Inventory;
 using HMS.Business.Patient;
+using HMS.Business.Scheduling;
 using HMS.Data.Auth;
 using HMS.Data.Billing;
 using HMS.Data.Bus;
@@ -15,6 +16,7 @@ using HMS.Data.Clinical;
 using HMS.Data.Cpoe;
 using HMS.Data.Inventory;
 using HMS.Data.Patient;
+using HMS.Data.Scheduling;
 using HMS.Bus;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -102,6 +104,10 @@ public class Program
         builder.Services.AddScoped<IPatientService, PatientService>();
         builder.Services.AddScoped<IPatientRepository, PatientRepository>();
         builder.Services.AddScoped<IMrnGenerator, MrnGenerator>();
+        
+        // Scheduling module
+        builder.Services.AddScoped<ISchedulingService, SchedulingService>();
+        builder.Services.AddScoped<ISchedulingRepository, SchedulingRepository>();
 
         var app = builder.Build();
 

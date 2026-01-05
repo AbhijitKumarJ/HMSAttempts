@@ -112,4 +112,28 @@ public class PatientController : ControllerBase
         }
         return Ok(new { message = $"Patient with MRN {mrn} retrieved.", data = result });
     }
+
+    // GET: api/patients
+    [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetPatients(CancellationToken cancellationToken)
+    {
+        var result = await _patientService.GetAllPatientsAsync();
+        return Ok(new { message = "All patients retrieved.", data = result });
+    }
+
+    // GET: api/patients/search
+    [HttpGet("search")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> SearchPatients([FromQuery] string q, CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrWhiteSpace(q))
+        {
+            return BadRequest(new { error = new { code = "INVALID_QUERY", message = "Search query is required" } });
+        }
+
+        var result = await _patientService.SearchPatientsAsync(q);
+        return Ok(new { message = $"Search results for '{q}'.", data = result });
+    }
 }

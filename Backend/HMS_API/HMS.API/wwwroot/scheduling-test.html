@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appointment Scheduling - HMS</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .auth-section {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .auth-section h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .card h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            width: 100%;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button.secondary {
+            background: #6c757d;
+        }
+
+        button.success {
+            background: #28a745;
+        }
+
+        .result {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .result h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        pre {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-size: 12px;
+            border: 1px solid #dee2e6;
+        }
+
+        .notification {
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        .notification.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .notification.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .notification.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .patient-list {
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+            margin-top: 5px;
+            background: #f9f9f9;
+        }
+
+        .patient-item {
+            padding: 8px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .patient-item:hover {
+            background: #e9ecef;
+        }
+
+        .patient-item:last-child {
+            border-bottom: none;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📅 Appointment Scheduling Portal</h1>
+            <p>Hospital Management System - Scheduling Module Testing Interface</p>
+        </div>
+
+        <div class="auth-section">
+            <h2>🔐 Authentication</h2>
+            <div class="form-group">
+                <label for="api-url">API URL</label>
+                <input type="text" id="api-url" value="http://localhost:5000" placeholder="http://localhost:5000">
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" placeholder="testuser">
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" placeholder="password123">
+                </div>
+            </div>
+            <button onclick="login()">🔑 Login</button>
+        </div>
+
+        <div class="notification" id="notification"></div>
+
+        <div class="main-content">
+            <div class="card">
+                <h2>📅 Book New Appointment</h2>
+                <p style="margin-bottom: 15px; color: #666;">Schedule an appointment for a patient with a doctor</p>
+                
+                <div class="form-group">
+                    <label for="patient-search">Search Patient</label>
+                    <input type="text" id="patient-search" placeholder="Search by name or MRN..." onkeyup="searchPatientsDebounced()">
+                    <div id="patient-list" class="patient-list" style="display: none;"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="selected-patient-id">Selected Patient ID</label>
+                    <input type="number" id="selected-patient-id" placeholder="Patient ID will appear here" readonly>
+                </div>
+
+                <div class="form-group">
+                    <label for="doctor-id">Doctor ID *</label>
+                    <input type="number" id="doctor-id" placeholder="1" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="appointment-date">Appointment Date *</label>
+                        <input type="datetime-local" id="appointment-date" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="reason-for-visit">Reason for Visit</label>
+                    <textarea id="reason-for-visit" rows="3" placeholder="Describe the reason for the appointment..."></textarea>
+                </div>
+
+                <button onclick="bookAppointment()" class="success">📝 Book Appointment</button>
+            </div>
+
+            <div class="card">
+                <h2>🔍 Get Appointment by ID</h2>
+                <p style="margin-bottom: 15px; color: #666;">Retrieve appointment details</p>
+                <div class="form-group">
+                    <label for="appointment-id">Appointment ID</label>
+                    <input type="number" id="appointment-id" placeholder="1">
+                </div>
+                <button onclick="getAppointment()" class="secondary">📋 Get Appointment</button>
+            </div>
+        </div>
+
+        <div class="result" id="result" style="display: none;">
+            <h2>📄 API Response</h2>
+            <pre id="response"></pre>
+        </div>
+    </div>
+
+    <script>
+        let accessToken = null;
+        let searchTimeout = null;
+        let selectedPatient = null;
+
+        function showNotification(message, type) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${type}`;
+            notification.style.display = 'block';
+
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 5000);
+        }
+
+        function displayResponse(data) {
+            const resultDiv = document.getElementById('result');
+            const responsePre = document.getElementById('response');
+            resultDiv.style.display = 'block';
+            responsePre.textContent = JSON.stringify(data, null, 2);
+        }
+
+        async function login() {
+            const apiUrl = document.getElementById('api-url').value;
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                const response = await fetch(`${apiUrl}/api/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username, password }),
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    accessToken = data.accessToken;
+                    showNotification('✅ Login successful! Token stored.', 'success');
+                    displayResponse(data);
+                } else {
+                    showNotification(`❌ Login failed: ${data.error || 'Unknown error'}`, 'error');
+                    displayResponse(data);
+                }
+            } catch (error) {
+                showNotification(`❌ Network error: ${error.message}`, 'error');
+            }
+        }
+
+        function searchPatientsDebounced() {
+            clearTimeout(searchTimeout);
+            const query = document.getElementById('patient-search').value;
+            
+            if (query.length < 2) {
+                document.getElementById('patient-list').style.display = 'none';
+                return;
+            }
+
+            searchTimeout = setTimeout(() => searchPatients(query), 300);
+        }
+
+        async function searchPatients(query) {
+            if (!accessToken) {
+                showNotification('❌ Please login first!', 'error');
+                return;
+            }
+
+            const apiUrl = document.getElementById('api-url').value;
+
+            try {
+                const response = await fetch(`${apiUrl}/api/patients/search?q=${encodeURIComponent(query)}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`,
+                    },
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    const patientListDiv = document.getElementById('patient-list');
+                    patientListDiv.innerHTML = '';
+                    
+                    if (data.data && data.data.length > 0) {
+                        data.data.forEach(patient => {
+                            const div = document.createElement('div');
+                            div.className = 'patient-item';
+                            div.innerHTML = `<strong>${patient.mrn}</strong> - ${patient.firstName} ${patient.lastName}`;
+                            div.onclick = () => selectPatient(patient);
+                            patientListDiv.appendChild(div);
+                        });
+                        patientListDiv.style.display = 'block';
+                    } else {
+                        patientListDiv.innerHTML = '<div class="patient-item">No patients found</div>';
+                        patientListDiv.style.display = 'block';
+                    }
+                } else {
+                    showNotification(`❌ Search failed: ${data.error?.message || 'Unknown error'}`, 'error');
+                }
+            } catch (error) {
+                showNotification(`❌ Network error: ${error.message}`, 'error');
+            }
+        }
+
+        function selectPatient(patient) {
+            selectedPatient = patient;
+            document.getElementById('selected-patient-id').value = patient.id;
+            document.getElementById('patient-search').value = `${patient.mrn} - ${patient.firstName} ${patient.lastName}`;
+            document.getElementById('patient-list').style.display = 'none';
+        }
+
+        async function bookAppointment() {
+            if (!accessToken) {
+                showNotification('❌ Please login first!', 'error');
+                return;
+            }
+
+            const apiUrl = document.getElementById('api-url').value;
+            const patientId = document.getElementById('selected-patient-id').value;
+            const doctorId = document.getElementById('doctor-id').value;
+            const appointmentDate = document.getElementById('appointment-date').value;
+            const reasonForVisit = document.getElementById('reason-for-visit').value;
+
+            if (!patientId) {
+                showNotification('❌ Please select a patient!', 'error');
+                return;
+            }
+
+            if (!doctorId || !appointmentDate) {
+                showNotification('❌ Please fill in all required fields!', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${apiUrl}/api/appointments`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${accessToken}`,
+                    },
+                    body: JSON.stringify({
+                        patientId: parseInt(patientId),
+                        doctorId: parseInt(doctorId),
+                        appointmentDate: new Date(appointmentDate).toISOString(),
+                        reasonForVisit: reasonForVisit || undefined
+                    }),
+                });
+
+                const data = await response.json();
+
+                if (response.ok || response.status === 201) {
+                    showNotification('✅ Appointment booked successfully!', 'success');
+                    displayResponse(data);
+                    document.getElementById('appointment-id').value = data.id;
+                } else {
+                    showNotification(`❌ Booking failed: ${data.error?.message || 'Unknown error'}`, 'error');
+                    displayResponse(data);
+                }
+            } catch (error) {
+                showNotification(`❌ Network error: ${error.message}`, 'error');
+            }
+        }
+
+        async function getAppointment() {
+            if (!accessToken) {
+                showNotification('❌ Please login first!', 'error');
+                return;
+            }
+
+            const apiUrl = document.getElementById('api-url').value;
+            const appointmentId = document.getElementById('appointment-id').value;
+
+            if (!appointmentId) {
+                showNotification('❌ Appointment ID is required!', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${apiUrl}/api/appointments/${appointmentId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`,
+                    },
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showNotification('✅ Appointment retrieved successfully!', 'success');
+                    displayResponse(data);
+                } else {
+                    showNotification(`❌ Retrieval failed: ${data.error?.message || 'Unknown error'}`, 'error');
+                    displayResponse(data);
+                }
+            } catch (error) {
+                showNotification(`❌ Network error: ${error.message}`, 'error');
+            }
+        }
+    </script>
+</body>
+</html>

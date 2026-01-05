@@ -318,6 +318,22 @@
             <button onclick="getPatient()" class="secondary">📋 Get Patient</button>
         </div>
 
+        <div class="card">
+            <h2>🔍 Search Patients</h2>
+            <p style="margin-bottom: 15px; color: #666;">Fuzzy search by name or MRN</p>
+            <div class="form-group">
+                <label for="search-query">Search Query</label>
+                <input type="text" id="search-query" placeholder="John or MRN-...">
+            </div>
+            <button onclick="searchPatients()" class="secondary">🔎 Search Patients</button>
+        </div>
+
+        <div class="card">
+            <h2>📋 Get All Patients</h2>
+            <p style="margin-bottom: 15px; color: #666;">Retrieve all patients in the system</p>
+            <button onclick="getAllPatients()" class="secondary">📄 Load All Patients</button>
+        </div>
+
         <div class="result" id="result" style="display: none;">
             <h2>📄 API Response</h2>
             <pre id="response"></pre>
@@ -506,6 +522,72 @@
 
                 if (response.ok) {
                     showNotification('✅ Patient retrieved successfully!', 'success');
+                    displayResponse(data);
+                } else {
+                    showNotification(`❌ Retrieval failed: ${data.error?.message || 'Unknown error'}`, 'error');
+                    displayResponse(data);
+                }
+            } catch (error) {
+                showNotification(`❌ Network error: ${error.message}`, 'error');
+            }
+        }
+
+        async function searchPatients() {
+            if (!accessToken) {
+                showNotification('❌ Please login first!', 'error');
+                return;
+            }
+
+            const apiUrl = document.getElementById('api-url').value;
+            const query = document.getElementById('search-query').value;
+
+            if (!query) {
+                showNotification('❌ Search query is required!', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${apiUrl}/api/patients/search?q=${encodeURIComponent(query)}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`,
+                    },
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showNotification(`✅ Found ${data.data?.length || 0} patient(s)!`, 'success');
+                    displayResponse(data);
+                } else {
+                    showNotification(`❌ Search failed: ${data.error?.message || 'Unknown error'}`, 'error');
+                    displayResponse(data);
+                }
+            } catch (error) {
+                showNotification(`❌ Network error: ${error.message}`, 'error');
+            }
+        }
+
+        async function getAllPatients() {
+            if (!accessToken) {
+                showNotification('❌ Please login first!', 'error');
+                return;
+            }
+
+            const apiUrl = document.getElementById('api-url').value;
+
+            try {
+                const response = await fetch(`${apiUrl}/api/patients`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`,
+                    },
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showNotification(`✅ Retrieved ${data.data?.length || 0} patient(s)!`, 'success');
                     displayResponse(data);
                 } else {
                     showNotification(`❌ Retrieval failed: ${data.error?.message || 'Unknown error'}`, 'error');
