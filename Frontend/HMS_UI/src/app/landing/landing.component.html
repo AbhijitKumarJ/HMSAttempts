@@ -1,0 +1,251 @@
+<div class="landing-page">
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-container">
+            <div class="nav-content">
+                <!-- Logo -->
+                <div class="logo">
+                    <div class="logo-icon">
+                        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                        </svg>
+                    </div>
+                    <span>HMS Core</span>
+                </div>
+
+                <!-- Links (Desktop) -->
+                <div class="nav-links">
+                    <a href="#features">Features</a>
+                    <a href="#tech-stack">Technology</a>
+                    <a href="#community">Ecosystem</a>
+                </div>
+
+                <!-- CTA -->
+                <div class="nav-actions">
+                    <a href="https://github.com/AbhijitKumarJ/HMSAttempts" class="github-link">
+                        <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                            <path fill-rule="evenodd"
+                                d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"
+                                clip-rule="evenodd" />
+                        </svg>
+                    </a>
+                    <a routerLink="/login" class="btn-login">Login</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <!-- Background Decor -->
+        <div class="bg-decor">
+            <div class="blob-1"></div>
+            <div class="blob-2"></div>
+        </div>
+
+        <div class="hero-content">
+            <div class="badge">
+                <div class="dot"></div>
+                v0.1.0 MVP In Development
+            </div>
+
+            <h1>
+                Democratizing Enterprise-Grade<br />
+                <span class="gradient-text">Healthcare Technology</span>
+            </h1>
+
+            <p class="subtitle">
+                A modern, modular, open-source Hospital Management System built for the "Clinical Reality" of
+                small-to-medium healthcare providers.
+            </p>
+
+            <div class="hero-actions">
+                <a href="#" class="btn-primary">Explore Documentation</a>
+                <a routerLink="/login" class="btn-secondary">Login to Demo</a>
+            </div>
+
+            <!-- Dashboard Preview Placeholder -->
+            <div class="preview-container">
+                <div class="window">
+                    <!-- Mock UI Header -->
+                    <div class="window-header">
+                        <div class="dots">
+                            <div class="red"></div>
+                            <div class="yellow"></div>
+                            <div class="green"></div>
+                        </div>
+                        <div class="title">HMS Clinical Cockpit v1.0</div>
+                    </div>
+                    <!-- Mock UI Body -->
+                    <div class="window-body">
+                        <!-- Sidebar -->
+                        <div class="sidebar"></div>
+                        <!-- Main Content -->
+                        <div class="main-area">
+                            <div class="card-grid">
+                                <!-- Patient Card -->
+                                <div class="mock-card alert">
+                                    <div class="mb-2">
+                                        <h3>
+                                            <span>Doe, John (MRN-2441)</span>
+                                            <span class="status">High Risk</span>
+                                        </h3>
+                                    </div>
+                                    <div class="details">BP: 160/100</div>
+                                </div>
+                                <div class="mock-card info">
+                                    <div class="mb-2">
+                                        <h3><span>Smith, Jane (MRN-1922)</span></h3>
+                                    </div>
+                                    <div class="details">Routine Checkup</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Overlay Text -->
+                    <div class="overlay">
+                        <span>Interactive Demo Coming Soon</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Core Pillars / Value Props -->
+    <div id="features" class="features-section">
+        <div class="features-container">
+            <div class="features-header">
+                <h2>Core Philosophy</h2>
+                <p class="title">Built for Clinical Velocity</p>
+                <p class="desc">Designed to reduce cognitive load and click-fatigue for healthcare professionals.</p>
+            </div>
+
+            <div class="features-grid">
+                <!-- Feature 1 -->
+                <div class="feature-card group">
+                    <div class="glow-bg"></div>
+                    <div class="card-content">
+                        <div class="icon-box">
+                            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M13 10V3L4 14h7v7l9-11h-7z" />
+                            </svg>
+                        </div>
+                        <h3>Modular Architecture</h3>
+                        <p>
+                            "Internal-as-External" design ensures modules like Lab, Pharmacy, and Billing can be swapped
+                            or extended without breaking the core.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Feature 2 -->
+                <div class="feature-card group">
+                    <div class="glow-bg"></div>
+                    <div class="card-content">
+                        <div class="icon-box">
+                            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <h3>No Dead Ends</h3>
+                        <p>
+                            Robust "Gap Handling" allows for manual overrides and document uploads when automated
+                            workflows are unavailable, ensuring care never stops.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Feature 3 -->
+                <div class="feature-card group">
+                    <div class="glow-bg"></div>
+                    <div class="card-content">
+                        <div class="icon-box">
+                            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                            </svg>
+                        </div>
+                        <h3>Ecosystem Enablement</h3>
+                        <p>
+                            Designed for local tech firms to provide support and customization, creating a sustainable
+                            economy around open-source healthcare.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tech Stack -->
+    <div id="tech-stack" class="tech-stack">
+        <div class="container">
+            <div class="header">
+                <h2>Modern Technology Stack</h2>
+                <p>Built on industry standards for performance and maintainability.</p>
+            </div>
+
+            <div class="stack-grid">
+                <div class="stack-item dotnet">
+                    <div class="logo">.NET 9</div>
+                    <span>Backend Core</span>
+                </div>
+
+                <div class="stack-item angular">
+                    <div class="logo">Angular 21</div>
+                    <span>Frontend Framework</span>
+                </div>
+
+                <div class="stack-item postgres">
+                    <div class="logo">PostgreSQL</div>
+                    <span>Relational DB</span>
+                </div>
+
+                <div class="stack-item tailwind">
+                    <div class="logo">Tailwind</div>
+                    <span>Utility CSS</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="brand">
+                    <h3>HMS Core</h3>
+                    <p>
+                        Open source Hospital Management System. MIT Licensed. Built with care for the global healthcare
+                        community.
+                    </p>
+                </div>
+                <div>
+                    <h4>Project</h4>
+                    <ul>
+                        <li><a href="#">Documentation</a></li>
+                        <li><a href="#">Roadmap</a></li>
+                        <li><a href="#">Issue Tracker</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4>Community</h4>
+                    <ul>
+                        <li><a href="#">Contributing</a></li>
+                        <li><a href="#">Code of Conduct</a></li>
+                        <li><a href="#">Discussions</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2026 HMS Core Project. All rights reserved.</p>
+                <div class="legal">
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+</div>

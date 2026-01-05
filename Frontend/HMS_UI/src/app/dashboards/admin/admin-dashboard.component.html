@@ -1,0 +1,204 @@
+<div class="admin-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="logo-icon">
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+            </div>
+            <span>HMS Core</span>
+        </div>
+
+        <nav class="nav-menu">
+            <a href="#" class="active">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                </svg>
+                System Overview
+            </a>
+            <a href="#">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+                Users & Roles
+            </a>
+            <a href="#">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                Config
+            </a>
+        </nav>
+
+        <div class="user-profile">
+            <div class="profile-card">
+                <div class="avatar">IT</div>
+                <div class="info">
+                    <div class="name">System Admin</div>
+                    <div class="role">Superuser</div>
+                </div>
+            </div>
+            <button class="logout-btn" (click)="logout()">Logout</button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <header>
+            <h1>System Status</h1>
+            <div class="system-status">
+                <div class="pulse-dot"></div>
+                All Systems Operational
+            </div>
+        </header>
+
+        <div class="content-scroll">
+
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <!-- Card 1 -->
+                <div class="stat-card">
+                    <div class="card-top">
+                        <div class="icon-box">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                            </svg>
+                        </div>
+                        <span class="trend">+12%</span>
+                    </div>
+                    <h3>Active Users</h3>
+                    <p class="value">24</p>
+                </div>
+                <!-- Card 2 -->
+                <div class="stat-card">
+                    <div class="card-top">
+                        <div class="icon-box purple">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                        </div>
+                        <span class="label">Today</span>
+                    </div>
+                    <h3>Total Orders</h3>
+                    <p class="value">142</p>
+                </div>
+                <!-- Card 3 -->
+                <div class="stat-card">
+                    <div class="card-top">
+                        <div class="icon-box orange">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01" />
+                            </svg>
+                        </div>
+                        <span class="trend">99.9%</span>
+                    </div>
+                    <h3>Server Uptime</h3>
+                    <p class="value">32d 4h</p>
+                </div>
+                <!-- Card 4 -->
+                <div class="stat-card">
+                    <div class="card-top">
+                        <div class="icon-box green">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19.428 15.428a2 2 0 00-1.022-.547l-2.384-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                            </svg>
+                        </div>
+                        <span class="trend">Healthy</span>
+                    </div>
+                    <h3>Message Queue</h3>
+                    <p class="value">0 Pending</p>
+                </div>
+            </div>
+
+            <!-- Main Grid -->
+            <div class="main-grid">
+                <!-- Activity Table -->
+                <div class="activity-panel">
+                    <div class="panel-header">
+                        <h3>Recent Login Activity</h3>
+                        <button>View All</button>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>User</th>
+                                <th>Role</th>
+                                <th>Time</th>
+                                <th>IP</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Dr. Sarah</td>
+                                <td><span class="role-badge doctor">Doctor</span></td>
+                                <td class="time">2 mins ago</td>
+                                <td class="ip">192.168.1.104</td>
+                            </tr>
+                            <tr>
+                                <td>Alex L.</td>
+                                <td><span class="role-badge nurse">Nurse</span></td>
+                                <td class="time">15 mins ago</td>
+                                <td class="ip">192.168.1.102</td>
+                            </tr>
+                            <tr>
+                                <td>Marcus K.</td>
+                                <td><span class="role-badge billing">Billing</span></td>
+                                <td class="time">45 mins ago</td>
+                                <td class="ip">192.168.1.110</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Infrastructure Health -->
+                <div class="infra-panel">
+                    <h3>Infrastructure Health</h3>
+                    <div class="status-items">
+                        <div class="item">
+                            <div class="header">
+                                <span class="label">Database (PostgreSQL)</span>
+                                <span class="status ok">Connected</span>
+                            </div>
+                            <div class="progress-bg">
+                                <div class="fill green" style="width: 100%"></div>
+                            </div>
+                        </div>
+                        <div class="item">
+                            <div class="header">
+                                <span class="label">Message Queue</span>
+                                <span class="status ok">Processing</span>
+                            </div>
+                            <div class="progress-bg">
+                                <div class="fill green" style="width: 100%"></div>
+                            </div>
+                        </div>
+                        <div class="item">
+                            <div class="header">
+                                <span class="label">Storage (Local)</span>
+                                <span class="status info">45% Used</span>
+                            </div>
+                            <div class="progress-bg">
+                                <div class="fill blue" style="width: 45%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="action-area">
+                        <button>View Full System Logs</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+</div>

@@ -1,0 +1,139 @@
+<div class="nurse-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="logo-icon">
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+            </div>
+            <span>HMS Core</span>
+        </div>
+
+        <nav class="nav-menu">
+            <a href="#" class="active">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
+                Triage Queue
+            </a>
+            <a href="#">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M19.428 15.428a2 2 0 00-1.022-.547l-2.384-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                </svg>
+                My Labs
+            </a>
+        </nav>
+
+        <div class="user-profile">
+            <div class="profile-card">
+                <div class="avatar">AL</div>
+                <div class="info">
+                    <div class="name">Alex L.</div>
+                    <div class="role">Nurse (RN)</div>
+                </div>
+            </div>
+            <button class="logout-btn" (click)="logout()">Logout</button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <header>
+            <h1>Triage Station</h1>
+            <div class="role-badge">
+                <div class="status-dot"></div>
+                Role: Nurse
+            </div>
+        </header>
+
+        <div class="content-scroll">
+            <div class="grid-container">
+
+                <!-- Patient List -->
+                <div class="patient-list-panel">
+                    <div class="panel-header">
+                        <h2>Pending Triage</h2>
+                    </div>
+                    <div class="list-container">
+                        <!-- Item 1 (Active) -->
+                        <div class="patient-item active">
+                            <div class="item-header">
+                                <span class="name">John Doe</span>
+                                <span class="badge alert">Chest Pain</span>
+                            </div>
+                            <div class="meta">MRN-2024-001 • 38y Male</div>
+                            <div class="wait-time">Wait: 12 mins</div>
+                        </div>
+                        <!-- Item 2 -->
+                        <div class="patient-item">
+                            <div class="item-header">
+                                <span class="name">Jane Smith</span>
+                                <span class="badge default">Fever</span>
+                            </div>
+                            <div class="meta">MRN-2024-042 • 24y Female</div>
+                            <div class="wait-time">Wait: 5 mins</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Triage Form -->
+                <div class="triage-panel">
+                    <div class="patient-banner">
+                        <div>
+                            <h2>John Doe</h2>
+                            <p>MRN-2024-001 • DOB: 12 Oct 1985 (38y)</p>
+                        </div>
+                        <div class="actions">
+                            <button>History</button>
+                            <button>Allergies</button>
+                        </div>
+                    </div>
+
+                    <div class="form-content">
+                        <div class="vitals-grid">
+                            <!-- Temp -->
+                            <div class="form-group">
+                                <label>Temperature (°C)</label>
+                                <input type="number" value="38.5" class="alert">
+                                <span class="alert-tag">High</span>
+                            </div>
+                            <!-- HR -->
+                            <div class="form-group">
+                                <label>Heart Rate (bpm)</label>
+                                <input type="number" value="98">
+                            </div>
+                            <!-- BP -->
+                            <div class="form-group">
+                                <label>Blood Pressure (mmHg)</label>
+                                <div class="bp-inputs">
+                                    <input type="number" value="145" class="critical" placeholder="Sys">
+                                    <span>/</span>
+                                    <input type="number" value="95" class="critical" placeholder="Dia">
+                                </div>
+                            </div>
+                            <!-- O2 -->
+                            <div class="form-group">
+                                <label>O2 Saturation (%)</label>
+                                <input type="number" value="98">
+                            </div>
+                        </div>
+
+                        <div class="notes-section">
+                            <label>Chief Complaint & Notes</label>
+                            <textarea rows="4" placeholder="Enter patient notes..."></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button class="btn-secondary">Save Draft</button>
+                        <button class="btn-primary">Complete Triage</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+</div>

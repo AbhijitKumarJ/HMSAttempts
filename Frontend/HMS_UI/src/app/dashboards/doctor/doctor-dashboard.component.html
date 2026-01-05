@@ -1,0 +1,188 @@
+<div class="doctor-layout">
+    <!-- Top Navigation (Dense) -->
+    <header class="top-nav">
+        <div class="nav-branding">
+            <span class="brand-title">HMS Clinical Cockpit</span>
+            <nav>
+                <a href="#" class="active">My Queue</a>
+                <a href="#">All Patients</a>
+                <a href="#">On-Call List</a>
+            </nav>
+        </div>
+        <div class="user-menu">
+            <div class="profile-btn">
+                <div class="dot"></div>
+                Dr. Sarah (MD)
+            </div>
+            <button class="logout-btn" (click)="logout()">Logout</button>
+        </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <div class="workspace">
+
+        <!-- Left: Patient List -->
+        <aside class="patient-list">
+            <div class="filter-bar">
+                <input type="text" placeholder="Filter patients...">
+            </div>
+            <div class="list-content">
+                <!-- Patient 1 (Active) -->
+                <div class="patient-card active">
+                    <div class="row-1">
+                        <span class="name">Doe, John</span>
+                        <span class="urgency high">High</span>
+                    </div>
+                    <div class="row-2">
+                        <span>38y M</span>
+                        <span>08:30 <span class="separator">|</span> Rm 4</span>
+                    </div>
+                    <div class="row-3">CP, Hypertensive urgency</div>
+                </div>
+                <!-- Patient 2 -->
+                <div class="patient-card">
+                    <div class="row-1">
+                        <span class="name">Smith, Jane</span>
+                        <span class="urgency reg">Reg</span>
+                    </div>
+                    <div class="row-2">
+                        <span>24y F</span>
+                        <span>09:15 <span class="separator">|</span> Rm 2</span>
+                    </div>
+                    <div class="row-3">Viral fever symptoms</div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Center: Clinical Context -->
+        <main class="clinical-context">
+            <!-- Patient Ribbon (Pinned) -->
+            <div class="patient-ribbon">
+                <div class="ribbon-header">
+                    <div>
+                        <h1>Doe, John <span class="mrn">#2024-001</span></h1>
+                        <p class="demographics">38y Male • DOB: 12/10/1985 • <span
+                                style="color:#334155; font-weight:500;">Dr. Sarah assigned</span></p>
+                    </div>
+                    <div class="alerts">
+                        <div class="alert-item">
+                            <div class="label">Allergies</div>
+                            <div class="value crit">Penicillin, Peanuts</div>
+                        </div>
+                        <div class="separator"></div>
+                        <div class="alert-item">
+                            <div class="label">Code Status</div>
+                            <div class="value">Full Code</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="vitals-strip">
+                    <div class="vital-box">
+                        <span class="label">BP</span>
+                        <span class="value crit">160/100</span>
+                    </div>
+                    <div class="vital-box">
+                        <span class="label">HR</span>
+                        <span class="value">98</span>
+                    </div>
+                    <div class="vital-box">
+                        <span class="label">Temp</span>
+                        <span class="value high">38.5°C</span>
+                    </div>
+                    <div class="vital-box">
+                        <span class="label">SpO2</span>
+                        <span class="value">98%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Scrolling Content -->
+            <div class="clinical-content">
+                <!-- Timeline -->
+                <div class="section-card">
+                    <h3>Recent Timeline</h3>
+                    <div class="timeline-item">
+                        <div class="marker">
+                            <div class="dot"></div>
+                            <div class="line"></div>
+                        </div>
+                        <div class="content">
+                            <div class="time">Today, 08:30 AM (Nurse Triage)</div>
+                            <div class="text">Pt presents with chest tightness radiating to left arm. Sweating noted.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="marker">
+                            <div class="dot"></div>
+                        </div>
+                        <div class="content">
+                            <div class="time">2 Weeks Ago (GP Visit)</div>
+                            <div class="text">Routine checkup. BP was 140/90. Advised lifestyle changes.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Labs -->
+                <div class="section-card">
+                    <h3>Active Orders / Results</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Test</th>
+                                <th>Status</th>
+                                <th>Result</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Troponin I</td>
+                                <td><span class="status-badge pending">In Lab</span></td>
+                                <td style="color:#94A3B8;">Pending...</td>
+                            </tr>
+                            <tr>
+                                <td>ECG 12-Lead</td>
+                                <td><span class="status-badge completed">Completed</span></td>
+                                <td><span class="link">View Trace</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+
+        <!-- Right: Action Panel -->
+        <aside class="action-panel">
+            <div class="panel-scroll">
+                <!-- Notes -->
+                <div class="panel-section border-bottom">
+                    <div class="header-flex">
+                        <h3>Clinical Note</h3>
+                        <span>Draft saved</span>
+                    </div>
+                    <textarea placeholder="Type notes here... (.vitals to insert)"></textarea>
+                </div>
+
+                <!-- Orders -->
+                <div class="panel-section">
+                    <h3>Place Orders</h3>
+                    <div class="search-input">
+                        <input type="text" placeholder="Search labs, meds...">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                    </div>
+
+                    <div class="order-item">
+                        <span>Aspirin 325mg PO</span>
+                        <button>&times;</button>
+                    </div>
+                    <button class="submit-btn">Sign & Submit Orders</button>
+                </div>
+            </div>
+        </aside>
+
+    </div>
+</div>
