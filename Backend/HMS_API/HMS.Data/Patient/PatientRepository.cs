@@ -1,10 +1,14 @@
 using HMS.Data.DBModel;
+using Microsoft.EntityFrameworkCore;
 
 namespace HMS.Data.Patient;
 
 public interface IPatientRepository
 {
-    object GetUserById(int id);
+    Task<PatPatient?> GetByMrnAsync(string mrn);
+    Task<PatPatient?> GetByIdAsync(int id);
+    Task<PatPatient> CreateAsync(PatPatient patient);
+    Task<PatPatient> UpdateAsync(PatPatient patient);
 }
 
 public class PatientRepository : IPatientRepository
@@ -15,10 +19,30 @@ public class PatientRepository : IPatientRepository
     {
         _context = context;
     }
-
-    public object GetUserById(int id)
+    
+    public async Task<PatPatient?> GetByMrnAsync(string mrn)
     {
-        var user = _context.Users.FirstOrDefault(u => u.Id == id);
-        return user ?? new object();
+        return await _context.PatPatients
+            .FirstOrDefaultAsync(p => p.Mrn == mrn);
+    }
+
+    public async Task<PatPatient?> GetByIdAsync(int id)
+    {
+        return await _context.PatPatients
+            .FirstOrDefaultAsync(p => p.Id == id);
+    }
+
+    public async Task<PatPatient> CreateAsync(PatPatient patient)
+    {
+        _context.PatPatients.Add(patient);
+        await _context.SaveChangesAsync();
+        return patient;
+    }
+
+    public async Task<PatPatient> UpdateAsync(PatPatient patient)
+    {
+        _context.PatPatients.Update(patient);
+        await _context.SaveChangesAsync();
+        return patient;
     }
 }

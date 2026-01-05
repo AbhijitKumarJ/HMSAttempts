@@ -3,11 +3,12 @@ using HMS.Entity.Patient;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
+using System.Security.Claims;
 
 namespace HMS.API.Controllers.Patient;
 
 [ApiController]
-[Route("api/Patient")]
+[Route("api/patients")]
 public class PatientController : ControllerBase
 {
     private readonly ILogger<PatientController> _logger;
@@ -19,40 +20,96 @@ public class PatientController : ControllerBase
         _patientService = patientService;
     }
 
-    // GET: api/Patient/GetUsers
-    [HttpGet("GetUsers")]
-    public async Task<IActionResult> GetUsers([FromQuery]int limit,CancellationToken cancellationToken)
+    private int? GetUserIdFromToken()
     {
-        return Ok(_patientService.GetUsers(limit));
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (int.TryParse(userIdClaim, out var userId))
+        {
+            return userId;
+        }
+        return null;
     }
 
-    // GET: api/Patient/GetUser/5
-    [HttpGet("GetUser/{id:int}")]
-    public async Task<IActionResult> GetUser(int id, CancellationToken cancellationToken)
+    
+    // POST: api/patients/emergency
+    [HttpPost("emergency")]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> EmergencyRegistration(
+        [FromBody] EmergencyRegistrationDto dto,
+        CancellationToken cancellationToken)
     {
-        return Ok(_patientService.GetUser(id));
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        var userId = GetUserIdFromToken();
+        if (!userId.HasValue)
+        {
+            return Unauthorized(new { error = new { code = "UNAUTHORIZED", message = "User ID not found in token" } });
+        }
+
+        try
+        {
+            var result = await _patientService.RegisterEmergencyAsync(dto, userId.Value);
+            return CreatedAtAction(nameof(GetPatientByMrn), new { mrn = result.Mrn }, result);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error during emergency registration");
+            return StatusCode(500, new { error = new { code = "INTERNAL_ERROR", message = "An error occurred while registering patient" } });
+        }
     }
 
-    // POST: api/Patient/CreateUser
-    [HttpPost("CreateUser")]
-    public async Task<IActionResult> CreateUser([FromBody] CreateUserEntity entity, CancellationToken cancellationToken)
+    // POST: api/patients/{mrn}
+    [HttpPost("{mrn}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> UpdatePatient(
+        string mrn,
+        [FromBody] UpdatePatientDto dto,
+        CancellationToken cancellationToken)
     {
-        if (entity == null) return BadRequest();
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
 
-        return Ok(_patientService.CreateUser(entity));
+        var userId = GetUserIdFromToken();
+        if (!userId.HasValue)
+        {
+            return Unauthorized(new { error = new { code = "UNAUTHORIZED", message = "User ID not found in token" } });
+        }
+
+        try
+        {
+            var result = await _patientService.UpdatePatientAsync(mrn, dto, userId.Value);
+            if (result == null)
+            {
+                return NotFound(new { error = new { code = "PATIENT_NOT_FOUND", message = $"Patient with MRN {mrn} not found" } });
+            }
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error updating patient {Mrn}", mrn);
+            return StatusCode(500, new { error = new { code = "INTERNAL_ERROR", message = "An error occurred while updating patient" } });
+        }
     }
 
-    // POST: api/Patient/UpdateUser
-    [HttpPost("UpdateUser")]
-    public async Task<IActionResult> UpdateUser([FromBody] UpdateUserEntity entity, CancellationToken cancellationToken)
+    // GET: api/patients/{mrn}
+    [HttpGet("{mrn}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetPatientByMrn(string mrn, CancellationToken cancellationToken)
     {
-        return Ok(_patientService.UpdateUser(entity));
-    }
-
-    // GET: api/Patient/DeleteUser/5
-    [HttpGet("DeleteUser/{id:int}")]
-    public async Task<IActionResult> DeleteUser(int id, CancellationToken cancellationToken)
-    {
-        return Ok(_patientService.DeleteUser(id));
+        var result = await _patientService.GetPatientByMrn(mrn);
+        if (result == null)
+        {
+            return NotFound(new { error = new { code = "PATIENT_NOT_FOUND", message = $"Patient with MRN {mrn} not found" } });
+        }
+        return Ok(new { message = $"Patient with MRN {mrn} retrieved.", data = result });
     }
 }

@@ -101,6 +101,7 @@ public class Program
         // Patient module
         builder.Services.AddScoped<IPatientService, PatientService>();
         builder.Services.AddScoped<IPatientRepository, PatientRepository>();
+        builder.Services.AddScoped<IMrnGenerator, MrnGenerator>();
 
         var app = builder.Build();
 

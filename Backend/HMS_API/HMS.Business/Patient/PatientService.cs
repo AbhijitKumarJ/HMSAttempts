@@ -1,53 +1,179 @@
 using HMS.Data.Patient;
 using HMS.Entity.Patient;
+using HMS.Data.DBModel;
+using HMS.Bus;
 using Newtonsoft.Json.Linq;
 
 namespace HMS.Business.Patient;
 
 public interface IPatientService
 {
-    JObject GetUsers(int limit);
-    JObject GetUser(int id);
-    JObject CreateUser(CreateUserEntity entity);
-    JObject UpdateUser(UpdateUserEntity entity);
-    JObject DeleteUser(int id);
+    Task<PatientResponseDto> GetPatientByMrn(string mrn);
+    Task<PatientResponseDto> RegisterEmergencyAsync(EmergencyRegistrationDto dto, int userId);
+    Task<PatientResponseDto?> UpdatePatientAsync(string mrn, UpdatePatientDto dto, int userId);
 }
 
 public class PatientService : IPatientService
 {
     private readonly IPatientRepository _patientRepository;
+    private readonly IMrnGenerator _mrnGenerator;
+    private readonly IEventBus _eventBus;
+    private readonly HMSContext _context;
 
-    public PatientService(IPatientRepository patientRepository)
+    public PatientService(
+        IPatientRepository patientRepository,
+        IMrnGenerator mrnGenerator,
+        IEventBus eventBus,
+        HMSContext context)
     {
         _patientRepository = patientRepository;
+        _mrnGenerator = mrnGenerator;
+        _eventBus = eventBus;
+        _context = context;
     }
-    public JObject GetUsers(int limit)
-    {
-        return new JObject { ["Message"] = $"Retrieved {limit} users from Patient service." };
-    }
+  
 
-    public JObject GetUser(int id)
+    public async Task<PatientResponseDto> RegisterEmergencyAsync(EmergencyRegistrationDto dto, int userId)
     {
-        var userData = _patientRepository.GetUserById(id);
-        return new JObject 
-        { 
-            ["Message"] = $"Retrieved user with ID {id} from Patient service.",
-            ["Data"] = JObject.FromObject(userData)
+        var mrn = await _mrnGenerator.GenerateMrnAsync();
+
+        var patient = new PatPatient
+        {
+            Mrn = mrn,
+            FirstName = dto.FirstName,
+            LastName = dto.LastName,
+            Gender = dto.Gender,
+            IsEmergencyReg = true,
+            CreatedAt = DateTime.UtcNow
+        };
+
+        var createdPatient = await _patientRepository.CreateAsync(patient);
+
+        await _eventBus.PublishAsync("Patient.Created", new
+        {
+            PatientId = createdPatient.Id,
+            Mrn = createdPatient.Mrn,
+            FullName = $"{createdPatient.FirstName} {createdPatient.LastName}",
+            CreatedBy = userId,
+            CreatedAt = DateTime.UtcNow
+        });
+
+        return new PatientResponseDto
+        {
+            Id = createdPatient.Id,
+            Mrn = createdPatient.Mrn!,
+            FirstName = createdPatient.FirstName!,
+            LastName = createdPatient.LastName!,
+            Gender = createdPatient.Gender,
+            Dob = createdPatient.Dob,
+            IsEmergencyReg = createdPatient.IsEmergencyReg ?? false,
+            CreatedAt = createdPatient.CreatedAt ?? DateTime.UtcNow
         };
     }
 
-    public JObject CreateUser(CreateUserEntity entity)
+    public async Task<PatientResponseDto?> UpdatePatientAsync(string mrn, UpdatePatientDto dto, int userId)
     {
-        return new JObject { ["Message"] = $"Created user: {entity.Username} in Patient service." };
+        var patient = await _patientRepository.GetByMrnAsync(mrn);
+        if (patient == null)
+        {
+            return null;
+        }
+
+        var oldValues = new
+        {
+            patient.FirstName,
+            patient.LastName,
+            patient.Dob,
+            patient.Gender,
+            patient.ContactInfo
+        };
+
+        if (dto.FirstName != null)
+            patient.FirstName = dto.FirstName;
+        if (dto.LastName != null)
+            patient.LastName = dto.LastName;
+        if (dto.Dob != null)
+            patient.Dob = dto.Dob.Value;
+        if (dto.Gender != null)
+            patient.Gender = dto.Gender;
+
+        if (dto.ContactInfo != null)
+        {
+            patient.ContactInfo = Newtonsoft.Json.JsonConvert.SerializeObject(dto.ContactInfo);
+        }
+
+        patient.IsEmergencyReg = false;
+
+        var updatedPatient = await _patientRepository.UpdateAsync(patient);
+
+        var newValues = new
+        {
+            updatedPatient.FirstName,
+            updatedPatient.LastName,
+            updatedPatient.Dob,
+            updatedPatient.Gender,
+            updatedPatient.ContactInfo
+        };
+
+        var auditLog = new AuditLog
+        {
+            EntityType = "Patient",
+            EntityId = mrn,
+            Action = "Update",
+            OldValue = Newtonsoft.Json.JsonConvert.SerializeObject(oldValues),
+            NewValue = Newtonsoft.Json.JsonConvert.SerializeObject(newValues),
+            UserId = userId,
+            CreatedAt = DateTime.UtcNow
+        };
+
+        _context.AuditLogs.Add(auditLog);
+        await _context.SaveChangesAsync();
+
+        ContactInfoDto? contactInfo = null;
+        if (!string.IsNullOrEmpty(updatedPatient.ContactInfo))
+        {
+            contactInfo = Newtonsoft.Json.JsonConvert.DeserializeObject<ContactInfoDto>(updatedPatient.ContactInfo);
+        }
+
+        return new PatientResponseDto
+        {
+            Id = updatedPatient.Id,
+            Mrn = updatedPatient.Mrn!,
+            FirstName = updatedPatient.FirstName!,
+            LastName = updatedPatient.LastName!,
+            Gender = updatedPatient.Gender,
+            Dob = updatedPatient.Dob,
+            ContactInfo = contactInfo,
+            IsEmergencyReg = updatedPatient.IsEmergencyReg ?? false,
+            CreatedAt = updatedPatient.CreatedAt ?? DateTime.UtcNow
+        };
     }
 
-    public JObject UpdateUser(UpdateUserEntity entity)
+    public async Task<PatientResponseDto> GetPatientByMrn(string mrn)
     {
-        return new JObject { ["Message"] = $"Updated user with ID {entity.UserId} in Patient service." };
-    }
+        var patient = await _patientRepository.GetByMrnAsync(mrn);
+        if (patient == null)
+        {
+            return null;
+        }
 
-    public JObject DeleteUser(int id)
-    {
-        return new JObject { ["Message"] = $"Deleted user with ID {id} from Patient service." };
+        ContactInfoDto? contactInfo = null;
+        if (!string.IsNullOrEmpty(patient.ContactInfo))
+        {
+            contactInfo = Newtonsoft.Json.JsonConvert.DeserializeObject<ContactInfoDto>(patient.ContactInfo);
+        }
+
+        return new PatientResponseDto
+        {
+            Id = patient.Id,
+            Mrn = patient.Mrn!,
+            FirstName = patient.FirstName!,
+            LastName = patient.LastName!,
+            Gender = patient.Gender,
+            Dob = patient.Dob,
+            ContactInfo = contactInfo,
+            IsEmergencyReg = patient.IsEmergencyReg ?? false,
+            CreatedAt = patient.CreatedAt ?? DateTime.UtcNow
+        };
     }
 }

@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Registration Portal - HMS</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .auth-section {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .auth-section h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .card h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            width: 100%;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button.secondary {
+            background: #6c757d;
+        }
+
+        button.success {
+            background: #28a745;
+        }
+
+        .result {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .result h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        pre {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-size: 12px;
+            border: 1px solid #dee2e6;
+        }
+
+        .notification {
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        .notification.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .notification.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .notification.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏥 Patient Registration Portal</h1>
+            <p>Hospital Management System - Patient Module Testing Interface</p>
+        </div>
+
+        <div class="auth-section">
+            <h2>🔐 Authentication</h2>
+            <div class="form-group">
+                <label for="api-url">API URL</label>
+                <input type="text" id="api-url" value="http://localhost:5000" placeholder="http://localhost:5000">
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" placeholder="testuser">
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" placeholder="password123">
+                </div>
+            </div>
+            <button onclick="login()">🔑 Login</button>
+        </div>
+
+        <div class="notification" id="notification"></div>
+
+        <div class="main-content">
+            <div class="card">
+                <h2>⚡ Emergency Registration</h2>
+                <p style="margin-bottom: 15px; color: #666;">Quick registration with minimal data for emergencies</p>
+                <div class="form-group">
+                    <label for="emergency-first-name">First Name *</label>
+                    <input type="text" id="emergency-first-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="emergency-last-name">Last Name *</label>
+                    <input type="text" id="emergency-last-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="emergency-gender">Gender *</label>
+                    <select id="emergency-gender" required>
+                        <option value="">Select Gender</option>
+                        <option value="M">Male</option>
+                        <option value="F">Female</option>
+                        <option value="O">Other</option>
+                        <option value="U">Unknown</option>
+                    </select>
+                </div>
+                <button onclick="registerEmergency()" class="success">🚑 Emergency Register</button>
+            </div>
+
+            <div class="card">
+                <h2>👤 Update Patient Demographics</h2>
+                <p style="margin-bottom: 15px; color: #666;">Complete registration with full patient information</p>
+                <div class="form-group">
+                    <label for="update-mrn">MRN *</label>
+                    <input type="text" id="update-mrn" placeholder="MRN-2026-0001" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="update-first-name">First Name</label>
+                        <input type="text" id="update-first-name">
+                    </div>
+                    <div class="form-group">
+                        <label for="update-last-name">Last Name</label>
+                        <input type="text" id="update-last-name">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="update-dob">Date of Birth</label>
+                        <input type="date" id="update-dob">
+                    </div>
+                    <div class="form-group">
+                        <label for="update-gender">Gender</label>
+                        <select id="update-gender">
+                            <option value="">Select Gender</option>
+                            <option value="M">Male</option>
+                            <option value="F">Female</option>
+                            <option value="O">Other</option>
+                            <option value="U">Unknown</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="update-email">Email</label>
+                    <input type="email" id="update-email" placeholder="john.doe@example.com">
+                </div>
+                <div class="form-group">
+                    <label for="update-phone">Phone</label>
+                    <input type="tel" id="update-phone" placeholder="555-123-4567">
+                </div>
+                <div class="form-group">
+                    <label for="update-address">Address</label>
+                    <textarea id="update-address" rows="2" placeholder="123 Main St, City, State 12345"></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="update-insurance">Insurance Provider</label>
+                        <input type="text" id="update-insurance" placeholder="BlueCross">
+                    </div>
+                    <div class="form-group">
+                        <label for="update-policy">Policy Number</label>
+                        <input type="text" id="update-policy" placeholder="POL-123456789">
+                    </div>
+                </div>
+                <button onclick="updatePatient()">✏️ Update Patient</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🔍 Get Patient by MRN</h2>
+            <div class="form-group">
+                <label for="search-mrn">MRN</label>
+                <input type="text" id="search-mrn" placeholder="MRN-2026-0001">
+            </div>
+            <button onclick="getPatient()" class="secondary">📋 Get Patient</button>
+        </div>
+
+        <div class="result" id="result" style="display: none;">
+            <h2>📄 API Response</h2>
+            <pre id="response"></pre>
+        </div>
+    </div>
+
+    <script>
+        let accessToken = null;
+
+        function showNotification(message, type) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${type}`;
+            notification.style.display = 'block';
+
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 5000);
+        }
+
+        function displayResponse(data) {
+            const resultDiv = document.getElementById('result');
+            const responsePre = document.getElementById('response');
+            resultDiv.style.display = 'block';
+            responsePre.textContent = JSON.stringify(data, null, 2);
+        }
+
+        async function login() {
+            const apiUrl = document.getElementById('api-url').value;
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                const response = await fetch(`${apiUrl}/api/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username, password }),
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    accessToken = data.accessToken;
+                    showNotification('✅ Login successful! Token stored.', 'success');
+                    displayResponse(data);
+                } else {
+                    showNotification(`❌ Login failed: ${data.error || 'Unknown error'}`, 'error');
+                    displayResponse(data);
+                }
+            } catch (error) {
+                showNotification(`❌ Network error: ${error.message}`, 'error');
+            }
+        }
+
+        async function registerEmergency() {
+            if (!accessToken) {
+                showNotification('❌ Please login first!', 'error');
+                return;
+            }
+
+            const apiUrl = document.getElementById('api-url').value;
+            const firstName = document.getElementById('emergency-first-name').value;
+            const lastName = document.getElementById('emergency-last-name').value;
+            const gender = document.getElementById('emergency-gender').value;
+
+            if (!firstName || !lastName || !gender) {
+                showNotification('❌ Please fill in all required fields!', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${apiUrl}/api/patients/emergency`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${accessToken}`,
+                    },
+                    body: JSON.stringify({ firstName, lastName, gender }),
+                });
+
+                const data = await response.json();
+
+                if (response.ok || response.status === 201) {
+                    showNotification('✅ Patient registered successfully!', 'success');
+                    displayResponse(data);
+
+                    document.getElementById('update-mrn').value = data.mrn;
+                } else {
+                    showNotification(`❌ Registration failed: ${data.error?.message || 'Unknown error'}`, 'error');
+                    displayResponse(data);
+                }
+            } catch (error) {
+                showNotification(`❌ Network error: ${error.message}`, 'error');
+            }
+        }
+
+        async function updatePatient() {
+            if (!accessToken) {
+                showNotification('❌ Please login first!', 'error');
+                return;
+            }
+
+            const apiUrl = document.getElementById('api-url').value;
+            const mrn = document.getElementById('update-mrn').value;
+
+            if (!mrn) {
+                showNotification('❌ MRN is required!', 'error');
+                return;
+            }
+
+            const firstName = document.getElementById('update-first-name').value || undefined;
+            const lastName = document.getElementById('update-last-name').value || undefined;
+            const dob = document.getElementById('update-dob').value || undefined;
+            const gender = document.getElementById('update-gender').value || undefined;
+            const email = document.getElementById('update-email').value || undefined;
+            const phone = document.getElementById('update-phone').value || undefined;
+            const address = document.getElementById('update-address').value || undefined;
+            const insuranceProvider = document.getElementById('update-insurance').value || undefined;
+            const policyNumber = document.getElementById('update-policy').value || undefined;
+
+            const contactInfo = {};
+            if (email || phone || address || insuranceProvider || policyNumber) {
+                if (email) contactInfo.email = email;
+                if (phone) contactInfo.phone = phone;
+                if (address) contactInfo.address = address;
+                if (insuranceProvider) contactInfo.insuranceProvider = insuranceProvider;
+                if (policyNumber) contactInfo.policyNumber = policyNumber;
+            }
+
+            const payload = {};
+            if (firstName) payload.firstName = firstName;
+            if (lastName) payload.lastName = lastName;
+            if (dob) payload.dob = dob;
+            if (gender) payload.gender = gender;
+            if (Object.keys(contactInfo).length > 0) payload.contactInfo = contactInfo;
+
+            try {
+                const response = await fetch(`${apiUrl}/api/patients/${mrn}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${accessToken}`,
+                    },
+                    body: JSON.stringify(payload),
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showNotification('✅ Patient updated successfully!', 'success');
+                    displayResponse(data);
+                } else {
+                    showNotification(`❌ Update failed: ${data.error?.message || 'Unknown error'}`, 'error');
+                    displayResponse(data);
+                }
+            } catch (error) {
+                showNotification(`❌ Network error: ${error.message}`, 'error');
+            }
+        }
+
+        async function getPatient() {
+            if (!accessToken) {
+                showNotification('❌ Please login first!', 'error');
+                return;
+            }
+
+            const apiUrl = document.getElementById('api-url').value;
+            const mrn = document.getElementById('search-mrn').value;
+
+            if (!mrn) {
+                showNotification('❌ MRN is required!', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${apiUrl}/api/patients/${mrn}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`,
+                    },
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showNotification('✅ Patient retrieved successfully!', 'success');
+                    displayResponse(data);
+                } else {
+                    showNotification(`❌ Retrieval failed: ${data.error?.message || 'Unknown error'}`, 'error');
+                    displayResponse(data);
+                }
+            } catch (error) {
+                showNotification(`❌ Network error: ${error.message}`, 'error');
+            }
+        }
+    </script>
+</body>
+</html>
