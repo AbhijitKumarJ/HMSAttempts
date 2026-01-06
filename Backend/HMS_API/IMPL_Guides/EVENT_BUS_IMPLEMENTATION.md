@@ -321,16 +321,90 @@ builder.Services.AddHostedService<BillingWorker>();
 └─────────────────────────────────────────────────────────┘
 ```
 
+## Using Background Services with EventBus
+
+Story 5-1 extends the EventBus with a robust background worker infrastructure. See [BACKGROUND_WORKERS_QUICKSTART.md](./BACKGROUND_WORKERS_QUICKSTART.md) for complete guide.
+
+### Overview
+
+`EventConsumerBackgroundService<T>` provides:
+- Automatic polling of `app_events` table
+- Strongly-typed payload deserialization
+- Automatic retry logic with configurable max retries
+- Dead letter handling after max failures
+- Graceful shutdown support
+- Concurrency-safe event processing (via SKIP LOCKED)
+
+### Base Class Usage
+
+```csharp
+public class MyWorker : EventConsumerBackgroundService<MyEvent>
+{
+    public MyWorker(IEventBus eventBus, ILogger<MyWorker> logger)
+        : base(eventBus, logger)
+    {
+        EventType = "My.EventType"; // Event type to listen for
+    }
+
+    protected override async Task ProcessEventAsync(Guid eventId, MyEvent payload, CancellationToken cancellationToken)
+    {
+        // Your business logic here
+        // Base class handles all event bus plumbing
+    }
+}
+```
+
+### Register in Program.cs
+
+```csharp
+// After other service registrations
+builder.Services.AddHostedService<MyWorker>();
+```
+
+### Example Workers
+
+- **OrderCreatedWorker** - Creates LabOrder records from "Order.Created" events
+- **MedicationDispensedWorker** - Generates billing from "Medication.Dispensed" events
+
+See `HMS.Business/Bus/Workers/` for complete implementations.
+
+### Key Features
+
+| Feature | Implementation |
+|---------|---------------|
+| **Polling** | Continuous loop with configurable interval (default: 1000ms) |
+| **Concurrency** | Uses SKIP LOCKED for safe multi-instance deployment |
+| **Idempotency** | Prevents duplicate processing via event ID tracking |
+| **Retry Logic** | Automatic retry up to MaxRetries (default: 5) |
+| **Dead Letter** | Events marked as Failed after max retries |
+| **Graceful Shutdown** | Respects CancellationToken, completes current processing |
+
+### Configuration
+
+Override in worker constructor:
+```csharp
+public class CustomWorker : EventConsumerBackgroundService<MyEvent>
+{
+    public CustomWorker(IEventBus eventBus, ILogger<CustomWorker> logger)
+        : base(eventBus, logger)
+    {
+        EventType = "Custom.Event";
+        PollIntervalMs = 500;  // Poll every 500ms
+        MaxRetries = 3;        // Fail after 3 retries
+    }
+}
+```
+
 ## Next Steps
 
-1. **Test the implementation:**
+1. **Test implementation:**
    ```bash
    cd Backend/HMS_API
    dotnet build
    dotnet test HMS.API/HMS.API.csproj --filter "FullyQualifiedName~EventBusTests" --no-build
    ```
 
-2. **Test the API endpoints:**
+2. **Test API endpoints:**
    ```bash
    # Publish an event
    curl -X POST http://localhost:5000/api/Bus/events/publish \
@@ -341,9 +415,16 @@ builder.Services.AddHostedService<BillingWorker>();
    curl http://localhost:5000/api/Bus/events/fetch?eventType=TestEvent
    ```
 
-3. **Create background workers** for your specific modules (Billing, Inventory, etc.)
+3. **Create background workers** using `EventConsumerBackgroundService<T>` base class
+   - See [BACKGROUND_WORKERS_QUICKSTART.md](./BACKGROUND_WORKERS_QUICKSTART.md) for complete guide
+   - See example workers in `HMS.Business/Bus/Workers/`
 
 4. **Register background workers** in Program.cs using `AddHostedService()`
+
+5. **Test background workers:**
+   ```bash
+   dotnet test HMS.Tests/HMS.Tests.csproj --filter "FullyQualifiedName~EventConsumerTests" --no-build
+   ```
 
 ## Conclusion
 

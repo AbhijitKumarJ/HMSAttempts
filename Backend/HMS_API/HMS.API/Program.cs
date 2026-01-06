@@ -4,6 +4,7 @@ using HMS.Data;
 using HMS.Business.Auth;
 using HMS.Business.Billing;
 using HMS.Business.Bus;
+using HMS.Business.Bus.Workers;
 using HMS.Business.Clinical;
 using HMS.Business.Cpoe;
 using HMS.Business.Inventory;
@@ -108,6 +109,11 @@ public class Program
         // Scheduling module
         builder.Services.AddScoped<ISchedulingService, SchedulingService>();
         builder.Services.AddScoped<ISchedulingRepository, SchedulingRepository>();
+
+        // Background Workers (Event Consumers)
+        // Uncomment to enable background workers
+        // builder.Services.AddHostedService<OrderCreatedWorker>();
+        // builder.Services.AddHostedService<MedicationDispensedWorker>();
 
         var app = builder.Build();
 
