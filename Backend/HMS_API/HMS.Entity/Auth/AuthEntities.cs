@@ -71,3 +71,16 @@ public class GetUserEntity
 //     public DateTime? CreatedAt { get; set; }
 //     public DateTime? UpdatedAt { get; set; }
 // }
+
+public class SwitchRoleRequest
+{
+    public string Role { get; set; } = null!;
+}
+
+public class SwitchRoleResponse
+{
+    public string AccessToken { get; set; } = null!;
+    public int ExpiresIn { get; set; }
+    public DateTime IssuedAt { get; set; }
+    public List<string> AvailableRoles { get; set; } = null!;
+}

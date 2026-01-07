@@ -18,10 +18,11 @@ public interface IAuthService
     // JObject CreateUser(CreateUserEntity entity);
     // JObject UpdateUser(UpdateUserEntity entity);
     // JObject DeleteUser(int id);
-    
+
     Task<List<DoctorDto>> GetDoctorsAsync(string? query);
     Task<TokenResponse?> LoginAsync(LoginRequest request, CancellationToken cancellationToken);
     Task<TokenResponse?> RefreshTokenAsync(string refreshToken, CancellationToken cancellationToken);
+    Task<SwitchRoleResponse?> SwitchRoleAsync(int userId, string newRole, CancellationToken cancellationToken);
     Task LogoutAsync(string refreshToken, CancellationToken cancellationToken);
     Task<string> HashPasswordAsync(string password);
     Task<bool> VerifyPasswordAsync(string password, string hash);
@@ -156,6 +157,41 @@ public class AuthService : IAuthService
         };
     }
 
+    public async Task<SwitchRoleResponse?> SwitchRoleAsync(int userId, string newRole, CancellationToken cancellationToken)
+    {
+        var user = _authRepository.GetUserWithRolesById(userId);
+        if (user == null)
+        {
+            _logger.LogWarning("Role switch failed: User not found - {UserId}", userId);
+            return null;
+        }
+
+        if (user.IsActive != true)
+        {
+            _logger.LogWarning("Role switch failed: User is inactive - {UserId}", userId);
+            return null;
+        }
+
+        var hasRole = user.Roles?.Any(r => r.Name == newRole) ?? false;
+        if (!hasRole)
+        {
+            _logger.LogWarning("Role switch failed: User does not have role {NewRole} - {UserId}", newRole, userId);
+            return null;
+        }
+
+        var accessToken = await GenerateJwtTokenAsync(user, newRole);
+        var availableRoles = user.Roles?.Select(r => r.Name).ToList() ?? new List<string>();
+
+        _logger.LogInformation("Role switched successfully for user - {UserId} to role {NewRole}", userId, newRole);
+        return new SwitchRoleResponse
+        {
+            AccessToken = accessToken,
+            ExpiresIn = 3600,
+            IssuedAt = DateTime.UtcNow,
+            AvailableRoles = availableRoles
+        };
+    }
+
     public async Task LogoutAsync(string refreshToken, CancellationToken cancellationToken)
     {
         var tokenHash = HashToken(refreshToken);
@@ -178,7 +214,7 @@ public class AuthService : IAuthService
         return await Task.FromResult(BCrypt.Net.BCrypt.Verify(password, hash));
     }
 
-    private async Task<string> GenerateJwtTokenAsync(User user)
+    private async Task<string> GenerateJwtTokenAsync(User user, string? specificRole = null)
     {
         var secretKey = _configuration["Jwt:Secret"];
         var issuer = _configuration["Jwt:Issuer"];
@@ -187,7 +223,7 @@ public class AuthService : IAuthService
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey!));
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-        var activeRole = user.Roles?.FirstOrDefault()?.Name ?? "Guest";
+        var activeRole = specificRole ?? user.Roles?.FirstOrDefault()?.Name ?? "Guest";
 
         var claims = new[]
         {

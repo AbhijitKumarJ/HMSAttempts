@@ -2,6 +2,7 @@ using HMS.Business.Auth;
 using HMS.Entity.Auth;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace HMS.API.Controllers.Auth;
 
@@ -96,6 +97,41 @@ public class AuthController : ControllerBase
 
         Response.Cookies.Delete("refreshToken");
         return Ok(new { message = "Logged out successfully" });
+    }
+
+    // POST: api/auth/switch-role
+    [HttpPost("switch-role")]
+    public async Task<IActionResult> SwitchRole([FromBody] SwitchRoleRequest request, CancellationToken cancellationToken)
+    {
+        if (request == null || string.IsNullOrEmpty(request.Role))
+        {
+            return BadRequest(new { error = "Role is required" });
+        }
+
+        if (!User.HasClaim(c => c.Type == JwtRegisteredClaimNames.Sub))
+        {
+            return Unauthorized(new { error = "Invalid token" });
+        }
+
+        var userIdClaim = User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
+        if (!int.TryParse(userIdClaim, out int userId))
+        {
+            return Unauthorized(new { error = "Invalid user ID in token" });
+        }
+
+        var result = await _authService.SwitchRoleAsync(userId, request.Role, cancellationToken);
+        if (result == null)
+        {
+            return BadRequest(new { error = "Invalid role or user not authorized for this role" });
+        }
+
+        return Ok(new
+        {
+            accessToken = result.AccessToken,
+            expiresIn = result.ExpiresIn,
+            issuedAt = result.IssuedAt,
+            availableRoles = result.AvailableRoles
+        });
     }
 
     // Legacy endpoints (kept for backward compatibility)

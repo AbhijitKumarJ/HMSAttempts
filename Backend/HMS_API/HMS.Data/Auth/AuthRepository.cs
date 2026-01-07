@@ -8,6 +8,7 @@ public interface IAuthRepository
     object GetUserById(int id);
     User? GetUserByUsername(string username);
     User? GetUserWithRoles(string username);
+    User? GetUserWithRolesById(int userId);
     Task<List<User>> GetDoctorsAsync(string? query);
     RefreshToken? CreateRefreshToken(RefreshToken token);
     RefreshToken? GetRefreshTokenByHash(string tokenHash);
@@ -41,6 +42,13 @@ public class AuthRepository : IAuthRepository
         return _context.Users
             .Include(u => u.Roles)
             .FirstOrDefault(u => u.Username == username);
+    }
+
+    public User? GetUserWithRolesById(int userId)
+    {
+        return _context.Users
+            .Include(u => u.Roles)
+            .FirstOrDefault(u => u.Id == userId);
     }
 
     public async Task<List<User>> GetDoctorsAsync(string? query)
