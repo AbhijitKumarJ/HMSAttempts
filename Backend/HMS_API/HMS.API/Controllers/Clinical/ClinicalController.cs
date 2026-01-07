@@ -154,4 +154,147 @@ public class ClinicalController : ControllerBase
     {
         return Ok(_clinicalService.GetVitalsAlertRules());
     }
+
+    // Story 10.2: Episode of Care Management
+
+    // POST: api/Clinical/episodes
+    [HttpPost("episodes")]
+    public async Task<IActionResult> CreateEpisode([FromBody] CreateEpisodeDto dto, CancellationToken cancellationToken)
+    {
+        if (dto == null) return BadRequest();
+
+        try
+        {
+            var result = _clinicalService.CreateEpisode(dto);
+            return CreatedAtAction(nameof(GetEpisode), new { id = result.Id }, result);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error creating episode");
+            return StatusCode(500, new { error = new { code = "INTERNAL_ERROR", message = "An error occurred while creating episode" } });
+        }
+    }
+
+    // GET: api/Clinical/episodes/{id}
+    [HttpGet("episodes/{id:long}")]
+    public async Task<IActionResult> GetEpisode(long id, CancellationToken cancellationToken)
+    {
+        var result = _clinicalService.GetEpisode(id);
+        if (result == null) return NotFound();
+        return Ok(result);
+    }
+
+    // GET: api/Clinical/patients/{patientId}/episodes
+    [HttpGet("patients/{patientId:int}/episodes")]
+    public async Task<IActionResult> GetPatientEpisodes(int patientId, CancellationToken cancellationToken)
+    {
+        return Ok(_clinicalService.GetPatientEpisodes(patientId));
+    }
+
+    // PUT: api/Clinical/episodes/{id}/close
+    [HttpPut("episodes/{id:long}/close")]
+    public async Task<IActionResult> CloseEpisode(long id, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var result = _clinicalService.CloseEpisode(id);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error closing episode");
+            return StatusCode(500, new { error = new { code = "INTERNAL_ERROR", message = "An error occurred while closing episode" } });
+        }
+    }
+
+    // Story 10.3: Consultation Lifecycle
+
+    // POST: api/Clinical/consultations/start
+    [HttpPost("consultations/start")]
+    public async Task<IActionResult> StartConsultation([FromBody] StartConsultationDto dto, CancellationToken cancellationToken)
+    {
+        if (dto == null) return BadRequest();
+
+        try
+        {
+            var result = _clinicalService.StartConsultation(dto);
+            return CreatedAtAction(nameof(GetConsultation), new { id = result.Id }, result);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Conflict(new { error = new { code = "ACTIVE_CONSULTATION_EXISTS", message = ex.Message } });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error starting consultation");
+            return StatusCode(500, new { error = new { code = "INTERNAL_ERROR", message = "An error occurred while starting consultation" } });
+        }
+    }
+
+    // GET: api/Clinical/consultations/{id}
+    [HttpGet("consultations/{id:long}")]
+    public async Task<IActionResult> GetConsultation(long id, CancellationToken cancellationToken)
+    {
+        var result = _clinicalService.GetConsultation(id);
+        if (result == null) return NotFound();
+        return Ok(result);
+    }
+
+    // GET: api/Clinical/doctors/{doctorId}/active-consultation
+    [HttpGet("doctors/{doctorId:int}/active-consultation")]
+    public async Task<IActionResult> GetActiveConsultationByDoctor(int doctorId, CancellationToken cancellationToken)
+    {
+        var result = _clinicalService.GetActiveConsultationByDoctor(doctorId);
+        if (result == null) return NotFound();
+        return Ok(result);
+    }
+
+    // GET: api/Clinical/patients/{patientId}/consultations
+    [HttpGet("patients/{patientId:int}/consultations")]
+    public async Task<IActionResult> GetPatientConsultations(int patientId, CancellationToken cancellationToken)
+    {
+        return Ok(_clinicalService.GetPatientConsultations(patientId));
+    }
+
+    // PUT: api/Clinical/consultations/{id}/end
+    [HttpPut("consultations/{id:long}/end")]
+    public async Task<IActionResult> EndConsultation(long id, [FromBody] EndConsultationDto dto, CancellationToken cancellationToken)
+    {
+        if (dto == null || string.IsNullOrEmpty(dto.ClinicalSummary))
+        {
+            return BadRequest(new { error = new { code = "VALIDATION_ERROR", message = "ClinicalSummary is required" } });
+        }
+
+        try
+        {
+            var result = _clinicalService.EndConsultation(id, dto.ClinicalSummary);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error ending consultation");
+            return StatusCode(500, new { error = new { code = "INTERNAL_ERROR", message = "An error occurred while ending consultation" } });
+        }
+    }
+
+    // PUT: api/Clinical/consultations/{id}/link-episode
+    [HttpPut("consultations/{id:long}/link-episode")]
+    public async Task<IActionResult> LinkConsultationToEpisode(long id, [FromBody] LinkConsultationEpisodeDto dto, CancellationToken cancellationToken)
+    {
+        if (dto == null || dto.EpisodeId == 0)
+        {
+            return BadRequest(new { error = new { code = "VALIDATION_ERROR", message = "EpisodeId is required" } });
+        }
+
+        try
+        {
+            var result = _clinicalService.LinkConsultationToEpisode(id, dto.EpisodeId);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error linking consultation to episode");
+            return StatusCode(500, new { error = new { code = "INTERNAL_ERROR", message = "An error occurred while linking consultation to episode" } });
+        }
+    }
 }

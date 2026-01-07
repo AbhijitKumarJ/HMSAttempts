@@ -7,15 +7,27 @@ namespace HMS.Data.Clinical;
 public interface IClinicalRepository
 {
     object GetUserById(int id);
-    
+
     FormTemplateDto CreateFormTemplate(CreateFormTemplateDto dto);
     FormTemplateDto? GetFormTemplate(int id);
     List<FormTemplateDto> GetFormTemplates();
     void DeleteFormTemplate(int id);
-    
+
     ClinVital CreateVital(VitalsCaptureDto dto, int recordedBy);
     ClinVital? GetVital(long id);
     List<ClinVital> GetPatientVitals(int patientId);
+
+    SchEpisode CreateEpisode(SchEpisode episode);
+    SchEpisode? GetEpisode(long id);
+    List<SchEpisode> GetPatientEpisodes(int patientId);
+    SchEpisode CloseEpisode(long id);
+
+    ClinConsultation CreateConsultation(ClinConsultation consultation);
+    ClinConsultation? GetConsultation(long id);
+    ClinConsultation? GetActiveConsultationByDoctor(int doctorId);
+    List<ClinConsultation> GetPatientConsultations(int patientId);
+    ClinConsultation EndConsultation(long id, string clinicalSummary);
+    ClinConsultation LinkConsultationToEpisode(long consultationId, long episodeId);
 }
 
 public class ClinicalRepository : IClinicalRepository
@@ -190,5 +202,98 @@ public class ClinicalRepository : IClinicalRepository
             .Where(v => v.PatientId == patientId)
             .OrderByDescending(v => v.RecordedAt)
             .ToList();
+    }
+
+    public SchEpisode CreateEpisode(SchEpisode episode)
+    {
+        _context.SchEpisodes.Add(episode);
+        _context.SaveChanges();
+        return episode;
+    }
+
+    public SchEpisode? GetEpisode(long id)
+    {
+        return _context.SchEpisodes
+            .Include(e => e.Patient)
+            .FirstOrDefault(e => e.Id == id);
+    }
+
+    public List<SchEpisode> GetPatientEpisodes(int patientId)
+    {
+        return _context.SchEpisodes
+            .Where(e => e.PatientId == patientId)
+            .OrderByDescending(e => e.StartDate)
+            .ToList();
+    }
+
+    public SchEpisode CloseEpisode(long id)
+    {
+        var episode = _context.SchEpisodes.FirstOrDefault(e => e.Id == id);
+        if (episode != null)
+        {
+            episode.EndDate = DateTime.UtcNow;
+            episode.Status = "Closed";
+            _context.SaveChanges();
+        }
+        return episode!;
+    }
+
+    public ClinConsultation CreateConsultation(ClinConsultation consultation)
+    {
+        _context.ClinConsultations.Add(consultation);
+        _context.SaveChanges();
+        return consultation;
+    }
+
+    public ClinConsultation? GetConsultation(long id)
+    {
+        return _context.ClinConsultations
+            .Include(c => c.Patient)
+            .Include(c => c.Doctor)
+            .Include(c => c.Appointment)
+            .Include(c => c.Episode)
+            .FirstOrDefault(c => c.Id == id);
+    }
+
+    public ClinConsultation? GetActiveConsultationByDoctor(int doctorId)
+    {
+        return _context.ClinConsultations
+            .Include(c => c.Patient)
+            .Include(c => c.Appointment)
+            .FirstOrDefault(c => c.DoctorId == doctorId && c.StartedAt.HasValue && !c.EndedAt.HasValue);
+    }
+
+    public List<ClinConsultation> GetPatientConsultations(int patientId)
+    {
+        return _context.ClinConsultations
+            .Include(c => c.Doctor)
+            .Include(c => c.Appointment)
+            .Include(c => c.Episode)
+            .Where(c => c.PatientId == patientId)
+            .OrderByDescending(c => c.StartedAt)
+            .ToList();
+    }
+
+    public ClinConsultation EndConsultation(long id, string clinicalSummary)
+    {
+        var consultation = _context.ClinConsultations.FirstOrDefault(c => c.Id == id);
+        if (consultation != null)
+        {
+            consultation.EndedAt = DateTime.UtcNow;
+            consultation.ClinicalSummary = clinicalSummary;
+            _context.SaveChanges();
+        }
+        return consultation!;
+    }
+
+    public ClinConsultation LinkConsultationToEpisode(long consultationId, long episodeId)
+    {
+        var consultation = _context.ClinConsultations.FirstOrDefault(c => c.Id == consultationId);
+        if (consultation != null)
+        {
+            consultation.EpisodeId = episodeId;
+            _context.SaveChanges();
+        }
+        return consultation!;
     }
 }

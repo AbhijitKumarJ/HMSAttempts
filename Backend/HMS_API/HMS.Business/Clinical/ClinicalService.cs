@@ -1,4 +1,5 @@
 using HMS.Data.Clinical;
+using HMS.Data.DBModel;
 using HMS.Entity.Clinical;
 using Newtonsoft.Json.Linq;
 using Microsoft.EntityFrameworkCore;
@@ -12,17 +13,29 @@ public interface IClinicalService
     JObject CreateUser(CreateUserEntity entity);
     JObject UpdateUser(UpdateUserEntity entity);
     JObject DeleteUser(int id);
-    
+
     FormTemplateDto CreateFormTemplate(CreateFormTemplateDto dto);
     FormTemplateDto? GetFormTemplate(int id);
     List<FormTemplateDto> GetFormTemplates();
     void DeleteFormTemplate(int id);
-    
+
     VitalsCaptureDto CreateVital(VitalsCaptureDto dto, int recordedBy);
     VitalsCaptureDto? GetVital(long id);
     List<VitalsCaptureDto> GetPatientVitals(int patientId);
     VitalsValidationResponse ValidateVitals(VitalsCaptureDto dto);
     List<VitalsAlertRule> GetVitalsAlertRules();
+
+    EpisodeDto CreateEpisode(CreateEpisodeDto dto);
+    EpisodeDto? GetEpisode(long id);
+    List<EpisodeDto> GetPatientEpisodes(int patientId);
+    EpisodeDto CloseEpisode(long id);
+
+    ConsultationDto StartConsultation(StartConsultationDto dto);
+    ConsultationDto? GetConsultation(long id);
+    ConsultationDto? GetActiveConsultationByDoctor(int doctorId);
+    List<ConsultationDto> GetPatientConsultations(int patientId);
+    ConsultationDto EndConsultation(long id, string clinicalSummary);
+    ConsultationDto LinkConsultationToEpisode(long consultationId, long episodeId);
 }
 
 public class ClinicalService : IClinicalService
@@ -396,6 +409,218 @@ public class ClinicalService : IClinicalService
                 AlertLevel = "Warning",
                 Message = "SpO2 below 94% - Mild Hypoxemia"
             }
+        };
+    }
+
+    public EpisodeDto CreateEpisode(CreateEpisodeDto dto)
+    {
+        var episode = new SchEpisode
+        {
+            PatientId = dto.PatientId,
+            Title = dto.Title,
+            StartDate = dto.StartDate,
+            Status = "Active"
+        };
+
+        var createdEpisode = _clinicalRepository.CreateEpisode(episode);
+
+        return new EpisodeDto
+        {
+            Id = createdEpisode.Id,
+            PatientId = createdEpisode.PatientId ?? 0,
+            Title = createdEpisode.Title,
+            StartDate = createdEpisode.StartDate,
+            EndDate = createdEpisode.EndDate,
+            Status = createdEpisode.Status
+        };
+    }
+
+    public EpisodeDto? GetEpisode(long id)
+    {
+        var episode = _clinicalRepository.GetEpisode(id);
+        if (episode == null) return null;
+
+        return new EpisodeDto
+        {
+            Id = episode.Id,
+            PatientId = episode.PatientId ?? 0,
+            Title = episode.Title,
+            StartDate = episode.StartDate,
+            EndDate = episode.EndDate,
+            Status = episode.Status,
+            PatientName = $"{episode.Patient?.FirstName} {episode.Patient?.LastName}"
+        };
+    }
+
+    public List<EpisodeDto> GetPatientEpisodes(int patientId)
+    {
+        var episodes = _clinicalRepository.GetPatientEpisodes(patientId);
+        return episodes.Select(e => new EpisodeDto
+        {
+            Id = e.Id,
+            PatientId = e.PatientId ?? 0,
+            Title = e.Title,
+            StartDate = e.StartDate,
+            EndDate = e.EndDate,
+            Status = e.Status
+        }).ToList();
+    }
+
+    public EpisodeDto CloseEpisode(long id)
+    {
+        var episode = _clinicalRepository.CloseEpisode(id);
+        return new EpisodeDto
+        {
+            Id = episode.Id,
+            PatientId = episode.PatientId ?? 0,
+            Title = episode.Title,
+            StartDate = episode.StartDate,
+            EndDate = episode.EndDate,
+            Status = episode.Status
+        };
+    }
+
+    public ConsultationDto StartConsultation(StartConsultationDto dto)
+    {
+        var activeConsultation = _clinicalRepository.GetActiveConsultationByDoctor(dto.DoctorId);
+        if (activeConsultation != null)
+        {
+            throw new InvalidOperationException($"Doctor already has an active consultation with ID {activeConsultation.Id}");
+        }
+
+        var consultation = new ClinConsultation
+        {
+            AppointmentId = dto.AppointmentId,
+            DoctorId = dto.DoctorId,
+            EpisodeId = dto.EpisodeId,
+            StartedAt = DateTime.UtcNow
+        };
+
+        var createdConsultation = _clinicalRepository.CreateConsultation(consultation);
+        var loadedConsultation = _clinicalRepository.GetConsultation(createdConsultation.Id);
+
+        return new ConsultationDto
+        {
+            Id = loadedConsultation.Id,
+            AppointmentId = loadedConsultation.AppointmentId,
+            EpisodeId = loadedConsultation.EpisodeId,
+            PatientId = loadedConsultation.PatientId,
+            DoctorId = loadedConsultation.DoctorId,
+            StartedAt = loadedConsultation.StartedAt,
+            EndedAt = loadedConsultation.EndedAt,
+            ClinicalSummary = loadedConsultation.ClinicalSummary,
+            PatientName = $"{loadedConsultation.Patient?.FirstName} {loadedConsultation.Patient?.LastName}",
+            DoctorName = loadedConsultation.Doctor?.Username,
+            AppointmentStatus = loadedConsultation.Appointment?.Status,
+            EpisodeTitle = loadedConsultation.Episode?.Title
+        };
+    }
+
+    public ConsultationDto? GetConsultation(long id)
+    {
+        var consultation = _clinicalRepository.GetConsultation(id);
+        if (consultation == null) return null;
+
+        return new ConsultationDto
+        {
+            Id = consultation.Id,
+            AppointmentId = consultation.AppointmentId,
+            EpisodeId = consultation.EpisodeId,
+            PatientId = consultation.PatientId,
+            DoctorId = consultation.DoctorId,
+            StartedAt = consultation.StartedAt,
+            EndedAt = consultation.EndedAt,
+            ClinicalSummary = consultation.ClinicalSummary,
+            PatientName = $"{consultation.Patient?.FirstName} {consultation.Patient?.LastName}",
+            DoctorName = consultation.Doctor?.Username,
+            AppointmentStatus = consultation.Appointment?.Status,
+            EpisodeTitle = consultation.Episode?.Title
+        };
+    }
+
+    public ConsultationDto? GetActiveConsultationByDoctor(int doctorId)
+    {
+        var consultation = _clinicalRepository.GetActiveConsultationByDoctor(doctorId);
+        if (consultation == null) return null;
+
+        return new ConsultationDto
+        {
+            Id = consultation.Id,
+            AppointmentId = consultation.AppointmentId,
+            EpisodeId = consultation.EpisodeId,
+            PatientId = consultation.PatientId,
+            DoctorId = consultation.DoctorId,
+            StartedAt = consultation.StartedAt,
+            EndedAt = consultation.EndedAt,
+            ClinicalSummary = consultation.ClinicalSummary,
+            PatientName = $"{consultation.Patient?.FirstName} {consultation.Patient?.LastName}",
+            DoctorName = consultation.Doctor?.Username,
+            AppointmentStatus = consultation.Appointment?.Status,
+            EpisodeTitle = consultation.Episode?.Title
+        };
+    }
+
+    public List<ConsultationDto> GetPatientConsultations(int patientId)
+    {
+        var consultations = _clinicalRepository.GetPatientConsultations(patientId);
+        return consultations.Select(c => new ConsultationDto
+        {
+            Id = c.Id,
+            AppointmentId = c.AppointmentId,
+            EpisodeId = c.EpisodeId,
+            PatientId = c.PatientId,
+            DoctorId = c.DoctorId,
+            StartedAt = c.StartedAt,
+            EndedAt = c.EndedAt,
+            ClinicalSummary = c.ClinicalSummary,
+            PatientName = $"{c.Patient?.FirstName} {c.Patient?.LastName}",
+            DoctorName = c.Doctor?.Username,
+            AppointmentStatus = c.Appointment?.Status,
+            EpisodeTitle = c.Episode?.Title
+        }).ToList();
+    }
+
+    public ConsultationDto EndConsultation(long id, string clinicalSummary)
+    {
+        var consultation = _clinicalRepository.EndConsultation(id, clinicalSummary);
+        var loadedConsultation = _clinicalRepository.GetConsultation(consultation.Id);
+
+        return new ConsultationDto
+        {
+            Id = loadedConsultation.Id,
+            AppointmentId = loadedConsultation.AppointmentId,
+            EpisodeId = loadedConsultation.EpisodeId,
+            PatientId = loadedConsultation.PatientId,
+            DoctorId = loadedConsultation.DoctorId,
+            StartedAt = loadedConsultation.StartedAt,
+            EndedAt = loadedConsultation.EndedAt,
+            ClinicalSummary = loadedConsultation.ClinicalSummary,
+            PatientName = $"{loadedConsultation.Patient?.FirstName} {loadedConsultation.Patient?.LastName}",
+            DoctorName = loadedConsultation.Doctor?.Username,
+            AppointmentStatus = loadedConsultation.Appointment?.Status,
+            EpisodeTitle = loadedConsultation.Episode?.Title
+        };
+    }
+
+    public ConsultationDto LinkConsultationToEpisode(long consultationId, long episodeId)
+    {
+        var consultation = _clinicalRepository.LinkConsultationToEpisode(consultationId, episodeId);
+        var loadedConsultation = _clinicalRepository.GetConsultation(consultation.Id);
+
+        return new ConsultationDto
+        {
+            Id = loadedConsultation.Id,
+            AppointmentId = loadedConsultation.AppointmentId,
+            EpisodeId = loadedConsultation.EpisodeId,
+            PatientId = loadedConsultation.PatientId,
+            DoctorId = loadedConsultation.DoctorId,
+            StartedAt = loadedConsultation.StartedAt,
+            EndedAt = loadedConsultation.EndedAt,
+            ClinicalSummary = loadedConsultation.ClinicalSummary,
+            PatientName = $"{loadedConsultation.Patient?.FirstName} {loadedConsultation.Patient?.LastName}",
+            DoctorName = loadedConsultation.Doctor?.Username,
+            AppointmentStatus = loadedConsultation.Appointment?.Status,
+            EpisodeTitle = loadedConsultation.Episode?.Title
         };
     }
 }

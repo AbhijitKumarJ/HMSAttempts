@@ -157,3 +157,54 @@ public class VitalsAlertRule
     public string AlertLevel { get; set; } = null!;
     public string Message { get; set; } = null!;
 }
+
+public class CreateEpisodeDto
+{
+    public int PatientId { get; set; }
+    public string? Title { get; set; }
+    public DateTime StartDate { get; set; }
+}
+
+public class EpisodeDto
+{
+    public long Id { get; set; }
+    public int PatientId { get; set; }
+    public string? Title { get; set; }
+    public DateTime? StartDate { get; set; }
+    public DateTime? EndDate { get; set; }
+    public string? Status { get; set; }
+    public string? PatientName { get; set; }
+}
+
+public class StartConsultationDto
+{
+    public long AppointmentId { get; set; }
+    public int DoctorId { get; set; }
+    public int? EpisodeId { get; set; }
+}
+
+public class EndConsultationDto
+{
+    public string ClinicalSummary { get; set; } = null!;
+}
+
+public class LinkConsultationEpisodeDto
+{
+    public long EpisodeId { get; set; }
+}
+
+public class ConsultationDto
+{
+    public long Id { get; set; }
+    public long? AppointmentId { get; set; }
+    public long? EpisodeId { get; set; }
+    public int? PatientId { get; set; }
+    public int? DoctorId { get; set; }
+    public DateTime? StartedAt { get; set; }
+    public DateTime? EndedAt { get; set; }
+    public string? ClinicalSummary { get; set; }
+    public string? PatientName { get; set; }
+    public string? DoctorName { get; set; }
+    public string? AppointmentStatus { get; set; }
+    public string? EpisodeTitle { get; set; }
+}

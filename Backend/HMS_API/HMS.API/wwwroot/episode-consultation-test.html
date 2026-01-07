@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Episode & Consultation Management - HMS</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .auth-section {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            padding: 12px 24px;
+            background: white;
+            border: 2px solid #667eea;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #667eea;
+            transition: all 0.3s;
+        }
+
+        .tab:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .tab.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .card h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button.secondary {
+            background: #6c757d;
+        }
+
+        button.success {
+            background: #28a745;
+        }
+
+        button.danger {
+            background: #dc3545;
+        }
+
+        button.warning {
+            background: #ffc107;
+            color: #333;
+        }
+
+        .result {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        pre {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-size: 12px;
+            border: 1px solid #dee2e6;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .notification {
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        .notification.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .notification.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .notification.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .notification.warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+        }
+
+        .search-list {
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+            margin-top: 5px;
+            background: #f9f9f9;
+        }
+
+        .search-item {
+            padding: 8px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .search-item:hover {
+            background: #e9ecef;
+        }
+
+        .search-item:last-child {
+            border-bottom: none;
+        }
+
+        .search-item.selected {
+            background: #667eea;
+            color: white;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-active {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-closed {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .status-in-progress {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        th {
+            background: #667eea;
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .dashboard-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-card h3 {
+            font-size: 2rem;
+            margin-bottom: 5px;
+        }
+
+        .stat-card p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏥 Episode & Consultation Management</h1>
+            <p>Hospital Management System - Episode of Care & Consultation Lifecycle Testing Interface</p>
+        </div>
+
+        <div class="auth-section">
+            <h2>🔐 Authentication</h2>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="api-url">API URL</label>
+                    <input type="text" id="api-url" value="http://localhost:5000">
+                </div>
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" placeholder="testuser">
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" placeholder="password123">
+                </div>
+            </div>
+            <button onclick="login()">🔑 Login</button>
+        </div>
+
+        <div class="notification" id="notification"></div>
+
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('dashboard')">📊 Dashboard</div>
+            <div class="tab" onclick="switchTab('episodes')">📋 Episodes</div>
+            <div class="tab" onclick="switchTab('consultations')">🩺 Consultations</div>
+            <div class="tab" onclick="switchTab('history')">📜 History</div>
+        </div>
+
+        <!-- Dashboard Tab -->
+        <div id="dashboard" class="tab-content active">
+            <div class="dashboard-stats">
+                <div class="stat-card">
+                    <h3 id="stat-active-episodes">0</h3>
+                    <p>Active Episodes</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="stat-active-consultations">0</h3>
+                    <p>Active Consultations</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="stat-completed-today">0</h3>
+                    <p>Completed Today</p>
+                </div>
+            </div>
+
+            <div class="grid-2">
+                <div class="card">
+                    <h2>👨‍⚕️ Doctor Status</h2>
+                    <p style="margin-bottom: 15px; color: #666;">Check active consultations by doctor</p>
+                    <div class="form-group">
+                        <label for="doctor-id-input">Doctor ID</label>
+                        <input type="number" id="doctor-id-input" placeholder="1">
+                    </div>
+                    <button onclick="checkDoctorStatus()" class="secondary">🔍 Check Status</button>
+                    <div id="doctor-status-result" style="margin-top: 15px;"></div>
+                </div>
+
+                <div class="card">
+                    <h2>📅 Today's Appointments</h2>
+                    <p style="margin-bottom: 15px; color: #666;">Appointments that can be started</p>
+                    <button onclick="loadTodayAppointments()" class="secondary">📋 Load Today's Appointments</button>
+                    <div id="appointments-list" style="margin-top: 15px;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Episodes Tab -->
+        <div id="episodes" class="tab-content">
+            <div class="grid-2">
+                <div class="card">
+                    <h2>➕ Create New Episode</h2>
+                    <p style="margin-bottom: 15px; color: #666;">Start a new episode of care for a patient</p>
+                    
+                    <div class="form-group">
+                        <label for="episode-patient-search">Search Patient</label>
+                        <input type="text" id="episode-patient-search" placeholder="Search by name or MRN..." onkeyup="searchPatientsForEpisode()">
+                        <div id="episode-patient-list" class="search-list" style="display: none;"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="episode-patient-id">Selected Patient ID</label>
+                        <input type="number" id="episode-patient-id" readonly>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="episode-title">Episode Title *</label>
+                        <input type="text" id="episode-title" placeholder="e.g., Pregnancy 2024, Diabetes Management">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="episode-start-date">Start Date *</label>
+                        <input type="datetime-local" id="episode-start-date">
+                    </div>
+
+                    <button onclick="createEpisode()" class="success">➕ Create Episode</button>
+                </div>
+
+                <div class="card">
+                    <h2>📋 Patient Episodes</h2>
+                    <p style="margin-bottom: 15px; color: #666;">View and manage episodes</p>
+                    
+                    <div class="form-group">
+                        <label for="view-episode-patient-id">Patient ID</label>
+                        <input type="number" id="view-episode-patient-id" placeholder="1">
+                    </div>
+
+                    <button onclick="getPatientEpisodes()" class="secondary">📋 Get Patient Episodes</button>
+                    
+                    <div id="patient-episodes-result" style="margin-top: 15px;"></div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>🔍 Get Episode by ID</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="episode-id">Episode ID</label>
+                        <input type="number" id="episode-id" placeholder="1">
+                    </div>
+                    <div class="form-group" style="display: flex; align-items: flex-end;">
+                        <button onclick="getEpisodeById()" class="secondary">🔍 Get Episode</button>
+                    </div>
+                </div>
+                <div id="episode-detail-result"></div>
+            </div>
+        </div>
+
+        <!-- Consultations Tab -->
+        <div id="consultations" class="tab-content">
+            <div class="grid-2">
+                <div class="card">
+                    <h2>▶️ Start Consultation</h2>
+                    <p style="margin-bottom: 15px; color: #666;">Start a consultation from an appointment</p>
+                    
+                    <div class="form-group">
+                        <label for="consultation-appointment-id">Appointment ID *</label>
+                        <input type="number" id="consultation-appointment-id" placeholder="1">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="consultation-doctor-id">Doctor ID *</label>
+                        <input type="number" id="consultation-doctor-id" placeholder="1">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="consultation-episode-id">Episode ID (Optional)</label>
+                        <input type="number" id="consultation-episode-id" placeholder="Leave empty for none">
+                    </div>
+
+                    <button onclick="startConsultation()" class="success">▶️ Start Consultation</button>
+                </div>
+
+                <div class="card">
+                    <h2>⏹️ End Consultation</h2>
+                    <p style="margin-bottom: 15px; color: #666;">End an active consultation</p>
+                    
+                    <div class="form-group">
+                        <label for="end-consultation-id">Consultation ID *</label>
+                        <input type="number" id="end-consultation-id" placeholder="1">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="clinical-summary">Clinical Summary *</label>
+                        <textarea id="clinical-summary" rows="4" placeholder="Enter consultation notes and summary..."></textarea>
+                    </div>
+
+                    <button onclick="endConsultation()" class="warning">⏹️ End Consultation</button>
+                </div>
+            </div>
+
+            <div class="grid-2">
+                <div class="card">
+                    <h2>🔗 Link to Episode</h2>
+                    <p style="margin-bottom: 15px; color: #666;">Link consultation to an episode</p>
+                    
+                    <div class="form-group">
+                        <label for="link-consultation-id">Consultation ID *</label>
+                        <input type="number" id="link-consultation-id" placeholder="1">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="link-episode-id">Episode ID *</label>
+                        <input type="number" id="link-episode-id" placeholder="1">
+                    </div>
+
+                    <button onclick="linkConsultationToEpisode()" class="secondary">🔗 Link to Episode</button>
+                </div>
+
+                <div class="card">
+                    <h2>👨‍⚕️ Get Active Consultation</h2>
+                    <p style="margin-bottom: 15px; color: #666;">Check if doctor has active consultation</p>
+                    
+                    <div class="form-group">
+                        <label for="active-doctor-id">Doctor ID *</label>
+                        <input type="number" id="active-doctor-id" placeholder="1">
+                    </div>
+
+                    <button onclick="getActiveConsultation()" class="secondary">🔍 Get Active Consultation</button>
+                    
+                    <div id="active-consultation-result" style="margin-top: 15px;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- History Tab -->
+        <div id="history" class="tab-content">
+            <div class="card">
+                <h2>📜 Patient Consultation History</h2>
+                <p style="margin-bottom: 15px; color: #666;">View all consultations for a patient</p>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="history-patient-id">Patient ID</label>
+                        <input type="number" id="history-patient-id" placeholder="1">
+                    </div>
+                    <div class="form-group" style="display: flex; align-items: flex-end;">
+                        <button onclick="getPatientConsultations()" class="secondary">📋 Load History</button>
+                    </div>
+                </div>
+
+                <div id="consultation-history-result"></div>
+            </div>
+
+            <div class="card">
+                <h2>📋 Get Consultation by ID</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="consultation-detail-id">Consultation ID</label>
+                        <input type="number" id="consultation-detail-id" placeholder="1">
+                    </div>
+                    <div class="form-group" style="display: flex; align-items: flex-end;">
+                        <button onclick="getConsultationById()" class="secondary">🔍 Get Details</button>
+                    </div>
+                </div>
+                <div id="consultation-detail-result"></div>
+            </div>
+        </div>
+
+        <div class="result" id="result" style="display: none;">
+            <h2>📄 API Response</h2>
+            <pre id="response"></pre>
+        </div>
+    </div>
+
+    <script>
+        let accessToken = null;
+        let searchTimeout = null;
+        let selectedPatient = null;
+
+        function showNotification(message, type) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${type}`;
+            notification.style.display = 'block';
+
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 5000);
+        }
+
+        function displayResponse(data, targetId = 'response') {
+            const resultDiv = document.getElementById('result');
+            const responsePre = document.getElementById(targetId);
+            resultDiv.style.display = 'block';
+            responsePre.textContent = JSON.stringify(data, null, 2);
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        async function login() {
+            const apiUrl = document.getElementById('api-url').value;
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                const response = await fetch(`${apiUrl}/api/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password }),
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    accessToken = data.accessToken;
+                    showNotification('✅ Login successful!', 'success');
+                    displayResponse(data);
+                } else {
+                    showNotification(`❌ Login failed: ${data.error || 'Unknown error'}`, 'error');
+                    displayResponse(data);
+                }
+            } catch (error) {
+                showNotification(`❌ Network error: ${error.message}`, 'error');
+            }
+        }
+
+        function getAuthHeaders() {
+            return {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${accessToken}`,
+            };
+        }
+
+        // Episode Functions
+        function searchPatientsForEpisode() {
+            clearTimeout(searchTimeout);
+            const query = document.getElementById('episode-patient-search').value;
+            
+            if (query.length < 2) {
+                document.getElementById('episode-patient-list').style.display = 'none';
+                return;
+            }
+
+            searchTimeout = setTimeout(() => searchPatients(query, 'episode-patient-list'), 300);
+        }
+
+        async function searchPatients(query, listId) {
+            const apiUrl = document.getElementById('api-url').value;
+
+            try {
+                const response = await fetch(`${apiUrl}/api/patients/search?q=${encodeURIComponent(query)}`, {
+                    method: 'GET',
+                    headers: getAuthHeaders(),
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    const listDiv = document.getElementById(listId);
+                    listDiv.innerHTML = '';
+                    
+                    if (data.data && data.data.length > 0) {
+                        data.data.forEach(patient => {
+                            const div = document.createElement('div');
+                            div.className = 'search-item';
+                            div.innerHTML = `<strong>${patient.mrn}</strong> - ${patient.firstName} ${patient.lastName}`;
+                            div.onclick = () => selectPatientForEpisode(patient, listId);
+                            listDiv.appendChild(div);
+                        });
+                        listDiv.style.display = 'block';
+                    } else {
+                        listDiv.innerHTML = '<div class="search-item">No patients found</div>';
+                        listDiv.style.display = 'block';
+                    }
+                }
+            } catch (error) {
+                console.error('Search error:', error);
+            }
+        }
+
+        function selectPatientForEpisode(patient, listId) {
+            document.getElementById('episode-patient-id').value = patient.id;
+            document.getElementById('episode-patient-search').value = `${patient.mrn} - ${patient.firstName} ${patient.lastName}`;
+            document.getElementById(listId).style.display = 'none';
+        }
+
+        async function createEpisode() {
+            if (!accessToken) {
+                showNotification('❌ Please login first!', 'error');
+                return;
+            }
+
+            const apiUrl = document.getElementById('api-url').value;
+            const patientId = document.getElementById('episode-patient-id').value;
+            const title = document.getElementById('episode-title').value;
+            const startDate = document.getElementById('episode-start-date').value;
+
+            if (!patientId || !title || !startDate) {
+                showNotification('❌ Please fill in all required fields!', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${apiUrl}/api/Clinical/episodes`, {
+                    method: 'POST',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify({
+                        patientId: parseInt(patientId),
+                        title: title,
+                        startDate: new Date(startDate).toISOString()
+                    }),
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showNotification('✅ Episode created successfully!', 'success');
+                    displayResponse(data);
+                    document.getElementById('episode-id').value = data.id;
+                } else {
+                    showNotification(`❌ Failed: ${data.error?.message || 'Unknown error'}`, 'error');
+                    displayResponse(data);
+                }
+            } catch (error) {
+                showNotification(`❌ Network error: ${error.message}`, 'error');
+            }
+        }
+
+        async function getPatientEpisodes() {
+            if (!accessToken) {
+                showNotification('❌ Please login first!', 'error');
+                return;
+            }
+
+            const apiUrl = document.getElementById('api-url').value;
+            const patientId = document.getElementById('view-episode-patient-id').value;
+
+            if (!patientId) {
+                showNotification('❌ Patient ID is required!', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${apiUrl}/api/Clinical/patients/${patientId}/episodes`, {
+                    method: 'GET',
+                    headers: getAuthHeaders(),
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showNotification(`✅ Found ${data.length} episode(s)!`, 'success');
+                    displayResponse(data, 'patient-episodes-result');
+                    
+                    let html = '<table><thead><tr><th>ID</th><th>Title</th><th>Start Date</th><th>End Date</th><th>Status</th><th>Action</th></tr></thead><tbody>';
+                    data.forEach(episode => {
+                        const statusClass = episode.status === 'Active' ? 'status-active' : 'status-closed';
+                        html += `<tr>
+                            <td>${episode.id}</td>
+                            <td>${episode.title}</td>
+                            <td>${new Date(episode.startDate).toLocaleString()}</td>
+                            <td>${episode.endDate ? new Date(episode.endDate).toLocaleString() : '-'}</td>
+                            <td><span class="status-badge ${statusClass}">${episode.status}</span></td>
+                            <td>${episode.status === 'Active' ? `<button onclick="closeEpisode(${episode.id})" class="danger" style="padding: 4px 8px; font-size: 12px;">Close</button>` : '-'}</td>
+                        </tr>`;
+                    });
+                    html += '</tbody></table>';
+                    document.getElementById('patient-episodes-result').innerHTML = html;
+                } else {
+                    showNotification(`❌ Failed: ${data.error?.message || 'Unknown error'}`, 'error');
+                }
+            } catch (error) {
+                showNotification(`❌ Network error: ${error.message}`, 'error');
+            }
+        }
+
+        async function closeEpisode(id) {
+            const apiUrl = document.getElementById('api-url').value;
+
+            try {
+                const response = await fetch(`${apiUrl}/api/Clinical/episodes/${id}/close`, {
+                    method: 'PUT',
+                    headers: getAuthHeaders(),
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showNotification('✅ Episode closed successfully!', 'success');
+                    getPatientEpisodes();
+                } else {
+                    showNotification(`❌ Failed: ${data.error?.message || 'Unknown error'}`, 'error');
+                }
+            } catch (error) {
+                showNotification(`❌ Network error: ${error.message}`, 'error');
+            }
+        }
+
+        async function getEpisodeById() {
+            if (!accessToken) {
+                showNotification('❌ Please login first!', 'error');
+                return;
+            }
+
+            const apiUrl = document.getElementById('api-url').value;
+            const episodeId = document.getElementById('episode-id').value;
+
+            if (!episodeId) {
+                showNotification('❌ Episode ID is required!', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${apiUrl}/api/Clinical/episodes/${episodeId}`, {
+                    method: 'GET',
+                    headers: getAuthHeaders(),
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showNotification('✅ Episode retrieved!', 'success');
+                    displayResponse(data, 'episode-detail-result');
+                } else {
+                    showNotification(`❌ Not found!`, 'error');
+                }
+            } catch (error) {
+                showNotification(`❌ Network error: ${error.message}`, 'error');
+            }
+        }
+
+        // Consultation Functions
+        async function startConsultation() {
+            if (!accessToken) {
+                showNotification('❌ Please login first!', 'error');
+                return;
+            }
+
+            const apiUrl = document.getElementById('api-url').value;
+            const appointmentId = document.getElementById('consultation-appointment-id').value;
+            const doctorId = document.getElementById('consultation-doctor-id').value;
+            const episodeId = document.getElementById('consultation-episode-id').value;
+
+            if (!appointmentId || !doctorId) {
+                showNotification('❌ Appointment ID and Doctor ID are required!', 'error');
+                return;
+            }
+
+            const body = {
+                appointmentId: parseInt(appointmentId),
+                doctorId: parseInt(doctorId)
+            };
+
+            if (episodeId) {
+                body.episodeId = parseInt(episodeId);
+            }
+
+            try {
+                const response = await fetch(`${apiUrl}/api/Clinical/consultations/start`, {
+                    method: 'POST',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify(body),
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showNotification('✅ Consultation started successfully!', 'success');
+                    displayResponse(data);
+                    document.getElementById('end-consultation-id').value = data.id;
+                } else if (response.status === 409) {
+                    showNotification(`❌ ${data.error?.message || 'Doctor has active consultation'}`, 'warning');
+                    displayResponse(data);
+                } else {
+                    showNotification(`❌ Failed: ${data.error?.message || 'Unknown error'}`, 'error');
+                    displayResponse(data);
+                }
+            } catch (error) {
+                showNotification(`❌ Network error: ${error.message}`, 'error');
+            }
+        }
+
+        async function endConsultation() {
+            if (!accessToken) {
+                showNotification('❌ Please login first!', 'error');
+                return;
+            }
+
+            const apiUrl = document.getElementById('api-url').value;
+            const consultationId = document.getElementById('end-consultation-id').value;
+            const clinicalSummary = document.getElementById('clinical-summary').value;
+
+            if (!consultationId || !clinicalSummary) {
+                showNotification('❌ Consultation ID and Clinical Summary are required!', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${apiUrl}/api/Clinical/consultations/${consultationId}/end`, {
+                    method: 'PUT',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify({ clinicalSummary }),
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showNotification('✅ Consultation ended successfully!', 'success');
+                    displayResponse(data);
+                } else {
+                    showNotification(`❌ Failed: ${data.error?.message || 'Unknown error'}`, 'error');
+                    displayResponse(data);
+                }
+            } catch (error) {
+                showNotification(`❌ Network error: ${error.message}`, 'error');
+            }
+        }
+
+        async function linkConsultationToEpisode() {
+            if (!accessToken) {
+                showNotification('❌ Please login first!', 'error');
+                return;
+            }
+
+            const apiUrl = document.getElementById('api-url').value;
+            const consultationId = document.getElementById('link-consultation-id').value;
+            const episodeId = document.getElementById('link-episode-id').value;
+
+            if (!consultationId || !episodeId) {
+                showNotification('❌ Consultation ID and Episode ID are required!', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${apiUrl}/api/Clinical/consultations/${consultationId}/link-episode`, {
+                    method: 'PUT',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify({ episodeId: parseInt(episodeId) }),
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showNotification('✅ Consultation linked to episode!', 'success');
+                    displayResponse(data);
+                } else {
+                    showNotification(`❌ Failed: ${data.error?.message || 'Unknown error'}`, 'error');
+                    displayResponse(data);
+                }
+            } catch (error) {
+                showNotification(`❌ Network error: ${error.message}`, 'error');
+            }
+        }
+
+        async function getActiveConsultation() {
+            if (!accessToken) {
+                showNotification('❌ Please login first!', 'error');
+                return;
+            }
+
+            const apiUrl = document.getElementById('api-url').value;
+            const doctorId = document.getElementById('active-doctor-id').value;
+
+            if (!doctorId) {
+                showNotification('❌ Doctor ID is required!', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${apiUrl}/api/Clinical/doctors/${doctorId}/active-consultation`, {
+                    method: 'GET',
+                    headers: getAuthHeaders(),
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showNotification('✅ Active consultation found!', 'success');
+                    displayResponse(data, 'active-consultation-result');
+                } else {
+                    showNotification('ℹ️ No active consultation for this doctor', 'info');
+                    document.getElementById('active-consultation-result').innerHTML = '<p style="color: #666;">No active consultation</p>';
+                }
+            } catch (error) {
+                showNotification(`❌ Network error: ${error.message}`, 'error');
+            }
+        }
+
+        async function getPatientConsultations() {
+            if (!accessToken) {
+                showNotification('❌ Please login first!', 'error');
+                return;
+            }
+
+            const apiUrl = document.getElementById('api-url').value;
+            const patientId = document.getElementById('history-patient-id').value;
+
+            if (!patientId) {
+                showNotification('❌ Patient ID is required!', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${apiUrl}/api/Clinical/patients/${patientId}/consultations`, {
+                    method: 'GET',
+                    headers: getAuthHeaders(),
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showNotification(`✅ Found ${data.length} consultation(s)!`, 'success');
+                    
+                    let html = '<table><thead><tr><th>ID</th><th>Doctor</th><th>Started</th><th>Ended</th><th>Episode</th><th>Summary</th></tr></thead><tbody>';
+                    data.forEach(consultation => {
+                        const statusClass = consultation.endedAt ? 'status-closed' : 'status-in-progress';
+                        html += `<tr>
+                            <td>${consultation.id}</td>
+                            <td>${consultation.doctorName || 'N/A'}</td>
+                            <td>${consultation.startedAt ? new Date(consultation.startedAt).toLocaleString() : '-'}</td>
+                            <td>${consultation.endedAt ? new Date(consultation.endedAt).toLocaleString() : '<span class="status-badge status-in-progress">In Progress</span>'}</td>
+                            <td>${consultation.episodeTitle || '-'}</td>
+                            <td>${consultation.clinicalSummary ? consultation.clinicalSummary.substring(0, 50) + '...' : '-'}</td>
+                        </tr>`;
+                    });
+                    html += '</tbody></table>';
+                    document.getElementById('consultation-history-result').innerHTML = html;
+                } else {
+                    showNotification(`❌ Failed: ${data.error?.message || 'Unknown error'}`, 'error');
+                }
+            } catch (error) {
+                showNotification(`❌ Network error: ${error.message}`, 'error');
+            }
+        }
+
+        async function getConsultationById() {
+            if (!accessToken) {
+                showNotification('❌ Please login first!', 'error');
+                return;
+            }
+
+            const apiUrl = document.getElementById('api-url').value;
+            const consultationId = document.getElementById('consultation-detail-id').value;
+
+            if (!consultationId) {
+                showNotification('❌ Consultation ID is required!', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${apiUrl}/api/Clinical/consultations/${consultationId}`, {
+                    method: 'GET',
+                    headers: getAuthHeaders(),
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showNotification('✅ Consultation retrieved!', 'success');
+                    displayResponse(data, 'consultation-detail-result');
+                } else {
+                    showNotification('❌ Consultation not found!', 'error');
+                }
+            } catch (error) {
+                showNotification(`❌ Network error: ${error.message}`, 'error');
+            }
+        }
+
+        // Dashboard Functions
+        async function checkDoctorStatus() {
+            const apiUrl = document.getElementById('api-url').value;
+            const doctorId = document.getElementById('doctor-id-input').value;
+
+            if (!doctorId) {
+                showNotification('❌ Doctor ID is required!', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${apiUrl}/api/Clinical/doctors/${doctorId}/active-consultation`, {
+                    method: 'GET',
+                    headers: getAuthHeaders(),
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    const statusDiv = document.getElementById('doctor-status-result');
+                    statusDiv.innerHTML = `<div class="notification warning" style="display: block;">
+                        <strong>⚠️ Doctor is occupied!</strong><br>
+                        Consultation ID: ${data.id}<br>
+                        Patient: ${data.patientName || 'N/A'}<br>
+                        Started: ${new Date(data.startedAt).toLocaleString()}
+                    </div>`;
+                } else {
+                    document.getElementById('doctor-status-result').innerHTML = `<div class="notification success" style="display: block;">
+                        <strong>✅ Doctor is available</strong><br>
+                        No active consultation
+                    </div>`;
+                }
+            } catch (error) {
+                showNotification(`❌ Network error: ${error.message}`, 'error');
+            }
+        }
+
+        async function loadTodayAppointments() {
+            const apiUrl = document.getElementById('api-url').value;
+            const today = new Date().toISOString().split('T')[0];
+
+            try {
+                const response = await fetch(`${apiUrl}/api/appointments?startDate=${today}`, {
+                    method: 'GET',
+                    headers: getAuthHeaders(),
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.data) {
+                    const listDiv = document.getElementById('appointments-list');
+                    let html = '<table><thead><tr><th>ID</th><th>Patient</th><th>Doctor</th><th>Date</th><th>Status</th><th>Action</th></tr></thead><tbody>';
+                    data.data.forEach(apt => {
+                        html += `<tr>
+                            <td>${apt.id}</td>
+                            <td>${apt.patientName}</td>
+                            <td>${apt.doctorName}</td>
+                            <td>${new Date(apt.appointmentDate).toLocaleString()}</td>
+                            <td>${apt.status}</td>
+                            <td><button onclick="selectAppointment(${apt.id}, ${apt.doctorId})" class="success" style="padding: 4px 8px; font-size: 12px;">Select</button></td>
+                        </tr>`;
+                    });
+                    html += '</tbody></table>';
+                    listDiv.innerHTML = html;
+                }
+            } catch (error) {
+                showNotification(`❌ Network error: ${error.message}`, 'error');
+            }
+        }
+
+        function selectAppointment(id, doctorId) {
+            document.getElementById('consultation-appointment-id').value = id;
+            document.getElementById('consultation-doctor-id').value = doctorId;
+            showNotification(`✅ Appointment ${id} selected`, 'success');
+            switchTab('consultations');
+            document.querySelectorAll('.tab')[2].click();
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            const now = new Date().toISOString().slice(0, 16);
+            document.getElementById('episode-start-date').value = now;
+        });
+    </script>
+</body>
+</html>
