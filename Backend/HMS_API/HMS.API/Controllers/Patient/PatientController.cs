@@ -136,4 +136,18 @@ public class PatientController : ControllerBase
         var result = await _patientService.SearchPatientsAsync(q);
         return Ok(new { message = $"Search results for '{q}'.", data = result });
     }
+
+    // GET: api/patients/{mrn}/summary
+    [HttpGet("{mrn}/summary")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetPatientSummary(string mrn, CancellationToken cancellationToken)
+    {
+        var result = await _patientService.GetPatientSummaryAsync(mrn);
+        if (result == null)
+        {
+            return NotFound(new { error = new { code = "PATIENT_NOT_FOUND", message = $"Patient with MRN {mrn} not found" } });
+        }
+        return Ok(new { message = $"Patient summary for MRN {mrn}.", data = result });
+    }
 }

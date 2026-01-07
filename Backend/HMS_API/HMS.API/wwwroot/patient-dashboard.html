@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Dashboard Test Client</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        h2 {
+            color: #555;
+            margin-bottom: 15px;
+            margin-top: 30px;
+        }
+        .section {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        button.secondary {
+            background-color: #6c757d;
+        }
+        button.secondary:hover {
+            background-color: #5a6268;
+        }
+        button.success {
+            background-color: #28a745;
+        }
+        button.success:hover {
+            background-color: #218838;
+        }
+        .response {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 10px;
+            margin-top: 10px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            word-break: break-word;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .response.error {
+            background-color: #fee;
+            border-color: #fcc;
+        }
+        .response.success {
+            background-color: #efe;
+            border-color: #cfc;
+        }
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #007bff;
+            text-decoration: none;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 20px;
+        }
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        .demographics-card {
+            background-color: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 15px;
+        }
+        .demographics-card h3 {
+            color: #007bff;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #007bff;
+        }
+        .demo-row {
+            display: flex;
+            margin-bottom: 10px;
+        }
+        .demo-label {
+            font-weight: bold;
+            color: #555;
+            width: 120px;
+            flex-shrink: 0;
+        }
+        .demo-value {
+            color: #333;
+        }
+        .vitals-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+        .vitals-card h3 {
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid rgba(255,255,255,0.3);
+        }
+        .vitals-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 15px;
+        }
+        .vital-item {
+            text-align: center;
+        }
+        .vital-label {
+            font-size: 12px;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+        .vital-value {
+            font-size: 20px;
+            font-weight: bold;
+        }
+        .vital-unit {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+        .timeline-section {
+            background-color: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 15px;
+        }
+        .timeline-section h3 {
+            color: #007bff;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #007bff;
+        }
+        .timeline-item {
+            position: relative;
+            padding-left: 30px;
+            margin-bottom: 20px;
+            border-left: 2px solid #e0e0e0;
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -8px;
+            top: 5px;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background-color: #007bff;
+        }
+        .timeline-date {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 5px;
+        }
+        .timeline-type {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .timeline-type.consultation {
+            background-color: #e3f2fd;
+            color: #1976d2;
+        }
+        .timeline-type.appointment {
+            background-color: #f3e5f5;
+            color: #7b1fa2;
+        }
+        .timeline-type.lab {
+            background-color: #e8f5e9;
+            color: #388e3c;
+        }
+        .timeline-title {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 3px;
+        }
+        .timeline-details {
+            font-size: 14px;
+            color: #666;
+        }
+        .no-data {
+            text-align: center;
+            color: #999;
+            padding: 20px;
+            font-style: italic;
+        }
+        .loading {
+            text-align: center;
+            color: #007bff;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-link">← Back to Index</a>
+    
+    <h1>Patient Dashboard Test Client</h1>
+    
+    <div class="section">
+        <h2>Login</h2>
+        <div class="form-group">
+            <label for="username">Username:</label>
+            <input type="text" id="username" placeholder="Enter username" value="doctor1">
+        </div>
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="password" id="password" placeholder="Enter password" value="password123">
+        </div>
+        <button onclick="login()">Login</button>
+        <button class="secondary" onclick="logout()">Logout</button>
+        <div id="loginResponse" class="response" style="display: none;"></div>
+    </div>
+    
+    <div class="section" id="searchSection" style="display: none;">
+        <h2>Fetch Patient Summary</h2>
+        <div class="form-group">
+            <label for="mrn">Medical Record Number (MRN):</label>
+            <input type="text" id="mrn" placeholder="Enter MRN (e.g., MRN-001)" value="MRN-001">
+        </div>
+        <button class="success" onclick="fetchPatientSummary()">Fetch Patient Summary</button>
+        <button class="secondary" onclick="clearDashboard()">Clear Dashboard</button>
+        <div id="summaryResponse" class="response" style="display: none;"></div>
+    </div>
+    
+    <div class="section" id="dashboardSection" style="display: none;">
+        <h2>Patient Dashboard</h2>
+        
+        <div class="dashboard-grid">
+            <div>
+                <div class="demographics-card" id="demographicsCard">
+                    <h3>Demographics</h3>
+                    <div class="no-data">No patient data loaded</div>
+                </div>
+                
+                <div class="vitals-card" id="vitalsCard">
+                    <h3>Vitals Ribbon</h3>
+                    <div class="no-data">No vitals data available</div>
+                </div>
+            </div>
+            
+            <div class="timeline-section">
+                <h3>Timeline</h3>
+                <div id="timelineContent">
+                    <div class="no-data">No timeline events loaded</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '/api';
+        
+        function displayResponse(elementId, data, isError = false) {
+            const responseDiv = document.getElementById(elementId);
+            responseDiv.style.display = 'block';
+            responseDiv.className = 'response ' + (isError ? 'error' : 'success');
+            responseDiv.textContent = typeof data === 'object' 
+                ? JSON.stringify(data, null, 2) 
+                : data;
+        }
+        
+        function clearResponse(elementId) {
+            const responseDiv = document.getElementById(elementId);
+            responseDiv.style.display = 'none';
+            responseDiv.textContent = '';
+        }
+        
+        function getToken() {
+            return localStorage.getItem('accessToken');
+        }
+        
+        async function login() {
+            clearResponse('loginResponse');
+            clearResponse('summaryResponse');
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            if (!username || !password) {
+                displayResponse('loginResponse', { error: 'Username and password are required' }, true);
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username, password }),
+                    credentials: 'include'
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    localStorage.setItem('accessToken', data.accessToken);
+                    localStorage.setItem('expiresIn', data.expiresIn);
+                    localStorage.setItem('issuedAt', data.issuedAt);
+                    
+                    displayResponse('loginResponse', data, false);
+                    
+                    document.getElementById('searchSection').style.display = 'block';
+                } else {
+                    displayResponse('loginResponse', data, true);
+                }
+            } catch (error) {
+                displayResponse('loginResponse', { error: error.message }, true);
+            }
+        }
+        
+        async function logout() {
+            try {
+                const response = await fetch(`${API_BASE}/auth/logout`, {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+                
+                localStorage.removeItem('accessToken');
+                localStorage.removeItem('expiresIn');
+                localStorage.removeItem('issuedAt');
+                
+                document.getElementById('searchSection').style.display = 'none';
+                document.getElementById('dashboardSection').style.display = 'none';
+                
+                clearResponse('loginResponse');
+                clearResponse('summaryResponse');
+                clearDashboard();
+            } catch (error) {
+                console.error('Logout error:', error);
+            }
+        }
+        
+        async function fetchPatientSummary() {
+            clearResponse('summaryResponse');
+            
+            const mrn = document.getElementById('mrn').value;
+            if (!mrn) {
+                displayResponse('summaryResponse', { error: 'MRN is required' }, true);
+                return;
+            }
+            
+            const token = getToken();
+            if (!token) {
+                displayResponse('summaryResponse', { error: 'Please login first' }, true);
+                return;
+            }
+            
+            const dashboardSection = document.getElementById('dashboardSection');
+            dashboardSection.style.display = 'block';
+            
+            document.getElementById('demographicsCard').querySelector('.no-data')?.remove();
+            document.getElementById('vitalsCard').querySelector('.no-data')?.remove();
+            document.getElementById('timelineContent').innerHTML = '<div class="loading">Loading...</div>';
+            
+            try {
+                const response = await fetch(`${API_BASE}/patients/${encodeURIComponent(mrn)}/summary`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    },
+                    credentials: 'include'
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    displayResponse('summaryResponse', data, false);
+                    renderDashboard(data);
+                } else {
+                    displayResponse('summaryResponse', data, true);
+                    document.getElementById('timelineContent').innerHTML = '<div class="no-data">Failed to load patient data</div>';
+                }
+            } catch (error) {
+                displayResponse('summaryResponse', { error: error.message }, true);
+                document.getElementById('timelineContent').innerHTML = '<div class="no-data">Failed to load patient data</div>';
+            }
+        }
+        
+        function renderDashboard(data) {
+            renderDemographics(data.demographics);
+            renderVitals(data.vitalsRibbon);
+            renderTimeline(data.timeline);
+        }
+        
+        function renderDemographics(demo) {
+            const card = document.getElementById('demographicsCard');
+            
+            if (!demo) {
+                card.innerHTML = `
+                    <h3>Demographics</h3>
+                    <div class="no-data">No demographics data available</div>
+                `;
+                return;
+            }
+            
+            card.innerHTML = `
+                <h3>Demographics</h3>
+                <div class="demo-row">
+                    <span class="demo-label">MRN:</span>
+                    <span class="demo-value">${demo.mrn || 'N/A'}</span>
+                </div>
+                <div class="demo-row">
+                    <span class="demo-label">Name:</span>
+                    <span class="demo-value">${demo.firstName || ''} ${demo.lastName || ''}</span>
+                </div>
+                <div class="demo-row">
+                    <span class="demo-label">DOB:</span>
+                    <span class="demo-value">${demo.dateOfBirth || 'N/A'}</span>
+                </div>
+                <div class="demo-row">
+                    <span class="demo-label">Age:</span>
+                    <span class="demo-value">${demo.age || 'N/A'} years</span>
+                </div>
+                <div class="demo-row">
+                    <span class="demo-label">Gender:</span>
+                    <span class="demo-value">${demo.gender || 'N/A'}</span>
+                </div>
+                <div class="demo-row">
+                    <span class="demo-label">Blood Type:</span>
+                    <span class="demo-value">${demo.bloodType || 'N/A'}</span>
+                </div>
+                <div class="demo-row">
+                    <span class="demo-label">Phone:</span>
+                    <span class="demo-value">${demo.phoneNumber || 'N/A'}</span>
+                </div>
+                <div class="demo-row">
+                    <span class="demo-label">Email:</span>
+                    <span class="demo-value">${demo.email || 'N/A'}</span>
+                </div>
+            `;
+        }
+        
+        function renderVitals(vitals) {
+            const card = document.getElementById('vitalsCard');
+            
+            if (!vitals) {
+                card.innerHTML = `
+                    <h3>Vitals Ribbon</h3>
+                    <div class="no-data">No vitals data available</div>
+                `;
+                return;
+            }
+            
+            const vitalsList = [
+                { label: 'Temperature', value: vitals.temperature, unit: '°C' },
+                { label: 'Pulse', value: vitals.pulse, unit: 'bpm' },
+                { label: 'Blood Pressure', value: vitals.bloodPressure, unit: 'mmHg' },
+                { label: 'Resp. Rate', value: vitals.respiratoryRate, unit: '/min' },
+                { label: 'SpO2', value: vitals.spO2, unit: '%' },
+                { label: 'Weight', value: vitals.weight, unit: 'kg' },
+                { label: 'Height', value: vitals.height, unit: 'cm' }
+            ];
+            
+            card.innerHTML = `
+                <h3>Vitals Ribbon</h3>
+                <div class="vitals-grid">
+                    ${vitalsList.map(v => `
+                        <div class="vital-item">
+                            <div class="vital-label">${v.label}</div>
+                            <div class="vital-value">${v.value || '--'}</div>
+                            <div class="vital-unit">${v.unit}</div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+        
+        function renderTimeline(timeline) {
+            const content = document.getElementById('timelineContent');
+            
+            if (!timeline || timeline.length === 0) {
+                content.innerHTML = '<div class="no-data">No timeline events available</div>';
+                return;
+            }
+            
+            content.innerHTML = timeline.map(event => {
+                const typeClass = event.eventType.toLowerCase();
+                const formattedDate = event.eventDate 
+                    ? new Date(event.eventDate).toLocaleString() 
+                    : 'N/A';
+                
+                return `
+                    <div class="timeline-item">
+                        <div class="timeline-date">${formattedDate}</div>
+                        <span class="timeline-type ${typeClass}">${event.eventType}</span>
+                        <div class="timeline-title">${event.title || 'Unknown Event'}</div>
+                        <div class="timeline-details">${event.details || ''}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function clearDashboard() {
+            document.getElementById('demographicsCard').innerHTML = `
+                <h3>Demographics</h3>
+                <div class="no-data">No patient data loaded</div>
+            `;
+            document.getElementById('vitalsCard').innerHTML = `
+                <h3>Vitals Ribbon</h3>
+                <div class="no-data">No vitals data available</div>
+            `;
+            document.getElementById('timelineContent').innerHTML = '<div class="no-data">No timeline events loaded</div>';
+            document.getElementById('dashboardSection').style.display = 'none';
+        }
+        
+        window.addEventListener('load', () => {
+            const accessToken = getToken();
+            if (accessToken) {
+                document.getElementById('searchSection').style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>

@@ -13,6 +13,7 @@ public interface IPatientService
     Task<List<PatientSearchResultDto>> GetAllPatientsAsync();
     Task<PatientResponseDto> RegisterEmergencyAsync(EmergencyRegistrationDto dto, int userId);
     Task<PatientResponseDto?> UpdatePatientAsync(string mrn, UpdatePatientDto dto, int userId);
+    Task<PatientSummaryDto?> GetPatientSummaryAsync(string mrn);
 }
 
 public class PatientService : IPatientService
@@ -197,7 +198,7 @@ public class PatientService : IPatientService
     public async Task<List<PatientSearchResultDto>> GetAllPatientsAsync()
     {
         var patients = await _patientRepository.GetAllPatientsAsync();
-        
+
         return patients.Select(p => new PatientSearchResultDto
         {
             Id = p.Id,
@@ -207,5 +208,95 @@ public class PatientService : IPatientService
             Gender = p.Gender,
             Dob = p.Dob
         }).ToList();
+    }
+
+    public async Task<PatientSummaryDto?> GetPatientSummaryAsync(string mrn)
+    {
+        var (patient, latestVital, consultations, appointments, labResults) = await _patientRepository.GetPatientSummaryDataAsync(mrn);
+
+        if (patient == null)
+        {
+            return null;
+        }
+
+        var age = patient.Dob.HasValue ? CalculateAge(patient.Dob.Value) : null;
+
+        var timelineEvents = new List<TimelineEventDto>();
+
+        foreach (var consultation in consultations)
+        {
+            timelineEvents.Add(new TimelineEventDto
+            {
+                Type = "Consultation",
+                EventDate = consultation.StartedAt ?? DateTime.UtcNow,
+                Summary = $"Consultation with {consultation.Doctor?.Username ?? "Doctor"}",
+                Details = consultation.ClinicalSummary,
+                PerformedBy = consultation.Doctor?.Username
+            });
+        }
+
+        foreach (var appointment in appointments)
+        {
+            timelineEvents.Add(new TimelineEventDto
+            {
+                Type = "Appointment",
+                EventDate = appointment.AppointmentDate ?? DateTime.UtcNow,
+                Summary = appointment.ReasonForVisit ?? "Scheduled Appointment",
+                Details = $"Status: {appointment.Status}",
+                PerformedBy = appointment.Doctor?.Username
+            });
+        }
+
+        foreach (var labResult in labResults)
+        {
+            timelineEvents.Add(new TimelineEventDto
+            {
+                Type = "LabResult",
+                EventDate = labResult.ReleasedAt ?? DateTime.UtcNow,
+                Summary = labResult.ResultSummary ?? "Lab Results",
+                Details = labResult.ResultData,
+                PerformedBy = labResult.Order?.OrderedByNavigation?.Username
+            });
+        }
+
+        timelineEvents = timelineEvents.OrderByDescending(e => e.EventDate).ToList();
+
+        return new PatientSummaryDto
+        {
+            Demographics = new DemographicsDto
+            {
+                Id = patient.Id,
+                Mrn = patient.Mrn!,
+                FirstName = patient.FirstName ?? "",
+                LastName = patient.LastName ?? "",
+                Gender = patient.Gender,
+                Dob = patient.Dob,
+                Age = age,
+                HasAllergies = false
+            },
+            VitalsRibbon = latestVital != null ? new VitalsRibbonDto
+            {
+                RecordedAt = latestVital.RecordedAt,
+                BpSystolic = latestVital.BpSystolic,
+                BpDiastolic = latestVital.BpDiastolic,
+                HeartRate = latestVital.HeartRate,
+                Temperature = latestVital.Temperature,
+                Spo2 = latestVital.Spo2
+            } : new VitalsRibbonDto(),
+            Allergies = new List<AllergyDto>(),
+            ActiveProblems = new List<ActiveProblemDto>(),
+            RecentTimelineEvents = timelineEvents
+        };
+    }
+
+    private string CalculateAge(DateOnly dob)
+    {
+        var today = DateOnly.FromDateTime(DateTime.UtcNow);
+        var age = today.Year - dob.Year;
+        if (today.DayOfYear < dob.DayOfYear)
+        {
+            age--;
+        }
+        return $"{age} years";
     }
 }

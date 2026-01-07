@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Role Switcher Test Client</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        h2 {
+            color: #555;
+            margin-bottom: 15px;
+            margin-top: 30px;
+        }
+        .section {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        input[type="text"],
+        input[type="password"],
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        button.secondary {
+            background-color: #6c757d;
+        }
+        button.secondary:hover {
+            background-color: #5a6268;
+        }
+        button.success {
+            background-color: #28a745;
+        }
+        button.success:hover {
+            background-color: #218838;
+        }
+        .response {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 10px;
+            margin-top: 10px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            word-break: break-word;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .response.error {
+            background-color: #fee;
+            border-color: #fcc;
+        }
+        .response.success {
+            background-color: #efe;
+            border-color: #cfc;
+        }
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #007bff;
+            text-decoration: none;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        .token-info {
+            background-color: #e7f3ff;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+        .role-display {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .available-roles {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .role-tag {
+            background-color: #007bff;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+        .role-tag.active {
+            background-color: #28a745;
+        }
+        .status-message {
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            display: none;
+        }
+        .status-message.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            display: block;
+        }
+        .status-message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-link">← Back to Index</a>
+    
+    <h1>Role Switcher Test Client</h1>
+    
+    <div class="section">
+        <h2>Login</h2>
+        <div class="form-group">
+            <label for="username">Username:</label>
+            <input type="text" id="username" placeholder="Enter username" value="multiruser">
+        </div>
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="password" id="password" placeholder="Enter password" value="password123">
+        </div>
+        <button onclick="login()">Login</button>
+        <div id="loginResponse" class="response" style="display: none;"></div>
+    </div>
+    
+    <div class="section" id="roleSection" style="display: none;">
+        <h2>Current Active Role</h2>
+        <div class="role-display" id="activeRoleDisplay">
+            --
+        </div>
+        <div id="statusMessage" class="status-message"></div>
+        
+        <h3>Available Roles</h3>
+        <div class="available-roles" id="availableRoles">
+            <span class="role-tag">No roles loaded</span>
+        </div>
+    </div>
+    
+    <div class="section" id="switchSection" style="display: none;">
+        <h2>Switch Role</h2>
+        <div class="form-group">
+            <label for="roleSelect">Select Role:</label>
+            <select id="roleSelect">
+                <option value="">-- Select Role --</option>
+            </select>
+        </div>
+        <button class="success" onclick="switchRole()">Switch Role</button>
+        <button class="secondary" onclick="refreshToken()">Refresh Token</button>
+        <button class="secondary" onclick="logout()">Logout</button>
+        <div id="switchResponse" class="response" style="display: none;"></div>
+    </div>
+    
+    <div class="section" id="tokenSection" style="display: none;">
+        <h2>Current Token Info</h2>
+        <div class="token-info" id="tokenInfo">
+            No active session
+        </div>
+        <button onclick="checkToken()">Refresh Token Info</button>
+    </div>
+
+    <script>
+        const API_BASE = '/api/auth';
+        let availableRolesList = [];
+        
+        function displayResponse(elementId, data, isError = false) {
+            const responseDiv = document.getElementById(elementId);
+            responseDiv.style.display = 'block';
+            responseDiv.className = 'response ' + (isError ? 'error' : 'success');
+            responseDiv.textContent = typeof data === 'object' 
+                ? JSON.stringify(data, null, 2) 
+                : data;
+        }
+        
+        function clearResponse(elementId) {
+            const responseDiv = document.getElementById(elementId);
+            responseDiv.style.display = 'none';
+            responseDiv.textContent = '';
+        }
+        
+        function showStatus(message, isSuccess = true) {
+            const statusDiv = document.getElementById('statusMessage');
+            statusDiv.className = 'status-message ' + (isSuccess ? 'success' : 'error');
+            statusDiv.textContent = message;
+            statusDiv.style.display = 'block';
+            
+            setTimeout(() => {
+                statusDiv.style.display = 'none';
+            }, 3000);
+        }
+        
+        function decodeJWT(token) {
+            try {
+                const base64Url = token.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                }).join(''));
+                return JSON.parse(jsonPayload);
+            } catch (e) {
+                return null;
+            }
+        }
+        
+        function updateRoleDisplay(token) {
+            const decoded = decodeJWT(token);
+            if (decoded) {
+                const activeRole = decoded.role || 'Unknown';
+                document.getElementById('activeRoleDisplay').textContent = `Active Role: ${activeRole}`;
+            }
+        }
+        
+        function updateAvailableRoles(roles) {
+            availableRolesList = roles;
+            const rolesDiv = document.getElementById('availableRoles');
+            const select = document.getElementById('roleSelect');
+            
+            rolesDiv.innerHTML = '';
+            select.innerHTML = '<option value="">-- Select Role --</option>';
+            
+            const token = localStorage.getItem('accessToken');
+            const decoded = decodeJWT(token);
+            const activeRole = decoded ? decoded.role : null;
+            
+            roles.forEach(role => {
+                const isActive = role === activeRole;
+                rolesDiv.innerHTML += `
+                    <span class="role-tag ${isActive ? 'active' : ''}">
+                        ${role} ${isActive ? '(Active)' : ''}
+                    </span>
+                `;
+                select.innerHTML += `
+                    <option value="${role}">${role} ${isActive ? '- Current' : ''}</option>
+                `;
+            });
+        }
+        
+        async function login() {
+            clearResponse('loginResponse');
+            clearResponse('switchResponse');
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            if (!username || !password) {
+                displayResponse('loginResponse', { error: 'Username and password are required' }, true);
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE}/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username, password }),
+                    credentials: 'include'
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    localStorage.setItem('accessToken', data.accessToken);
+                    localStorage.setItem('expiresIn', data.expiresIn);
+                    localStorage.setItem('issuedAt', data.issuedAt);
+                    
+                    displayResponse('loginResponse', data, false);
+                    
+                    document.getElementById('roleSection').style.display = 'block';
+                    document.getElementById('switchSection').style.display = 'block';
+                    document.getElementById('tokenSection').style.display = 'block';
+                    
+                    updateRoleDisplay(data.accessToken);
+                    updateAvailableRoles([decoded?.role || 'Doctor']);
+                    updateTokenInfo();
+                    
+                    showStatus('Login successful!');
+                } else {
+                    displayResponse('loginResponse', data, true);
+                }
+            } catch (error) {
+                displayResponse('loginResponse', { error: error.message }, true);
+            }
+        }
+        
+        async function switchRole() {
+            clearResponse('switchResponse');
+            
+            const role = document.getElementById('roleSelect').value;
+            if (!role) {
+                showStatus('Please select a role', false);
+                return;
+            }
+            
+            const token = localStorage.getItem('accessToken');
+            if (!token) {
+                showStatus('Please login first', false);
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE}/switch-role`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ role }),
+                    credentials: 'include'
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    localStorage.setItem('accessToken', data.accessToken);
+                    localStorage.setItem('expiresIn', data.expiresIn);
+                    localStorage.setItem('issuedAt', data.issuedAt);
+                    
+                    displayResponse('switchResponse', data, false);
+                    
+                    updateRoleDisplay(data.accessToken);
+                    updateAvailableRoles(data.availableRoles || []);
+                    updateTokenInfo();
+                    
+                    showStatus(`Switched to ${role} role successfully!`);
+                } else {
+                    displayResponse('switchResponse', data, true);
+                    showStatus('Failed to switch role', false);
+                }
+            } catch (error) {
+                displayResponse('switchResponse', { error: error.message }, true);
+                showStatus('Failed to switch role', false);
+            }
+        }
+        
+        async function refreshToken() {
+            clearResponse('switchResponse');
+            
+            try {
+                const response = await fetch(`${API_BASE}/refresh`, {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    localStorage.setItem('accessToken', data.accessToken);
+                    localStorage.setItem('expiresIn', data.expiresIn);
+                    localStorage.setItem('issuedAt', data.issuedAt);
+                    
+                    displayResponse('switchResponse', data, false);
+                    updateRoleDisplay(data.accessToken);
+                    updateTokenInfo();
+                    
+                    showStatus('Token refreshed successfully!');
+                } else {
+                    displayResponse('switchResponse', data, true);
+                    showStatus('Failed to refresh token', false);
+                }
+            } catch (error) {
+                displayResponse('switchResponse', { error: error.message }, true);
+                showStatus('Failed to refresh token', false);
+            }
+        }
+        
+        async function logout() {
+            clearResponse('switchResponse');
+            
+            try {
+                const response = await fetch(`${API_BASE}/logout`, {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+                
+                if (response.ok) {
+                    localStorage.removeItem('accessToken');
+                    localStorage.removeItem('expiresIn');
+                    localStorage.removeItem('issuedAt');
+                    
+                    document.getElementById('roleSection').style.display = 'none';
+                    document.getElementById('switchSection').style.display = 'none';
+                    document.getElementById('tokenSection').style.display = 'none';
+                    
+                    showStatus('Logged out successfully!');
+                } else {
+                    const data = await response.json();
+                    displayResponse('switchResponse', data, true);
+                }
+            } catch (error) {
+                displayResponse('switchResponse', { error: error.message }, true);
+            }
+        }
+        
+        function updateTokenInfo() {
+            const tokenInfoDiv = document.getElementById('tokenInfo');
+            
+            const accessToken = localStorage.getItem('accessToken');
+            const issuedAt = localStorage.getItem('issuedAt');
+            const expiresIn = localStorage.getItem('expiresIn');
+            
+            if (accessToken) {
+                const expiryTime = issuedAt ? new Date(issuedAt).getTime() + (expiresIn ? parseInt(expiresIn) * 1000 : 0) : null;
+                const currentTime = new Date().getTime();
+                const remainingTime = expiryTime ? Math.max(0, Math.floor((expiryTime - currentTime) / 1000)) : 0;
+                const decoded = decodeJWT(accessToken);
+                
+                tokenInfoDiv.innerHTML = `
+                    <strong>Access Token:</strong> ${accessToken.substring(0, 30)}...<br><br>
+                    <strong>Current Role:</strong> ${decoded ? decoded.role : 'Unknown'}<br>
+                    <strong>Expires In:</strong> ${Math.floor(remainingTime / 60)} minutes ${remainingTime % 60} seconds<br>
+                    <strong>Issued At:</strong> ${issuedAt ? new Date(issuedAt).toLocaleString() : 'N/A'}
+                `;
+            } else {
+                tokenInfoDiv.textContent = 'No active session';
+            }
+        }
+        
+        function checkToken() {
+            updateTokenInfo();
+        }
+        
+        window.addEventListener('load', () => {
+            const accessToken = localStorage.getItem('accessToken');
+            if (accessToken) {
+                document.getElementById('roleSection').style.display = 'block';
+                document.getElementById('switchSection').style.display = 'block';
+                document.getElementById('tokenSection').style.display = 'block';
+                updateRoleDisplay(accessToken);
+                updateAvailableRoles(availableRolesList.length > 0 ? availableRolesList : ['Doctor']);
+                updateTokenInfo();
+            }
+        });
+    </script>
+</body>
+</html>
