@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using System.Text.Json;
 
 namespace HMS.Data.DBModel;
 
@@ -13,7 +14,7 @@ public partial class ClinAssessmentValue
 
     public string? ValueRaw { get; set; }
 
-    public string? ValueTyped { get; set; }
+    public JsonDocument? ValueTyped { get; set; }
 
     public DateTime? CreatedAt { get; set; }
 

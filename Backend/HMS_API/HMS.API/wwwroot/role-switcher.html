@@ -328,6 +328,7 @@
                     document.getElementById('tokenSection').style.display = 'block';
                     
                     updateRoleDisplay(data.accessToken);
+                    const decoded = decodeJWT(data.accessToken);
                     updateAvailableRoles([decoded?.role || 'Doctor']);
                     updateTokenInfo();
                     
