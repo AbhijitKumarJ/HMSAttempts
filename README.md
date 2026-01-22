@@ -1,2 +1,2 @@
 # HMSAttempts
-Attempts at creating HMS related solutions
+Attempts at creating possible UIs for HMS related solutions
